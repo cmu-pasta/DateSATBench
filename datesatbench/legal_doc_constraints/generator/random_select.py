@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import List, Dict
 
 # Import formatting function
-from format_jsonl import format_as_pretty_jsonl
+from .format_jsonl import format_as_pretty_jsonl
 
 # Fixed random seed for deterministic selection across runs
 DEFAULT_RANDOM_SEED = 42

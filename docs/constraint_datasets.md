@@ -1,6 +1,6 @@
-## Constraint DateSATBenchs in DateSAT
+## Constraint datasets in DateSATBench
 
-This document summarizes how the two main constraint datesatbenchs are generated:
+This document summarizes how the two main constraint datasets are generated:
 
 - LLM-generated synthetic constraints (`datesatbench/llm_constraints`)
 - Legal-document–extracted constraints (`datesatbench/legal_doc_constraints`)
@@ -27,7 +27,7 @@ Internally, `ConstraintGenerator.generate_constraints()`:
   - How many objects to generate.
   - Allowed coverage tags (if `--tags` was given).
   - Target constraints-per-object range.
-- Calls a provider-agnostic `LLMClient` (`datesatbench/llm.py`) with:
+- Calls a provider-agnostic `LLMClient` (`datesatbench/utils/llm.py`) with:
   - The fixed `SYSTEM_PROMPT` as the system message.
   - The constructed local prompt as the user message.
 
@@ -89,14 +89,14 @@ The generator logs all LLM calls and feedback to timestamped JSONL files:
 
 These logs make it possible to reproduce or debug individual generations.
 
-### 1.5 Combining per-tag files into a single datesatbench
+### 1.5 Combining per-tag files into a single dataset
 
 Once per-tag constraint files (e.g., `year_vs_days.json`, `month_vs_days.json`,
 `symbolic_date_vars.json`, `property_access.json`, `logical_operators.json`) have been generated,
 they are merged with:
 
 ```bash
-python datesatbench/llm_constraints/generator/combine_constraints.py \
+python -m datesatbench.llm_constraints.generator.combine_constraints \
   --constraints-dir datesatbench/llm_constraints/constraints \
   --output datesatbench/llm_constraints/constraints/constraints.json
 ```
@@ -112,7 +112,7 @@ python datesatbench/llm_constraints/generator/combine_constraints.py \
       (e.g., `llm-logical_operators-1`, `llm-logical_operators-2`, then continuing into the next file).
 - Writes the combined array to `constraints/constraints.json`.
 
-The resulting `constraints.json` is the master LLM constraint datesatbench.
+The resulting `constraints.json` is the master LLM constraint dataset file.
 
 ---
 
@@ -137,7 +137,7 @@ Each record includes:
 - CLI (simplified):
 
 ```bash
-python datesatbench/legal_doc_constraints/generator/llm_extractor.py \
+python -m datesatbench.legal_doc_constraints.generator.llm_extractor \
   --input datesatbench/legal_doc_constraints/processed_data/selected.jsonl \
   --output datesatbench/legal_doc_constraints/constraints/constraints_YYYY-MM-DD_HH-MM-SS.jsonl
 ```
@@ -227,12 +227,12 @@ Each line is a JSON object representing constraints for a single legal record, w
 
 ---
 
-## 3. Post-generation Testing & Validation (both datesatbenchs)
+## 3. Post-generation testing & validation (overview)
 
-Both datesatbenchs are tested and validated using a common infrastructure:
+Both datasets are typically tested and validated using downstream evaluation infrastructure (not included in this repo snapshot).
 
-- **Benchmark runner**: `datesatbench/run_benchmarks.py`
-- **Validation logic**: `datesatbench/utils/validation.py`
+- **Benchmark runner**: (not present here)
+- **Validation logic**: (not present here)
 - **Enumeration baseline**: `datesat/enumeration_baseline.py`
 
 In brief:

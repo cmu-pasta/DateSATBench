@@ -12,16 +12,16 @@ Parses the fixed Title 26 XML file and produces **element-level** records (per s
 
 ```bash
 # From repository root
-python datesatbench/legal_doc_constraints/generator/parse.py
+python -m datesatbench.legal_doc_constraints.generator.parse
 ```
 
 This always reads:
 - Input: `datesatbench/legal_doc_constraints/raw_data/title26.xml`
-- Output: `datesatbench/legal_doc_constraints/processed_data/parsed/parsed.jsonl`
+- Output: `datesatbench/legal_doc_constraints/processed_data/parsed.jsonl`
 
-The raw_data/title26.xml can be downloaded from https://uscode.house.gov/view.xhtml?path=/prelim@title26&edition=prelim
+The `raw_data/title26.xml` file can be downloaded from `https://uscode.house.gov/view.xhtml?path=/prelim@title26&edition=prelim` and placed at the path above.
 
-**Output:** `processed_data/parsed/parsed.jsonl` – one JSON object **per element** with:
+**Output:** `processed_data/parsed.jsonl` – one JSON object **per element** with:
 - `id`: Unique identifier for the element
 - `heading`: Section heading/title
 - `identifier`: Full USLM identifier path
@@ -34,8 +34,8 @@ The raw_data/title26.xml can be downloaded from https://uscode.house.gov/view.xh
 Identifies clauses containing temporal logic (dates, periods, deadlines).
 
 ```bash
-python datesatbench/legal_doc_constraints/generator/detect.py \
-    datesatbench/legal_doc_constraints/processed_data/parsed/parsed.jsonl \
+python -m datesatbench.legal_doc_constraints.generator.filter \
+    datesatbench/legal_doc_constraints/processed_data/parsed.jsonl \
     --output datesatbench/legal_doc_constraints/processed_data/filtered.jsonl
 ```
 
@@ -53,7 +53,7 @@ Converts temporal clauses into DateSAT constraint format.
 # Set API key first
 export ANTHROPIC_API_KEY="your-key-here"  # or OPENAI_API_KEY
 
-python datesatbench/legal_doc_constraints/generator/llm_extractor.py \
+python -m datesatbench.legal_doc_constraints.generator.llm_extractor \
     --input datesatbench/legal_doc_constraints/processed_data/selected.jsonl \
     --output datesatbench/legal_doc_constraints/constraints/1.jsonl \
     --provider anthropic

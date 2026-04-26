@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Dict, List
 
 # Import formatting function
-from format_jsonl import format_as_pretty_jsonl
+from .format_jsonl import format_as_pretty_jsonl
 
 # Temporal period keywords
 PERIOD_KEYWORDS = [

@@ -24,8 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from datesatbench.llm import LLMClient
-from datesat.constraint_parser import ConstraintParser
+from datesatbench.utils.llm import LLMClient
 
 
 # System prompt for legal document constraint extraction
@@ -269,10 +268,16 @@ def _validate_constraints_with_parser(constraint_obj: Dict) -> Tuple[bool, Optio
         return True, None
     
     try:
+        from datesat.constraint_parser import ConstraintParser  # type: ignore
         parser = ConstraintParser()
         # generate_builder_code validates and parses all constraints
         parser.generate_builder_code(constraints, declarations)
         return True, None
+    except ModuleNotFoundError:
+        return False, (
+            "Missing dependency 'datesat' (needed for parser-based validation). "
+            "Install/enable the DateSAT package to validate extracted constraints."
+        )
     except ValueError as e:
         return False, str(e)
     except Exception as e:
@@ -773,7 +778,7 @@ def main():
 
     # Also write pretty JSONL version
     pretty_output_path = output_path.parent / f"{output_path.stem}_formatted.jsonl"
-    from format_jsonl import format_as_pretty_jsonl
+    from .format_jsonl import format_as_pretty_jsonl
     format_as_pretty_jsonl(output_path, pretty_output_path)
 
     print(f"\nDone!")

@@ -10,32 +10,12 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-try:
-    from ..llm import LLMClient
-except ImportError:
-    # Try absolute import
-    import sys
-    from pathlib import Path
-    datesatbench_path = Path(__file__).parent.parent.parent
-    sys.path.insert(0, str(datesatbench_path))
-    from llm import LLMClient
+from datesatbench.utils.llm import LLMClient
 
 try:
     from .id_counter import get_next_id
 except ImportError:
     from id_counter import get_next_id
-
-try:
-    from datesat.constraint_parser import ConstraintParser
-except ImportError:
-    import sys
-    from pathlib import Path
-    # Add repo root to path
-    repo_root = Path(__file__).resolve().parents[3]
-    if str(repo_root) not in sys.path:
-        sys.path.insert(0, str(repo_root))
-    from datesat.constraint_parser import ConstraintParser
-
 
 def _validate_constraints_with_parser(constraint_obj: Dict) -> Tuple[bool, Optional[str]]:
     """
@@ -56,10 +36,16 @@ def _validate_constraints_with_parser(constraint_obj: Dict) -> Tuple[bool, Optio
         return True, None
 
     try:
+        from datesat.constraint_parser import ConstraintParser  # type: ignore
         parser = ConstraintParser()
         # generate_builder_code validates and parses all constraints
         parser.generate_builder_code(constraints, declarations)
         return True, None
+    except ModuleNotFoundError as e:
+        return False, (
+            "Missing dependency 'datesat' (needed for parser-based validation). "
+            "Install/enable the DateSAT package to validate generated constraints."
+        )
     except ValueError as e:
         return False, str(e)
     except Exception as e:
@@ -741,6 +727,16 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="Generate DateSAT constraints with LLM"
+    )
+    parser.add_argument(
+        "--api-key",
+        type=str,
+        help="API key (or set ANTHROPIC_API_KEY/OPENAI_API_KEY)",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        help="Model name (provider default if omitted)",
     )
     parser.add_argument(
         "--num", type=int, default=10, help="Number of constraints to generate"

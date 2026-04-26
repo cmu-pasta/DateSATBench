@@ -20,7 +20,7 @@ Basic usage:
 
 ```bash
 # Generate 10 constraints
-python datesatbench/llm_constraints/generator/constraint_generator.py --num 10 --output datesatbench/llm_constraints/constraints/1.json
+python -m datesatbench.llm_constraints.generator.constraint_generator --num 10 --output datesatbench/llm_constraints/constraints/1.json
 ```
 
 ### Command Line Arguments
@@ -39,7 +39,7 @@ You can restrict the LLM to generate constraints with only specific coverage tag
 
 **Example**: To generate only leap year and end-of-month constraints:
 ```bash
-python datesatbench/llm_constraints/generator/constraint_generator.py --num 10 --output datesatbench/llm_constraints/constraints/1.json --tags year_vs_days
+python -m datesatbench.llm_constraints.generator.constraint_generator --num 10 --output datesatbench/llm_constraints/constraints/1.json --tags year_vs_days
 ```
 
 If `--tags` is not specified, the LLM will generate constraints with any combination of tags (default behavior).
@@ -54,14 +54,14 @@ By default, the system generates constraint objects with a **varied number of co
 
   **Example**: Generate constraints with 3-7 constraints per object:
   ```bash
-  python datesatbench/llm_constraints/generator/constraint_generator.py --num 10 --output datesatbench/llm_constraints/constraints/1.json --min-constraints 3 --max-constraints 7
+  python -m datesatbench.llm_constraints.generator.constraint_generator --num 10 --output datesatbench/llm_constraints/constraints/1.json --min-constraints 3 --max-constraints 7
   ```
 
 - **Exact count**: Use `--exact-constraints` to make all objects have the same number of constraints. This overrides any min/max settings.
 
   **Example**: Generate all objects with exactly 5 constraints:
   ```bash
-  python datesatbench/llm_constraints/generator/constraint_generator.py --num 10 --output datesatbench/llm_constraints/constraints/1.json --exact-constraints 5
+  python -m datesatbench.llm_constraints.generator.constraint_generator --num 10 --output datesatbench/llm_constraints/constraints/1.json --exact-constraints 5
   ```
 
 ## Combining Constraints
@@ -69,18 +69,18 @@ By default, the system generates constraint objects with a **varied number of co
 After generating multiple constraint files, you can combine them into a single file using the `combine_constraints.py` script:
 
 ```bash
-# Combine all constraint files (excluding all_constraints.json) into all_constraints.json
-python datesatbench/llm_constraints/generator/combine_constraints.py
+# Combine all constraint files (excluding constraints.json) into constraints.json
+python -m datesatbench.llm_constraints.generator.combine_constraints
 
 # Specify custom directory and output file
-python datesatbench/llm_constraints/generator/combine_constraints.py --constraints-dir datesatbench/llm_constraints/constraints --output datesatbench/llm_constraints/constraints/all_constraints.json
+python -m datesatbench.llm_constraints.generator.combine_constraints --constraints-dir datesatbench/llm_constraints/constraints --output datesatbench/llm_constraints/constraints/constraints.json
 ```
 
 The script will:
 - Find all JSON files in the constraints directory
-- Exclude `all_constraints.json` itself (to avoid recursion)
-- Combine all constraints into a single array
-- Save the result as `all_constraints.json`
+- Exclude `constraints.json` itself (to avoid recursion)
+- Combine all constraints into a single array (and reassign IDs)
+- Save the result as `constraints.json`
 
 ## Output Schema
 

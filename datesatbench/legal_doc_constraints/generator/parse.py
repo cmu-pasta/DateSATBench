@@ -32,7 +32,7 @@ from typing import Dict, List, Optional
 from xml.etree import ElementTree as ET
 
 # Import formatting function
-from format_jsonl import format_as_pretty_jsonl
+from .format_jsonl import format_as_pretty_jsonl
 
 # USLM namespace
 USLM_NS = "{http://xml.house.gov/schemas/uslm/1.0}"
