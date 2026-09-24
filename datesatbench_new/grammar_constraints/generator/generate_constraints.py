@@ -144,6 +144,13 @@ def generate_constraints_with_fandango(
             str(num_samples),
             "--max-nodes",
             str(max_nodes),
+            # Sample the whole population once and skip evolution: fandango's
+            # crossover copies constraints between individuals, which left
+            # ~75% of constraints as duplicates and skewed every distribution.
+            "--population-size",
+            str(num_samples),
+            "-N",
+            "1",
             "-o",
             str(output_file),
         ]
