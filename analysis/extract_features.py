@@ -1,5 +1,5 @@
 """
-Extract the descriptive feature set of docs/constraint_features.md over DateSATBench.
+Extract a descriptive feature set over DateSATBench.
 
 Writes one CSV row per benchmark instance. Usage:
 
