@@ -1,0 +1,683 @@
+<title>DateSATBench Encoding Analysis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root {
+  color-scheme: only light;   /* the report is always light */
+  --bg: #f8f8f6;
+  --surface: #ffffff;
+  --ink: #1a1a18;
+  --ink-2: #55544e;
+  --ink-3: #85837b;
+  --rule: #e2e0d9;
+  --chip: #eeede8;
+  --accent: #2a78d6;
+  --accent-ink: #ffffff;
+  --c-llm: #2a78d6;
+  --c-legal: #eb6834;
+  --c-grammar: #1baf7a;
+  --k1: #2a78d6; --k2: #eb6834; --k3: #1baf7a; --k4: #eda100;
+  --k5: #e87ba4; --k6: #008300; --k7: #4a3aa7; --k8: #e34948;
+  --div-n2: #991b1b;   /* darkest red at rho = -1 */
+  --div-n1: #e3807d;
+  --div-0: #f0efec;
+  --div-p1: #66b588;
+  --div-p2: #166534;   /* darkest green at rho = +1 */
+  --const: #e4e2dc;
+  --muted-pt: #c4c2ba;
+  --o-sat: #3d3c37; --o-unsat: #75736b; --o-timeout: #adaba2;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--sans);
+  margin: 0;
+  padding-inline: 16px;
+  padding-block: 0 64px;
+}
+.wrap { max-width: 1440px; margin: 0 auto; }   /* laid out for a landscape window */
+
+header.top { padding-block: 40px 28px; border-bottom: 1px solid var(--rule); }
+.eyebrow {
+  font: 500 12px/1 var(--mono);
+  letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
+}
+h1 {
+  font: 600 clamp(28px, 4vw, 40px)/1.1 var(--cond);
+  letter-spacing: -.01em; margin: 10px 0 12px; text-wrap: balance;
+}
+.lede { max-width: 68ch; color: var(--ink-2); margin: 0; }
+.prov {
+  display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 18px;
+  font: 400 12.5px/1.4 var(--mono); color: var(--ink-3);
+}
+.prov b { color: var(--ink); font-weight: 500; }
+
+nav.toc {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg); border-bottom: 1px solid var(--rule);
+  display: flex; gap: 4px 20px; flex-wrap: wrap; padding-block: 10px;
+  font-size: 13.5px;
+}
+nav.toc a { color: var(--ink-2); text-decoration: none; }
+nav.toc a:hover, nav.toc a:focus-visible { color: var(--accent); }
+
+section { padding-block: 44px 8px; }
+h2 {
+  font: 600 24px/1.2 var(--cond); margin: 0 0 8px; text-wrap: balance;
+}
+.sec-lede { max-width: 72ch; color: var(--ink-2); margin: 0 0 20px; }
+.note { font-size: 13px; color: var(--ink-3); max-width: 80ch; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-bottom: 16px; }
+.ctl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ctl-label { font: 500 11.5px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.seg { display: inline-flex; flex-wrap: wrap; background: var(--chip); border-radius: 8px; padding: 3px; gap: 2px; }
+.seg button {
+  font: 500 13px/1 var(--sans); color: var(--ink-2); background: transparent;
+  border: 0; border-radius: 6px; padding: 7px 11px; cursor: pointer;
+}
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--rule); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* ---- speedup heatmap ---- */
+/* One table per feature family: three across for a single scope. Side by side has four
+   scopes x three encodings per table, too wide for three across, so it stacks. */
+.heat-grid { display: grid; gap: 30px 28px; align-items: start; }
+.heat-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.heat-grid.cols-1 { grid-template-columns: max-content; }
+.heat-card h3.grp-title {
+  font: 500 11px/1 var(--mono); letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3);
+  margin: 0 0 6px; padding-bottom: 7px; border-bottom: 1px solid var(--rule);
+}
+table.heat { border-collapse: separate; border-spacing: 2px; font-variant-numeric: tabular-nums; }
+.cols-3 table.heat { width: 100%; }
+.cols-1 table.heat th.feat { min-width: var(--feat-w, 24ch); }   /* same label width in every stacked table, so the corpus columns line up */
+table.heat th.feat {
+  font: 400 12px/1 var(--mono); color: var(--ink-2); text-align: right;
+  padding: 0 8px 0 0; white-space: nowrap;
+}
+table.heat td {
+  font: 500 12px/1 var(--mono); text-align: center; width: 64px; min-width: 64px; height: 26px;
+  border-radius: 3px; cursor: default; white-space: nowrap; padding: 0 6px;
+}
+table.heat td.const { background: var(--const); color: var(--ink-3); font-weight: 400; font-size: 10.5px; }
+table.heat td.gap, table.heat th.gap { width: 10px; min-width: 10px; background: transparent; padding: 0; }
+table.heat thead th { font: 500 11px/1.25 var(--mono); color: var(--ink-2); padding: 4px 2px 6px; vertical-align: bottom; }
+table.heat thead th .n { display: block; color: var(--ink-3); font-weight: 400; font-size: 11px; }
+table.heat thead th.scope { font: 600 13px/1 var(--cond); color: var(--ink); border-bottom: 1px solid var(--rule); padding-bottom: 7px; }
+table.heat td:hover { outline: 2px solid var(--ink); outline-offset: -1px; }
+
+.heat-legend { margin-left: auto; gap: 12px; }
+.legend-scale { width: 170px; }
+.legend-bar { height: 10px; border-radius: 3px; margin: 0 0 4px; }
+.legend-note { font-size: 12.5px; color: var(--ink-3); }
+.aside.heat-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 40px; margin-top: 30px; max-width: 1100px; }
+.aside.heat-notes .blk { border: 0; padding: 0; margin: 0; }
+.legend-ticks { display: flex; justify-content: space-between; font: 400 11px/1 var(--mono); color: var(--ink-3); }
+.aside h3 { font: 600 14px/1.3 var(--sans); margin: 0 0 6px; }
+.aside p { font-size: 13px; color: var(--ink-2); margin: 0 0 14px; }
+.aside .blk { padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--rule); }
+.aside .blk:last-child { border-bottom: 0; }
+
+/* ---- outcome table ---- */
+table.out { border-collapse: collapse; width: 100%; min-width: 980px; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+table.out th, table.out td { padding: 7px 9px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+table.out th:first-child, table.out td:first-child { padding-left: 0; }
+table.out th:last-child, table.out td:last-child { padding-right: 0; }
+table.out th.l, table.out td.l { text-align: left; }
+table.out thead th { font: 500 11.5px/1.3 var(--mono); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); border-bottom: 1px solid var(--ink-3); vertical-align: bottom; }
+table.out thead th.grp { text-align: center; border-bottom: 1px solid var(--rule); padding-bottom: 5px; }
+table.out thead th.sub { text-transform: none; letter-spacing: 0; }
+table.out thead th.w { white-space: normal; min-width: 9ch; }
+table.out td.enc { font-family: var(--mono); font-size: 12.5px; }
+table.out tr.first td { border-top: 1px solid var(--ink-3); }
+table.out td.corp { font-weight: 600; vertical-align: top; }
+table.out td.corp .sub { display: block; font: 400 11.5px/1.4 var(--mono); color: var(--ink-3); margin-top: 2px; white-space: normal; width: 13ch; }
+table.out td[data-tip] { cursor: default; }
+table.out td[data-tip]:hover { background: var(--chip); }
+.obar { display: inline-flex; gap: 2px; width: 96px; height: 8px; border-radius: 0 4px 4px 0; overflow: hidden; vertical-align: 1px; }
+.obar i { display: block; height: 100%; flex: 1 1 0; min-width: 2px; }   /* flex-grow = count, set inline */
+.o-sat { background: var(--o-sat); }
+.o-unsat { background: var(--o-unsat); }
+.o-timeout { background: var(--o-timeout); }
+.o-error { background: repeating-linear-gradient(45deg, var(--o-unsat) 0 2px, transparent 2px 4px); }
+.olegend { display: flex; flex-wrap: wrap; gap: 4px 16px; font: 400 12.5px/1.3 var(--mono); color: var(--ink-2); margin: 0 0 10px; }
+.olegend .sw { display: inline-block; width: 14px; height: 8px; margin-right: 6px; vertical-align: 0; border-radius: 0 3px 3px 0; }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 0; }
+.bar-cell { display: inline-flex; align-items: center; gap: 8px; }
+.minibar { width: 64px; height: 6px; background: var(--chip); border-radius: 3px; overflow: hidden; display: inline-block; }
+.minibar i { display: block; height: 100%; background: var(--ink-2); border-radius: 3px; }
+.dim { color: var(--ink-3); }
+
+/* ---- clusters ---- */
+.cl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+@media (max-width: 860px) { .cl-layout { grid-template-columns: 1fr; } }
+#scatter { width: 100%; height: 640px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; }
+@media (max-width: 600px) { #scatter { height: 420px; } }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chips button {
+  font: 500 12.5px/1 var(--mono); border: 1px solid var(--rule); background: var(--surface);
+  color: var(--ink-2); border-radius: 999px; padding: 6px 10px; cursor: pointer;
+}
+.chips button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.mix { display: flex; height: 10px; border-radius: 3px; overflow: hidden; gap: 2px; margin: 6px 0 6px; }
+.mix i { display: block; height: 100%; }
+.mix-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 400 12px/1.3 var(--mono); color: var(--ink-2); }
+.drivers { list-style: none; padding: 0; margin: 6px 0 0; font: 400 12.5px/1.3 var(--mono); }
+.drivers li { display: grid; grid-template-columns: 1fr 44px 60px; gap: 8px; align-items: center; padding: 3px 0; }
+.drivers .z { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.drivers .zb { height: 6px; background: var(--chip); border-radius: 3px; position: relative; overflow: hidden; }
+.drivers .zb i { position: absolute; top: 0; bottom: 0; background: var(--ink-2); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 20px; margin-top: 18px; }
+.stat .k { font: 500 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.stat .v { font: 600 20px/1.2 var(--cond); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.stat .s { font-size: 12.5px; color: var(--ink-2); }
+
+#corr { display: block; }   /* width and height are set by renderCorr() from the feature count */
+
+.tip {
+  position: fixed; z-index: 20; pointer-events: none; max-width: 280px;
+  background: var(--ink); color: var(--bg); border-radius: 6px; padding: 8px 10px;
+  font: 400 12.5px/1.45 var(--sans); box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+.tip b { font-weight: 600; }
+.tip .m { font-family: var(--mono); }
+
+footer { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 13px; }
+footer ol { padding-left: 20px; margin: 8px 0 0; }
+footer li { margin: 3px 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">DateSATBench · analysis stage 5</div>
+    <h1>Which constraint features predict an encoding's speedup over <span class="mono" id="h-base">simple</span>?</h1>
+    <p class="lede">Every benchmark instance is described by <span class="n-feat">36</span> static features computed from its constraint text. This page first shows how the instances group in feature space, then relates those features to how fast each SMT encoding solves the instance, relative to the <span class="mono">simple</span> baseline.</p>
+    <div class="prov" id="prov"></div>
+  </header>
+
+  <nav class="toc" aria-label="Sections">
+    <a href="#clusters">Instance clusters</a>
+    <a href="#speedup">Feature × speedup</a>
+    <a href="#outcomes">Solver outcomes</a>
+    <a href="#correlation">Feature correlation</a>
+  </nav>
+
+  <section id="clusters">
+    <h2>Instance clusters</h2>
+    <p class="sec-lede">Instances embedded in 3D from their standardised features (skewed counts log-scaled first). Clustering never sees the corpus label; the agreement score below says how much of the structure is just “which generator made this”. Drag to rotate.</p>
+    <div class="controls">
+      <div class="ctl"><span class="ctl-label" id="lbl-proj">Projection</span>
+        <div class="seg" role="group" aria-labelledby="lbl-proj" id="seg-proj">
+          <button id="proj-t" data-v="t" aria-pressed="true">t-SNE</button>
+          <button id="proj-p" data-v="p" aria-pressed="false">PCA</button>
+        </div>
+      </div>
+      <div class="ctl"><span class="ctl-label" id="lbl-col">Colour by</span>
+        <div class="seg" role="group" aria-labelledby="lbl-col" id="seg-col">
+          <button id="col-c" data-v="c" aria-pressed="true">Corpus</button>
+          <button id="col-k" data-v="k" aria-pressed="false">K-means</button>
+          <button id="col-h" data-v="h" aria-pressed="false">HDBSCAN</button>
+        </div>
+      </div>
+    </div>
+    <div class="cl-layout">
+      <div id="scatter" role="img" aria-label="3D scatter of benchmark instances"></div>
+      <aside class="aside" id="cl-side"></aside>
+    </div>
+    <div class="stats" id="cl-stats"></div>
+  </section>
+
+  <section id="speedup">
+    <h2>Feature × speedup</h2>
+    <p class="sec-lede">Each cell is the Spearman correlation between one feature and one encoding's speedup over the baseline (<span class="mono">baseline_time / time</span>). Green: the encoding pulls ahead of the baseline as the feature grows. Red: it falls behind. Hover a cell for its exact value, q-value and sample size.</p>
+    <div class="controls">
+      <div class="ctl"><span class="ctl-label" id="lbl-scope">Corpus</span>
+        <div class="seg" role="group" aria-labelledby="lbl-scope" id="seg-scope">
+          <button id="scope-all" data-v="all" aria-pressed="true">All corpora</button>
+          <button id="scope-llm" data-v="llm" aria-pressed="false">LLM</button>
+          <button id="scope-legal" data-v="legal" aria-pressed="false">Legal</button>
+          <button id="scope-grammar" data-v="grammar" aria-pressed="false">Grammar</button>
+          <button id="scope-compare" data-v="compare" aria-pressed="false">Side by side</button>
+        </div>
+      </div>
+      <div class="ctl"><span class="ctl-label" id="lbl-to">Timeouts</span>
+        <div class="seg" role="group" aria-labelledby="lbl-to" id="seg-to">
+          <button id="to-bound" data-v="bound" aria-pressed="true">Kept as bounds</button>
+          <button id="to-drop" data-v="drop" aria-pressed="false">Exact only</button>
+        </div>
+      </div>
+      <div class="ctl heat-legend"><span class="ctl-label">Spearman <span style="text-transform:none">ρ</span></span>
+        <div class="legend-scale">
+          <div class="legend-bar" id="legend-bar"></div>
+          <div class="legend-ticks"><span>−1</span><span>0</span><span>+1</span></div>
+        </div>
+        <span class="legend-note">* BH q &lt; 0.05 &nbsp; ** q &lt; 0.01, corrected across every cell shown</span>
+      </div>
+    </div>
+    <div class="scroll"><div class="heat-grid cols-3" id="heat"></div></div>
+    <div class="aside heat-notes">
+      <div class="blk">
+        <h3>Reading it</h3>
+        <p>When all three columns share a colour, the feature mostly tracks when the <em>baseline</em> gets slow, not which alternative to choose. Rows where the columns disagree are the ones that separate encodings.</p>
+        <p>Pooled correlations mix three very different corpora. Check <em>Side by side</em> before trusting a pooled cell.</p>
+      </div>
+      <div class="blk" id="to-note"></div>
+    </div>
+  </section>
+
+  <section id="outcomes">
+    <h2>Solver outcomes</h2>
+    <p class="sec-lede">What each encoding did. Show every corpus side by side, all corpora pooled, or one corpus at a time, and narrow to a single encoding to follow it across corpora. Hover a row's cells for the counts behind them.</p>
+    <div class="controls">
+      <div class="ctl"><span class="ctl-label" id="lbl-oscope">Corpus</span>
+        <div class="seg" role="group" aria-labelledby="lbl-oscope" id="seg-oscope">
+          <button id="oscope-compare" data-v="compare" aria-pressed="true">Side by side</button>
+          <button id="oscope-all" data-v="all" aria-pressed="false">All corpora</button>
+          <button id="oscope-llm" data-v="llm" aria-pressed="false">LLM</button>
+          <button id="oscope-legal" data-v="legal" aria-pressed="false">Legal</button>
+          <button id="oscope-grammar" data-v="grammar" aria-pressed="false">Grammar</button>
+        </div>
+      </div>
+      <div class="ctl"><span class="ctl-label" id="lbl-oenc">Encoding</span>
+        <div class="seg" role="group" aria-labelledby="lbl-oenc" id="seg-oenc"></div>
+      </div>
+    </div>
+    <div class="olegend" id="olegend"></div>
+    <div class="scroll"><table class="out" id="out"></table></div>
+    <p class="note">Each encoding solves a different subset of instances, so the median over its own solves favours encodings that give up on the hard ones. The median over instances solved by every encoding compares them on the same work. “Beats it” counts speedups above 1 over the baseline, including one-sided timeouts at their bound. Median exact speedup uses only pairs both sides solved.</p>
+  </section>
+
+  <section id="correlation">
+    <h2>Feature correlation</h2>
+    <p class="sec-lede">Spearman correlation between every pair of features over all instances, ordered so that related features sit together. Green is positive and red negative, darker for a stronger correlation. Hover a cell for its exact ρ.</p>
+    <div class="scroll"><div id="corr"></div></div>
+  </section>
+
+  <footer>
+    <div>Built by <span class="mono">analysis/build_report.py</span> from the pipeline outputs:</div>
+    <ol>
+      <li><span class="mono">datesat_parser.py</span>: parse and fold the DSL</li>
+      <li><span class="mono">extract_features.py</span> → <span class="mono">features.csv</span>: <span class="n-feat">36</span> features per instance (definitions in <span class="mono">features.md</span>)</li>
+      <li><span class="mono">join_results.py</span> → <span class="mono">joined.csv</span>: one row per instance × encoding × run, with speedup</li>
+      <li><span class="mono">cluster.py</span>, <span class="mono">solver_outcomes.py</span>, <span class="mono">plot_speedup_heatmap.py</span>, <span class="mono">plot_feature_correlation.py</span>: clusters, outcome tables and PNG plots</li>
+      <li><span class="mono">build_report.py</span> → this page</li>
+    </ol>
+  </footer>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<script>
+const DATA = __DATA__;
+const M = DATA.meta;
+const ENC = M.encodings;
+const CORPORA = ["llm", "legal", "grammar"];
+const CNAME = { all: "All corpora", llm: "LLM", legal: "Legal", grammar: "Grammar" };
+const $ = (s) => document.querySelector(s);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- header ---------- */
+$("#h-base").textContent = M.baseline;
+const N_FEAT = DATA.groups.reduce((s, [, feats]) => s + feats.length, 0);
+document.querySelectorAll(".n-feat").forEach((el) => { el.textContent = N_FEAT; });
+{
+  const parts = [
+    `<span><b>${M.n_instances}</b> instances (${CORPORA.map((c) => `${CNAME[c]} ${M.corpora[c]}`).join(", ")})</span>`,
+    `<span><b>${ENC.length}</b> encodings vs <b>${esc(M.baseline)}</b></span>`,
+    `<span><b>${M.runs}</b> run${M.runs === 1 ? "" : "s"} per instance${M.timeout_s ? `, ${M.timeout_s} s timeout` : ""}</span>`,
+    `<span>injected bounds <b>${esc(M.bounds === "strip" ? "stripped" : M.bounds === "keep" ? "kept" : M.bounds)}</b></span>`,
+    `<span>results <b>${esc(M.results)}</b></span>`,
+    `<span>generated <b>${esc(M.generated)}</b></span>`,
+  ];
+  $("#prov").innerHTML = parts.join("");
+}
+
+/* ---------- colour helpers ---------- */
+function hex2rgb(h) { h = h.replace("#", ""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); }
+function rgb2hex(c) { return "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0")).join(""); }
+function divStops() { return [css("--div-n2"), css("--div-n1"), css("--div-0"), css("--div-p1"), css("--div-p2")]; }
+function divColor(v) {
+  const s = divStops().map(hex2rgb);
+  const x = Math.max(-1, Math.min(1, v)) * 2 + 2;        // 0..4
+  const i = Math.min(3, Math.floor(x)), t = x - i;
+  return rgb2hex(s[i].map((a, k) => a + (s[i + 1][k] - a) * t));
+}
+function inkOn(bg) {
+  /* whichever of white or dark ink has the higher contrast ratio on this fill */
+  const [r, g, b] = hex2rgb(bg).map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; });
+  const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return 1.05 / (L + 0.05) >= (L + 0.05) / 0.0602 ? "#ffffff" : "#1a1a18";
+}
+const stars = (q) => (q == null ? "" : q < 0.01 ? "**" : q < 0.05 ? "*" : "");
+const fmtR = (v) => (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(2);
+
+/* ---------- tooltip ---------- */
+const tip = $("#tip");
+function showTip(e, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + w > innerWidth - 8) x = e.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = e.clientY - h - pad;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function hideTip() { tip.hidden = true; }
+
+/* ---------- segmented controls ---------- */
+const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", proj: "t", col: "c", sel: { k: 0, h: 0 } };
+function wireSeg(id, key, cb) {
+  const seg = $(id);
+  seg.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    state[key] = b.dataset.v; cb();
+  });
+}
+
+/* ---------- speedup heatmap ---------- */
+/* Header rows shared by every family table: scope names (side by side only), then encodings. */
+function heatHead(scopes, H) {
+  const multi = scopes.length > 1;
+  let h = "<thead>";
+  if (multi) {
+    h += "<tr><th></th>" + scopes.map((s, i) => (i ? '<th class="gap"></th>' : "") + `<th class="scope" colspan="${ENC.length}">${CNAME[s]}</th>`).join("") + "</tr>";
+  }
+  h += "<tr><th></th>" + scopes.map((s, i) => (i ? '<th class="gap"></th>' : "") +
+    ENC.map((e) => `<th>${multi ? esc(e).replace("_", "_<wbr>") : esc(e)}<span class="n">n=${H[s].n[e] ?? 0}</span></th>`).join("")).join("") + "</tr>";
+  return h + "</thead>";
+}
+function heatBody(feats, scopes, H) {
+  let h = "<tbody>";
+  for (const f of feats) {
+    h += `<tr><th class="feat" scope="row">${esc(f)}</th>`;
+    scopes.forEach((s, i) => {
+      if (i) h += '<td class="gap"></td>';
+      for (const e of ENC) {
+        const r = H[s].rho[f]?.[e], q = H[s].q[f]?.[e];
+        if (r == null) { h += `<td class="const" data-f="${f}" data-e="${e}" data-s="${s}">const</td>`; continue; }
+        const bg = divColor(r);
+        h += `<td style="background:${bg};color:${inkOn(bg)}" data-f="${f}" data-e="${e}" data-s="${s}">${fmtR(r)}${stars(q)}</td>`;
+      }
+    });
+    h += "</tr>";
+  }
+  return h + "</tbody>";
+}
+function renderHeat() {
+  const scopes = state.scope === "compare" ? ["all", ...CORPORA] : [state.scope];
+  const H = DATA.heat[state.to];
+  const grid = $("#heat");
+  grid.className = "heat-grid " + (scopes.length > 1 ? "cols-1" : "cols-3");
+  grid.style.setProperty("--feat-w", Math.max(...DATA.groups.flatMap(([, fs]) => fs.map((f) => f.length))) + 1 + "ch");
+  grid.innerHTML = DATA.groups.map(([grp, feats]) =>
+    `<div class="heat-card"><h3 class="grp-title">${esc(grp)}</h3><table class="heat">${heatHead(scopes, H)}${heatBody(feats, scopes, H)}</table></div>`
+  ).join("");
+  const s = divStops();
+  $("#legend-bar").style.background = `linear-gradient(90deg, ${s.join(", ")})`;
+  $("#to-note").innerHTML = state.to === "bound"
+    ? "<h3>Timeouts: kept as bounds</h3><p>If only one side timed out, its time is how long it ran before being killed, so the speedup is a lower bound (baseline timed out) or an upper bound (encoding timed out). Ranking at the bound understates the effect. Pairs where both timed out are left out.</p>"
+    : "<h3>Timeouts: exact only</h3><p>Only instances both sides finished. This drops the cases where one encoding solves what the other cannot, which are often the most informative.</p>";
+}
+$("#heat").addEventListener("mouseover", (e) => {
+  const td = e.target.closest("td[data-f]"); if (!td) return;
+  const { f, e: enc, s } = td.dataset;
+  const H = DATA.heat[state.to][s];
+  const r = H.rho[f]?.[enc], q = H.q[f]?.[enc];
+  const body = r == null
+    ? "Constant in this subset, so no correlation."
+    : `ρ = <span class="m">${fmtR(r)}</span> · q = <span class="m">${q < 0.001 ? q.toExponential(1) : q.toFixed(3)}</span><br>n = ${H.n[enc]} rows · ${r > 0 ? `${esc(enc)} gains on ${esc(M.baseline)} as this grows` : `${esc(enc)} loses ground to ${esc(M.baseline)} as this grows`}`;
+  showTip(e, `<b class="m">${esc(f)}</b><br>${esc(enc)} · ${CNAME[s]}<br>${body}`);
+});
+$("#heat").addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
+$("#heat").addEventListener("mouseleave", hideTip);
+
+/* ---------- outcomes table ---------- */
+function fmtTime(t) {
+  if (t == null) return '<span class="dim">—</span>';
+  if (t < 1) return (t * 1000).toFixed(t < 0.01 ? 2 : 1) + " ms";
+  return t.toFixed(2) + " s";
+}
+const OUT_ENCS = [M.baseline, ...ENC];
+const OSTATUS = [["sat", "sat"], ["unsat", "unsat"], ["timeout", "timed out"], ["error", "error"]];
+const UNIT = M.runs > 1 ? "instance runs" : "instances";
+$("#seg-oenc").innerHTML = ["all", ...OUT_ENCS].map((e) =>
+  `<button id="oenc-${esc(e)}" data-v="${esc(e)}" aria-pressed="${e === state.oenc}">${e === "all" ? "All" : esc(e)}</button>`).join("");
+const zero = (n) => (n ? n : '<span class="dim">0</span>');
+const tipAttr = (html) => ` data-tip="${esc(html)}"`;
+
+function renderOutcomes() {
+  const scopes = state.oscope === "compare" ? ["all", ...CORPORA] : [state.oscope];
+  const encs = state.oenc === "all" ? OUT_ENCS : [state.oenc];
+  const B = esc(M.baseline);
+  const hasErr = scopes.some((c) => encs.some((e) => DATA.outcomes[c][e].error));
+  $("#olegend").innerHTML = OSTATUS.filter(([k]) => k !== "error" || hasErr)
+    .map(([k, label]) => `<span><i class="sw o-${k}"></i>${label}</span>`).join("");
+
+  let h = `<thead><tr><th class="l" rowspan="2">Corpus</th><th class="l" rowspan="2">Encoding</th><th class="l" rowspan="2">Solved</th>
+    <th rowspan="2">Sat</th><th rowspan="2">Unsat</th><th rowspan="2">Timed out</th>
+    <th class="grp" colspan="2">Median solve time</th><th class="grp" colspan="2">Versus ${B}</th></tr>
+    <tr><th class="sub">own solves</th><th class="sub">solved by all</th><th class="sub">beats it</th><th class="sub w">median exact speedup</th></tr></thead><tbody>`;
+  for (const c of scopes) {
+    encs.forEach((e, i) => {
+      const o = DATA.outcomes[c][e];
+      const head = `<b class="m">${esc(e)}</b> · ${CNAME[c]}<br>`;
+      const dot = c === "all" ? "" : `<span class="dot" style="background:var(--c-${c})"></span>`;
+      const corp = i ? "" : `${dot}${CNAME[c]}<span class="sub">${o.n_common} of ${o.rows} solved by all</span>`;
+
+      const segs = OSTATUS.filter(([k]) => o[k] > 0);
+      const bar = `<span class="obar" aria-hidden="true">${segs.map(([k]) => `<i class="o-${k}" style="flex-grow:${o[k]}"></i>`).join("")}</span>`;
+      const pctSolved = o.rows ? Math.round((100 * o.solved) / o.rows) : 0;
+      const solvedTip = head + segs.map(([k, label]) => `${label} ${o[k]}`).join(" · ") + `<br>${o.solved} of ${o.rows} ${UNIT} solved (${pctSolved}%)`;
+
+      let beats = '<span class="dim">baseline</span>', beatsTip = "";
+      let ms = '<span class="dim">1.00×</span>', msTip = "";
+      if (e !== M.baseline) {
+        if (o.compared) {
+          const pct = (100 * o.wins) / o.compared;
+          beats = `<span class="bar-cell">${o.wins} / ${o.compared}<span class="minibar"><i style="width:${pct.toFixed(0)}%"></i></span>${pct.toFixed(0)}%</span>`;
+          beatsTip = tipAttr(head + `Faster than ${B} on ${o.wins} of ${o.compared} ${UNIT}. That includes ${o.lower} solved where ${B} timed out (wins) and ${o.upper} timed out where ${B} solved (losses). ${o.no_speedup} where both timed out are left out.`);
+        } else beats = '<span class="dim">—</span>';
+        ms = o.median_speedup == null ? '<span class="dim">—</span>' : o.median_speedup.toFixed(2) + "×";
+        msTip = tipAttr(head + `Median over the ${o.exact} ${UNIT} that both ${esc(e)} and ${B} solved.`);
+      }
+      const ownTip = tipAttr(head + `Median over the ${o.solved} ${UNIT} ${esc(e)} solved. Not comparable across encodings: each solves a different subset.`);
+      const comTip = tipAttr(head + `Median over the ${o.n_common} ${UNIT} that every encoding solved, so every row of this corpus times the same work.`);
+
+      h += `<tr class="${i === 0 ? "first" : ""}"><td class="corp l">${corp}</td><td class="enc l">${esc(e)}</td>
+        <td class="l"${tipAttr(solvedTip)}><span class="bar-cell">${bar}${o.solved} / ${o.rows}</span></td>
+        <td>${zero(o.sat)}</td><td>${zero(o.unsat)}</td><td>${zero(o.timeout)}</td>
+        <td${ownTip}>${fmtTime(o.median_time)}</td><td${comTip}>${fmtTime(o.median_time_common)}</td>
+        <td${beatsTip}>${beats}</td><td${msTip}>${ms}</td></tr>`;
+    });
+  }
+  $("#out").innerHTML = h + "</tbody>";
+}
+$("#out").addEventListener("mouseover", (e) => {
+  const td = e.target.closest("td[data-tip]");
+  if (td) showTip(e, td.dataset.tip); else hideTip();
+});
+$("#out").addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
+$("#out").addEventListener("mouseleave", hideTip);
+
+/* ---------- clusters ---------- */
+const CL = DATA.clusters;
+function clusterIds(key) { return [...new Set(CL.points.map((p) => p[key]))].sort((a, b) => a - b); }
+/* One palette slot and one marker shape per cluster, in cluster order; HDBSCAN noise is grey.
+   Past five groups some colour pairs are hard to tell apart, so the shape carries identity too. */
+const SYMBOLS = ["circle", "square", "diamond", "cross", "circle-open", "square-open", "diamond-open", "x"];
+function clusterStyle(key, id) {
+  if (id < 0) return { color: css("--muted-pt"), symbol: "circle" };
+  const i = clusterIds(key).filter((c) => c >= 0).indexOf(id);
+  return { color: i < 8 ? css(`--k${i + 1}`) : css("--ink-3"), symbol: SYMBOLS[i % SYMBOLS.length] };
+}
+function plotTheme() {
+  return {
+    paper_bgcolor: css("--surface"), plot_bgcolor: css("--surface"),
+    font: { family: css("--sans"), color: css("--ink-2"), size: 12 },
+  };
+}
+function axis3(title) {
+  return { title: { text: title, font: { size: 11, color: css("--ink-3") } }, showticklabels: false,
+    gridcolor: css("--rule"), zerolinecolor: css("--rule"), showbackground: false, showspikes: false };
+}
+function renderScatter() {
+  const P = CL.points, pj = state.proj;
+  const hover = (p) => `${p.i}<br>${CNAME[p.c]} · K-means ${p.k} · HDBSCAN ${p.h < 0 ? "noise" : p.h}`;
+  const trace = (pts, name, color, size, opacity, symbol = "circle") => ({
+    type: "scatter3d", mode: "markers", name,
+    x: pts.map((p) => p[pj][0]), y: pts.map((p) => p[pj][1]), z: pts.map((p) => p[pj][2]),
+    text: pts.map(hover), hovertemplate: "%{text}<extra></extra>",
+    marker: { size, color, opacity, symbol, line: { width: 0 } },
+  });
+  let traces;
+  if (state.col === "c") {
+    traces = CORPORA.map((c) => trace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`), 3.6, 0.9));
+  } else {
+    const key = state.col, sel = state.sel[key];
+    traces = clusterIds(key).map((id) => {
+      const pts = P.filter((p) => p[key] === id), st = clusterStyle(key, id);
+      const name = `${id < 0 ? "Noise" : `Cluster ${id}`} (${pts.length})`;
+      return trace(pts, name, st.color, id === sel ? 5.5 : 4, id < 0 ? 0.6 : 0.9, st.symbol);
+    });
+  }
+  const ax = pj === "p"
+    ? CL.pca_explained_variance.map((v, i) => `PC${i + 1} (${(v * 100).toFixed(0)}%)`)
+    : ["t-SNE 1", "t-SNE 2", "t-SNE 3"];
+  const layout = {
+    ...plotTheme(), margin: { l: 0, r: 0, t: 0, b: 0 },
+    legend: { x: 0.01, y: 0.99, bgcolor: "rgba(0,0,0,0)", font: { size: 12, color: css("--ink-2") } },
+    scene: { xaxis: axis3(ax[0]), yaxis: axis3(ax[1]), zaxis: axis3(ax[2]), bgcolor: css("--surface") },
+    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
+    uirevision: "keep",
+  };
+  Plotly.react("scatter", traces, layout, { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage", "resetCameraLastSave3d"] });
+  renderClusterSide();
+}
+function mixOf(pts) {
+  const n = pts.length || 1;
+  return CORPORA.map((c) => ({ c, k: pts.filter((p) => p.c === c).length })).map((o) => ({ ...o, f: o.k / n }));
+}
+function renderClusterSide() {
+  const side = $("#cl-side");
+  if (state.col === "c") {
+    side.innerHTML = `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. Switch to K-means or HDBSCAN to see the clusters found without that label.</p>
+      <div class="mix-legend">${CORPORA.map((c) => `<span><span class="dot" style="background:var(--c-${c})"></span>${CNAME[c]} ${M.corpora[c]}</span>`).join("")}</div></div>
+      <div class="blk"><h3>Agreement with corpus</h3><p>Adjusted Rand index, 0 = unrelated, 1 = identical grouping.<br>K-means <b class="mono">${CL.ari_kmeans_vs_corpus.toFixed(2)}</b> · HDBSCAN <b class="mono">${CL.ari_hdbscan_vs_corpus.toFixed(2)}</b></p></div>`;
+    return;
+  }
+  const key = state.col, ids = clusterIds(key), sel = state.sel[key];
+  const pts = CL.points.filter((p) => p[key] === sel);
+  const mix = mixOf(pts);
+  const prof = (key === "k" ? CL.cluster_profiles : CL.hdbscan_profiles || {})[String(sel)];
+  let drivers = "";
+  if (prof && sel >= 0) {
+    const zmax = Math.max(...prof.drivers.map((d) => Math.abs(d.z)), 1);
+    drivers = `<div class="blk"><h3>What sets it apart</h3><p>Features whose cluster mean is furthest from the overall mean, in standard deviations.</p><ul class="drivers">${prof.drivers.map((d) => {
+      const w = (Math.abs(d.z) / zmax) * 50;
+      const left = d.z >= 0 ? 50 : 50 - w;
+      return `<li><span>${esc(d.feature)}</span><span class="z">${d.z > 0 ? "+" : "−"}${Math.abs(d.z).toFixed(1)}</span><span class="zb"><i style="left:${left}%;width:${w}%"></i></span></li>`;
+    }).join("")}</ul></div>`;
+  } else if (sel < 0) {
+    drivers = `<div class="blk"><p>HDBSCAN leaves points in sparse regions unassigned. These ${pts.length} instances belong to no dense cluster.</p></div>`;
+  }
+  side.innerHTML = `<div class="blk"><h3>${key === "k" ? `K-means, k = ${CL.kmeans_k}` : `HDBSCAN, ${CL.hdbscan_clusters} clusters + noise`}</h3>
+      <p>Each cluster has its own colour and marker shape. Pick one to enlarge it and see what sets it apart.</p>
+      <div class="chips" role="group" aria-label="Choose cluster">${ids.map((i) => {
+        const n = CL.points.filter((p) => p[key] === i).length;
+        return `<button id="chip-${key}-${i < 0 ? "noise" : i}" data-id="${i}" aria-pressed="${i === sel}"><span class="dot" style="background:${clusterStyle(key, i).color}"></span>${i < 0 ? "noise" : i} · ${n}</button>`;
+      }).join("")}</div></div>
+    <div class="blk"><h3><span class="dot" style="background:${clusterStyle(key, sel).color}"></span>${sel < 0 ? "Noise" : `Cluster ${sel}`}: ${pts.length} instances</h3>
+      <div class="mix">${mix.filter((m) => m.k).map((m) => `<i style="width:${(m.f * 100).toFixed(1)}%;background:var(--c-${m.c})" title="${CNAME[m.c]} ${m.k}"></i>`).join("")}</div>
+      <div class="mix-legend">${mix.map((m) => `<span><span class="dot" style="background:var(--c-${m.c})"></span>${CNAME[m.c]} ${m.k}</span>`).join("")}</div></div>
+    ${drivers}`;
+  side.querySelectorAll(".chips button").forEach((b) => b.addEventListener("click", () => {
+    state.sel[key] = Number(b.dataset.id); renderScatter();
+  }));
+}
+function renderClusterStats() {
+  const sil = CL.silhouette_by_k;
+  const best = sil[String(CL.kmeans_k)];
+  const close = Object.entries(sil).filter(([, v]) => best - v <= 0.02).map(([k]) => k);
+  const pv = CL.pca_explained_variance;
+  $("#cl-stats").innerHTML = [
+    ["K-means k", CL.kmeans_k, `silhouette ${best.toFixed(2)}; k = ${close.join(", ")} all within 0.02, so k is fragile`],
+    ["HDBSCAN", `${CL.hdbscan_clusters} + noise`, `${CL.hdbscan_noise} instances left unassigned`],
+    ["Corpus agreement", CL.ari_kmeans_vs_corpus.toFixed(2), `adjusted Rand, K-means (HDBSCAN ${CL.ari_hdbscan_vs_corpus.toFixed(2)})`],
+    ["PCA, 3 axes", `${(pv.reduce((a, b) => a + b, 0) * 100).toFixed(0)}%`, `of variance: ${pv.map((v) => (v * 100).toFixed(0) + "%").join(" + ")}`],
+  ].map(([k, v, s]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join("");
+}
+
+/* ---------- feature correlation ---------- */
+/* Cells are sized from the available width (16-26 px) and the plot area is exactly
+   n x n cells, so the matrix stays square and legible instead of being squeezed. */
+const CORR_M = { l: 170, r: 90, t: 12, b: 155 };
+let corrCell = 0;
+function corrSize(n) {
+  const avail = $("#corr").parentElement.clientWidth || 1120;
+  const cell = Math.max(16, Math.min(26, Math.floor((avail - CORR_M.l - CORR_M.r) / n)));
+  return { cell, w: n * cell + CORR_M.l + CORR_M.r, h: n * cell + CORR_M.t + CORR_M.b };
+}
+function renderCorr() {
+  const C = DATA.corr, n = C.order.length;
+  const s = divStops();
+  const size = corrSize(n);
+  corrCell = size.cell;
+  const el = $("#corr");
+  el.style.width = size.w + "px";
+  el.style.height = size.h + "px";
+  const tick = { tickfont: { family: css("--mono"), size: size.cell >= 20 ? 11 : 10, color: css("--ink-2") },
+                 showgrid: false, zeroline: false, ticks: "", automargin: false };
+  Plotly.react("corr", [{
+    type: "heatmap", x: C.order, y: C.order, zmin: -1, zmax: 1,
+    z: C.z.map((row, i) => row.map((v, j) => (i === j ? null : v))),   // diagonal is always +1: leave it blank
+    colorscale: s.map((c, i) => [i / 4, c]), xgap: 2, ygap: 2, hoverongaps: false,
+    hovertemplate: "<b>%{y}</b> × <b>%{x}</b><br>ρ = %{z:+.2f}<extra></extra>",
+    colorbar: { thickness: 12, len: 0.45, y: 1, yanchor: "top", x: 1.02, outlinewidth: 0,
+                tickvals: [-1, -0.5, 0, 0.5, 1], ticktext: ["−1", "−0.5", "0", "+0.5", "+1"],
+                tickfont: { family: css("--mono"), size: 11, color: css("--ink-3") },
+                title: { text: "ρ", font: { color: css("--ink-2") } } },
+  }], {
+    ...plotTheme(), paper_bgcolor: css("--bg"), plot_bgcolor: css("--bg"),
+    width: size.w, height: size.h, margin: CORR_M,
+    xaxis: { ...tick, tickangle: -60, range: [-0.5, n - 0.5] },
+    yaxis: { ...tick, autorange: false, range: [n - 0.5, -0.5] },
+    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
+  }, { displaylogo: false, responsive: false, modeBarButtonsToRemove: ["toImage", "lasso2d", "select2d"] });
+}
+addEventListener("resize", () => {
+  if (window.Plotly && corrSize(DATA.corr.order.length).cell !== corrCell) renderCorr();
+});
+
+/* ---------- wiring ---------- */
+wireSeg("#seg-scope", "scope", renderHeat);
+wireSeg("#seg-to", "to", renderHeat);
+wireSeg("#seg-oscope", "oscope", renderOutcomes);
+wireSeg("#seg-oenc", "oenc", renderOutcomes);
+wireSeg("#seg-proj", "proj", renderScatter);
+wireSeg("#seg-col", "col", renderScatter);
+
+function renderAll() {
+  renderHeat(); renderOutcomes(); renderClusterStats();
+  if (window.Plotly) { renderScatter(); renderCorr(); }
+  else {
+    $("#scatter").innerHTML = '<p class="note" style="padding:16px">The 3D view needs Plotly, which could not be loaded from the CDN.</p>';
+    renderClusterSide();
+  }
+}
+renderAll();
+</script>
