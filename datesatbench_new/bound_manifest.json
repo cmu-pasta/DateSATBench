@@ -1,0 +1,33 @@
+{
+  "name": "positive_years",
+  "min": [
+    1,
+    1,
+    1
+  ],
+  "max": [
+    9999,
+    12,
+    31
+  ],
+  "source": "/Users/smtiwari/Documents/DateSAT/DateSatBench/datesatbench_new",
+  "generated_at": "2026-09-24T18:50:51",
+  "generator": "tools/inject_bounds.py",
+  "datasets": {
+    "llm_constraints": {
+      "entries": 100,
+      "injected_constraints": 660,
+      "file": "llm_constraints/constraints/constraints.json"
+    },
+    "grammar_constraints": {
+      "entries": 1500,
+      "injected_constraints": 27036,
+      "file": "grammar_constraints/constraints/constraints.json"
+    },
+    "legal_doc_constraints": {
+      "entries": 200,
+      "injected_constraints": 2390,
+      "file": "legal_doc_constraints/constraints/constraints.jsonl"
+    }
+  }
+}
