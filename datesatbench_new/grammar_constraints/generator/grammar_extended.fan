@@ -2,6 +2,7 @@
 # Library imports
 ##################################################
 import re
+import random
 import datetime
 
 
@@ -47,14 +48,17 @@ import datetime
 <date_var> ::= "D"<digit>
 
 # Years 1..9999: the full range representable by the solver, matching the positive_years bounded variant (0001-01-01 .. 9999-12-31).
-<date_year> ::= <digit><digit><digit><digit>
+# Numbers are drawn uniformly by the generator; the expansion forbids leading zeros (0007 is not a valid literal).
+<date_year> ::= <nonzero_digit><digit>{0,3} := str(random.randint(1, 9999))
 <date_month> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12"
 <date_day> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29" | "30" | "31"
 
 # Note: Set to small numbers on purpose
-<period_year> ::= <digit><digit>
-<period_month> ::= <digit><digit>
-<period_day> ::= <digit><digit><digit>
+<period_year> ::= "0" | <nonzero_digit><digit>? := str(random.randint(0, 99))
+<period_month> ::= "0" | <nonzero_digit><digit>? := str(random.randint(0, 99))
+<period_day> ::= "0" | <nonzero_digit><digit>{0,2} := str(random.randint(0, 999))
+
+<nonzero_digit> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 
 <bool_var_expr> ::= <bool_var> <bool_cmp_op> <bool_val>
 <bool_var> ::= "B"<digit>
