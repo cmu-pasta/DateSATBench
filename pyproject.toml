@@ -34,4 +34,10 @@ datesatbench = [
   "**/*.fan",
   "**/*.md",
 ]
+datesatbench_new = [
+  "**/*.json",
+  "**/*.jsonl",
+  "**/*.fan",
+  "**/*.md",
+]
 
