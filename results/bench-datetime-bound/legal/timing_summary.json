@@ -1,0 +1,56 @@
+{
+  "bound": "none",
+  "approaches": {
+    "alpha_beta_int": {
+      "total": 200,
+      "status_counts": {
+        "sat": 182,
+        "timeout": 18
+      },
+      "solve_rate_pct": 91.0,
+      "mean_time_s": 7.840650268225,
+      "median_time_s": 0.13456100784242153,
+      "std_dev_s": 17.945840306044456,
+      "mean_time_solved_only_s": 2.6817004529472728,
+      "median_time_solved_only_s": 0.09283757768571377
+    },
+    "epoch_days_int": {
+      "total": 200,
+      "status_counts": {
+        "sat": 194,
+        "timeout": 6
+      },
+      "solve_rate_pct": 97.0,
+      "mean_time_s": 4.600896337493323,
+      "median_time_s": 0.1931547001004219,
+      "std_dev_s": 12.61391881083134,
+      "mean_time_solved_only_s": 2.8874293844234775,
+      "median_time_solved_only_s": 0.19140675524249673
+    },
+    "hybrid_ymd_int": {
+      "total": 200,
+      "status_counts": {
+        "sat": 194,
+        "timeout": 6
+      },
+      "solve_rate_pct": 97.0,
+      "mean_time_s": 2.96066882008221,
+      "median_time_s": 0.09122537542134523,
+      "std_dev_s": 11.41960425584337,
+      "mean_time_solved_only_s": 1.196408058847925,
+      "median_time_solved_only_s": 0.08887942088767886
+    },
+    "simple_int": {
+      "total": 200,
+      "status_counts": {
+        "sat": 200
+      },
+      "solve_rate_pct": 100.0,
+      "mean_time_s": 0.9189788436703384,
+      "median_time_s": 0.08012962667271495,
+      "std_dev_s": 2.577031259680395,
+      "mean_time_solved_only_s": 0.9189788436703384,
+      "median_time_solved_only_s": 0.08012962667271495
+    }
+  }
+}

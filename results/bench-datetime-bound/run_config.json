@@ -1,0 +1,16 @@
+{
+  "mode": "eval",
+  "bound": "none",
+  "timeout_ms": 60000,
+  "runs": 1,
+  "approaches": [
+    "simple",
+    "epoch_days",
+    "hybrid_ymd",
+    "alpha_beta"
+  ],
+  "maxsat": false,
+  "timestamp": "20260706_030403",
+  "tag": "bench-datetime",
+  "datesatbench_root": "/home/angelc2/DateSATBench/datesatbench_bounded/positive_years"
+}

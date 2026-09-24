@@ -1,0 +1,58 @@
+{
+  "bound": "none",
+  "approaches": {
+    "alpha_beta_int": {
+      "total": 100,
+      "status_counts": {
+        "sat": 59,
+        "unsat": 41
+      },
+      "solve_rate_pct": 100.0,
+      "mean_time_s": 0.039889146396890285,
+      "median_time_s": 0.0009496239945292473,
+      "std_dev_s": 0.29496746839114213,
+      "mean_time_solved_only_s": 0.039889146396890285,
+      "median_time_solved_only_s": 0.0009496239945292473
+    },
+    "epoch_days_int": {
+      "total": 100,
+      "status_counts": {
+        "sat": 59,
+        "unsat": 41
+      },
+      "solve_rate_pct": 100.0,
+      "mean_time_s": 0.39974177905358377,
+      "median_time_s": 0.0009146146476268768,
+      "std_dev_s": 2.912731391763121,
+      "mean_time_solved_only_s": 0.39974177905358377,
+      "median_time_solved_only_s": 0.0009146146476268768
+    },
+    "hybrid_ymd_int": {
+      "total": 100,
+      "status_counts": {
+        "sat": 59,
+        "unsat": 41
+      },
+      "solve_rate_pct": 100.0,
+      "mean_time_s": 0.02298475267365575,
+      "median_time_s": 0.0013736840337514877,
+      "std_dev_s": 0.09660827849434939,
+      "mean_time_solved_only_s": 0.02298475267365575,
+      "median_time_solved_only_s": 0.0013736840337514877
+    },
+    "simple_int": {
+      "total": 100,
+      "status_counts": {
+        "sat": 58,
+        "unsat": 41,
+        "timeout": 1
+      },
+      "solve_rate_pct": 99.0,
+      "mean_time_s": 0.7390752472821623,
+      "median_time_s": 0.001573068555444479,
+      "std_dev_s": 6.003394121050815,
+      "mean_time_solved_only_s": 0.13906311333141844,
+      "median_time_solved_only_s": 0.0015640463680028915
+    }
+  }
+}

@@ -1,0 +1,614 @@
+{
+  "approaches": [
+    "alpha_beta_int",
+    "epoch_days_int",
+    "hybrid_ymd_int",
+    "simple_int"
+  ],
+  "constraints": 100,
+  "fully_decided_and_agreeing": 99,
+  "num_disagreements": 0,
+  "disagreements": [],
+  "statuses_by_constraint": {
+    "llm-logical_operators-1": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-2": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-3": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-logical_operators-4": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-5": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-logical_operators-6": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-7": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-8": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-logical_operators-9": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-10": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-11": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-12": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-13": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-14": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-15": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-16": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-17": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-logical_operators-18": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-logical_operators-19": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-logical_operators-20": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-month_vs_days-21": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-22": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-month_vs_days-23": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-24": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-month_vs_days-25": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-26": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-month_vs_days-27": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-month_vs_days-28": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-29": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-30": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-month_vs_days-31": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-32": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-33": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-34": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-35": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-36": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-37": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-38": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-39": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-month_vs_days-40": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-41": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-42": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-43": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-44": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-45": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-46": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-47": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-48": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-49": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-50": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-51": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-52": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-53": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-54": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-55": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-56": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-57": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-58": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-property_access-59": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-property_access-60": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-61": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-62": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-symbolic_date_vars-63": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-64": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-symbolic_date_vars-65": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-66": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-67": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-68": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-69": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-70": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-71": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-72": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-73": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-symbolic_date_vars-74": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-75": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-symbolic_date_vars-76": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-77": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-78": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-79": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-symbolic_date_vars-80": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-81": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-82": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-83": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-84": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-85": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-86": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-87": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-88": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-89": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-90": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-91": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-92": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-93": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-94": {
+      "simple_int": "timeout",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-95": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-96": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-97": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-98": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "llm-year_vs_days-99": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "llm-year_vs_days-100": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    }
+  }
+}

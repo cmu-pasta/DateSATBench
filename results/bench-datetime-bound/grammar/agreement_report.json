@@ -1,0 +1,914 @@
+{
+  "approaches": [
+    "alpha_beta_int",
+    "epoch_days_int",
+    "hybrid_ymd_int",
+    "simple_int"
+  ],
+  "constraints": 150,
+  "fully_decided_and_agreeing": 31,
+  "num_disagreements": 0,
+  "disagreements": [],
+  "statuses_by_constraint": {
+    "grammar-sat-1": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-2": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-3": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-4": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-5": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-6": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-7": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-8": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-9": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-10": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-11": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-12": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-13": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-14": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-15": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-16": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-17": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-18": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-19": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-20": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-21": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-22": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-23": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-24": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-25": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-26": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-27": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-28": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-29": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-30": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-31": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-32": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-33": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-34": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-35": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-36": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-37": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-38": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-39": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-40": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-41": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-42": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-43": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-44": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-45": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-46": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-47": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-sat-48": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-49": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-sat-50": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-1": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-2": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-3": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-4": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-5": {
+      "simple_int": "timeout",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-timeout-6": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-7": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-8": {
+      "simple_int": "timeout",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-timeout-9": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-10": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-11": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-12": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-13": {
+      "simple_int": "timeout",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-timeout-14": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-15": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-16": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-17": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-18": {
+      "simple_int": "timeout",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "sat"
+    },
+    "grammar-timeout-19": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-20": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-21": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-22": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-23": {
+      "simple_int": "timeout",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-24": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-25": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-26": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-27": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-28": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-29": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-30": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-31": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-32": {
+      "simple_int": "timeout",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-33": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-34": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-35": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-36": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-37": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-38": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-39": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-40": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-41": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-42": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-43": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-44": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-45": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-46": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-47": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-48": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-49": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-timeout-50": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-1": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-2": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-3": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-4": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-5": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-6": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-7": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-8": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-9": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-10": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-11": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-12": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-13": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-14": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-15": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-16": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-17": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-18": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-19": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-20": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-21": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-22": {
+      "simple_int": "sat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-23": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-24": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-25": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-26": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-27": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-28": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-29": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-30": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-31": {
+      "simple_int": "timeout",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-32": {
+      "simple_int": "unsat",
+      "epoch_days_int": "timeout",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-33": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-34": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "timeout",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-35": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-36": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-37": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-38": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-39": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-40": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-41": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-42": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-43": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-44": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-45": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-46": {
+      "simple_int": "sat",
+      "epoch_days_int": "sat",
+      "hybrid_ymd_int": "sat",
+      "alpha_beta_int": "timeout"
+    },
+    "grammar-unsat-47": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-48": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-49": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    },
+    "grammar-unsat-50": {
+      "simple_int": "unsat",
+      "epoch_days_int": "unsat",
+      "hybrid_ymd_int": "unsat",
+      "alpha_beta_int": "unsat"
+    }
+  }
+}
