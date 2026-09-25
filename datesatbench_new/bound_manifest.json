@@ -20,8 +20,8 @@
       "file": "llm_constraints/constraints/constraints.json"
     },
     "grammar_constraints": {
-      "entries": 1500,
-      "injected_constraints": 27036,
+      "entries": 300,
+      "injected_constraints": 5386,
       "file": "grammar_constraints/constraints/constraints.json"
     },
     "legal_doc_constraints": {

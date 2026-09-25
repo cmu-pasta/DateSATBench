@@ -7,7 +7,7 @@ The dataset is the raw random sample. No selection or filtering is applied
 afterwards; the generated constraints.json is the shipped benchmark.
 
 Steps:
-1. Generate constraints using fandango fuzzer (default: 1500 samples)
+1. Generate constraints using fandango fuzzer (default: 300 samples)
 2. Convert from text format to JSON format
 3. Clean up temporary files
 
@@ -185,8 +185,8 @@ def main():
         "-n",
         "--num-samples",
         type=int,
-        default=1500,
-        help="Number of constraint sets to generate (default: 1500)",
+        default=300,
+        help="Number of constraint sets to generate (default: 300)",
     )
     parser.add_argument(
         "-m",
