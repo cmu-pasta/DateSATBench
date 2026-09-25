@@ -1,7 +1,7 @@
 """
 Join solver timings to the feature matrix.
 
-    python analysis/join_results.py --results results/bench-datetime-bound
+    python analysis/join_results.py --results results/bench-datetime-bound --timeout 60000
 
 Reads every <corpus>/run_N/<approach>_<impl>.json (or, for a single-run eval,
 <corpus>/<approach>_<impl>.json) under the results root and joins each record to
@@ -13,18 +13,21 @@ same instance in the same run:
 
     speedup = baseline_time / time          (> 1 means faster than the baseline)
 
-Timeouts. A timed-out run's `time` is how long the solver ran before it was killed,
-so a one-sided timeout still bounds the speedup, and the row keeps it:
+Timeouts. The solver timeout the results were run with must be given, in ms, with
+--timeout or the DATESAT_TIMEOUT_MS environment variable (--timeout wins). A timed-out
+side counts at that timeout, so a one-sided timeout still bounds the speedup, and the
+row keeps it:
 
-    baseline timed out, encoding finished  ->  speedup = baseline_time / time,
+    baseline timed out, encoding finished  ->  speedup = timeout / time,
                                                a LOWER bound  (speedup_bound = "lower")
-    encoding timed out, baseline finished  ->  speedup = baseline_time / time,
+    encoding timed out, baseline finished  ->  speedup = baseline_time / timeout,
                                                an UPPER bound (speedup_bound = "upper")
     both finished                          ->  exact          (speedup_bound = "exact")
     both timed out, or either errored      ->  speedup empty  (speedup_bound empty)
 
 Rows are never dropped from joined.csv; analyses skip rows with an empty speedup.
-Filter on `solved` before using `time` as a measurement.
+`time` and `baseline_time` stay as measured; filter on `solved` before using `time` as
+a measurement.
 
 Writes analysis/joined.csv, one row per (instance, encoding, run).
 """
@@ -32,20 +35,52 @@ Writes analysis/joined.csv, one row per (instance, encoding, run).
 import argparse
 import csv
 import json
+import os
 from pathlib import Path
 
 HERE = Path(__file__).parent
 FINISHED = {"sat", "unsat"}
+TIMEOUT_ENV = "DATESAT_TIMEOUT_MS"
 
 
-def speedup_and_bound(time, status, base_time, base_status):
-    """Speedup over the baseline, and whether it is exact or a lower/upper bound."""
+def add_timeout_arg(ap):
+    """--timeout in ms, falling back to $DATESAT_TIMEOUT_MS; there is no default."""
+    ap.add_argument("--timeout", type=float, default=os.environ.get(TIMEOUT_ENV),
+                    help=f"solver timeout in ms that the results were run with "
+                         f"(default: ${TIMEOUT_ENV}; one of the two is required)")
+
+
+def timeout_seconds(ap, args):
+    """The timeout from add_timeout_arg in seconds, or exit if it was not given."""
+    if args.timeout is None:
+        ap.error(f"give the solver timeout with --timeout <ms> or {TIMEOUT_ENV}")
+    if args.timeout <= 0:
+        ap.error(f"the timeout must be positive, got {args.timeout:g} ms")
+    return args.timeout / 1000
+
+
+def check_run_config(results, timeout_s):
+    """Warn when the results' run_config.json records a different timeout."""
+    cfg = Path(results) / "run_config.json"
+    if not cfg.exists():
+        return
+    run_ms = json.loads(cfg.read_text()).get("timeout_ms")
+    if run_ms is not None and run_ms / 1000 != timeout_s:
+        print(f"WARNING: timeout is {timeout_s:g} s but {cfg} records "
+              f"timeout_ms={run_ms} ({run_ms / 1000:g} s)")
+
+
+def speedup_and_bound(time, status, base_time, base_status, timeout):
+    """Speedup over the baseline, and whether it is exact or a lower/upper bound.
+
+    A timed-out side counts at `timeout` (seconds) instead of its measured time.
+    """
     if status in FINISHED and base_status in FINISHED:
         bound = "exact"
     elif status in FINISHED and base_status == "timeout":
-        bound = "lower"
+        bound, base_time = "lower", timeout
     elif status == "timeout" and base_status in FINISHED:
-        bound = "upper"
+        bound, time = "upper", timeout
     else:
         return None, None
     if not time or base_time is None:
@@ -59,8 +94,11 @@ def main():
                     help="results directory (multi-run <corpus>/run_N/ or single-run <corpus>/)")
     ap.add_argument("--features", default=str(HERE / "features.csv"))
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
+    add_timeout_arg(ap)
     ap.add_argument("--output", default=str(HERE / "joined.csv"))
     args = ap.parse_args()
+    timeout = timeout_seconds(ap, args)
+    check_run_config(args.results, timeout)
 
     root = Path(args.results)
     obs = {}                          # (id, encoding, run) -> (time, status)
@@ -81,6 +119,7 @@ def main():
     print(f"corpora: {sorted(corpora)}")
     print(f"encodings: {sorted(encodings)}")
     print(f"runs: {sorted(run_ids)}")
+    print(f"timeout: {timeout:g} s")
     if args.baseline not in encodings:
         raise SystemExit(f"baseline encoding {args.baseline!r} not found in results")
 
@@ -101,7 +140,7 @@ def main():
             no_baseline += 1
         base_time, base_status = base if base else (None, None)
 
-        speedup, bound = speedup_and_bound(time, status, base_time, base_status)
+        speedup, bound = speedup_and_bound(time, status, base_time, base_status, timeout)
 
         row = {
             "id": iid,

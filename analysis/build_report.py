@@ -1,7 +1,7 @@
 """
 Stage 5: build the standalone analysis report from the outputs of stages 2-4.
 
-    python analysis/build_report.py
+    python analysis/build_report.py --timeout 60000     # or set DATESAT_TIMEOUT_MS
 
 Reads features.csv (+ features_meta.json), joined.csv and clusters.json, computes the
 solver outcomes and speedup heatmaps for every corpus (and timeout mode) and the
@@ -22,6 +22,7 @@ import pandas as pd
 
 from cluster import build_matrix, profile_clusters
 from extract_features import FEATURE_GROUPS
+from join_results import add_timeout_arg, check_run_config, timeout_seconds
 from plot_feature_correlation import constant_features, feature_correlation
 from plot_speedup_heatmap import speedup_correlations
 from solver_outcomes import COUNTS as OUTCOME_COUNTS, solver_outcomes
@@ -58,17 +59,18 @@ def main():
     ap.add_argument("--clusters", default=str(HERE / "clusters.json"))
     ap.add_argument("--results", default=str(REPO / "results/bench-datetime-bound"))
     ap.add_argument("--baseline", default="simple")
+    add_timeout_arg(ap)
     ap.add_argument("--template", default=str(HERE / "report_template.html"))
     ap.add_argument("--output", default=str(HERE / "report.html"))
     args = ap.parse_args()
+    timeout_s = timeout_seconds(ap, args)
+    check_run_config(args.results, timeout_s)
 
     feats = pd.read_csv(args.features)
     joined = pd.read_csv(args.joined)
     clusters = json.loads(Path(args.clusters).read_text())
     meta_path = Path(args.features).with_name(Path(args.features).stem + "_meta.json")
     fmeta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
-    run_cfg_path = Path(args.results) / "run_config.json"
-    run_cfg = json.loads(run_cfg_path.read_text()) if run_cfg_path.exists() else {}
 
     encodings = sorted(joined["encoding"].unique())
     others = [e for e in encodings if e != args.baseline]
@@ -124,7 +126,7 @@ def main():
             "dataset_root": rel(fmeta["dataset_root"]) if "dataset_root" in fmeta else None,
             "results": rel(args.results),
             "runs": int(joined["run"].nunique()),
-            "timeout_s": (run_cfg.get("timeout_ms") or 0) / 1000 or None,
+            "timeout_s": timeout_s,
             "baseline": args.baseline,
             "encodings": others,
             "corpora": {c: int((feats["corpus"] == c).sum()) for c in CORPORA},

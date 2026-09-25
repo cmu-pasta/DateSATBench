@@ -62,6 +62,7 @@ The chosen mode is recorded in `features_meta.json` and shown in `report.html`. 
 affects `features.csv`. To carry it through the analysis, rerun the downstream steps:
 
 ```
+export DATESAT_TIMEOUT_MS=60000                    # the --timeout the results were run with
 python analysis/extract_features.py --bounds keep
 python analysis/join_results.py
 python analysis/cluster.py
@@ -69,6 +70,9 @@ python analysis/plot_speedup_heatmap.py            # and --corpus llm|legal|gram
 python analysis/plot_feature_correlation.py
 python analysis/build_report.py
 ```
+
+`join_results.py` and `build_report.py` refuse to run without a timeout: pass `--timeout <ms>`
+or set `DATESAT_TIMEOUT_MS`. Timed-out runs count at that timeout when computing speedups.
 
 ---
 
