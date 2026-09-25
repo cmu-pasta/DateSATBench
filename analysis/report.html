@@ -123,6 +123,7 @@ table.heat td:hover { outline: 2px solid var(--ink); outline-offset: -1px; }
 .legend-scale { width: 170px; }
 .legend-bar { height: 10px; border-radius: 3px; margin: 0 0 4px; }
 .legend-note { font-size: 12.5px; color: var(--ink-3); }
+.ctl-hint { flex-basis: 100%; font-size: 12.5px; color: var(--ink-3); max-width: 60ch; }
 .aside.heat-notes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 40px; margin-top: 30px; max-width: 1100px; }
 .aside.heat-notes .blk { border: 0; padding: 0; margin: 0; }
 .legend-ticks { display: flex; justify-content: space-between; font: 400 11px/1 var(--mono); color: var(--ink-3); }
@@ -254,11 +255,12 @@ footer li { margin: 3px 0; }
           <button id="scope-compare" data-v="compare" aria-pressed="false">Side by side</button>
         </div>
       </div>
-      <div class="ctl"><span class="ctl-label" id="lbl-to">Timeouts</span>
-        <div class="seg" role="group" aria-labelledby="lbl-to" id="seg-to">
-          <button id="to-bound" data-v="bound" aria-pressed="true">Kept as bounds</button>
-          <button id="to-drop" data-v="drop" aria-pressed="false">Exact only</button>
+      <div class="ctl"><span class="ctl-label" id="lbl-to">If only one side timed out</span>
+        <div class="seg" role="group" aria-labelledby="lbl-to" id="seg-to" aria-describedby="to-hint">
+          <button id="to-bound" data-v="bound" aria-pressed="true">Keep it, as a bound</button>
+          <button id="to-drop" data-v="drop" aria-pressed="false">Leave it out</button>
         </div>
+        <span class="ctl-hint" id="to-hint"></span>
       </div>
       <div class="ctl heat-legend"><span class="ctl-label">Spearman <span style="text-transform:none">ρ</span></span>
         <div class="legend-scale">
@@ -429,9 +431,16 @@ function renderHeat() {
   ).join("");
   const s = divStops();
   $("#legend-bar").style.background = `linear-gradient(90deg, ${s.join(", ")})`;
+  // Pairs the two modes disagree on: one side timed out, the other finished.
+  const n = (mode) => Object.values(DATA.heat[mode][scopes[0]].n).reduce((a, b) => a + b, 0);
+  const extra = n("bound") - n("drop");
+  const where = scopes.length > 1 ? " across all corpora" : "";
+  $("#to-hint").innerHTML = state.to === "bound"
+    ? `A side is the encoding or <span class="mono">${esc(M.baseline)}</span>. The timed-out side counts at the time limit, so its speedup is only a bound. Keeps ${extra} such pairs${where}.`
+    : `A side is the encoding or <span class="mono">${esc(M.baseline)}</span>. Only pairs where both finished, so every speedup is exact. Drops ${extra} pairs${where}.`;
   $("#to-note").innerHTML = state.to === "bound"
-    ? "<h3>Timeouts: kept as bounds</h3><p>If only one side timed out, its time is how long it ran before being killed, so the speedup is a lower bound (baseline timed out) or an upper bound (encoding timed out). Ranking at the bound understates the effect. Pairs where both timed out are left out.</p>"
-    : "<h3>Timeouts: exact only</h3><p>Only instances both sides finished. This drops the cases where one encoding solves what the other cannot, which are often the most informative.</p>";
+    ? "<h3>One side timed out: kept as a bound</h3><p>If only one side timed out, that side counts at the timeout, so the speedup is a lower bound (baseline timed out) or an upper bound (encoding timed out). Ranking at the bound understates the effect. Pairs where both timed out are left out.</p>"
+    : "<h3>One side timed out: left out</h3><p>Only instances both sides finished. This drops the cases where one encoding solves what the other cannot, which are often the most informative.</p>";
 }
 $("#heat").addEventListener("mouseover", (e) => {
   const td = e.target.closest("td[data-f]"); if (!td) return;
