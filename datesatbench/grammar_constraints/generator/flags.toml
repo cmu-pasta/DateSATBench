@@ -1,0 +1,36 @@
+# Swarm-testing flags for grammar.fan. flag.md explains what each flag does.
+#
+# The sampler draws one value for every flag, samples `batch_size` instances with
+# that configuration, then draws again, until it has `num_samples` instances.
+#
+# A flag's value is either
+#   - a list: one element drawn uniformly (a switch is [true, false]), or
+#   - a range { min = a, max = b }: one number drawn uniformly from [a, b] in steps of 0.01.
+
+[sampling]
+num_samples = 300
+batch_size = 5
+seed = 0
+
+[flags]
+# SIZE
+num_constraints = [5, 6, 7, 8, 9, 10]
+num_date_vars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+# SEARCH SPACE
+anchor_frac = { min = 0.0, max = 0.25 }
+
+# PERIODS
+multi_field_periods = [true, false]
+mixed_sign_periods = [true, false]
+max_period_years = [0, 1, 10, 100, 1000]
+max_period_months = [0, 11, 24, 12000]
+max_period_days = [0, 30, 365, 1000, 365000]
+max_chain_len = [0, 1, 2, 3, 4, 5]
+
+# BOOLEAN SKELETON
+disjunctions = [true, false]
+
+# DATE LITERALS
+literal_spread = [30, 365, 3650, 36500, 3652059]   # days; 3652059 is all of 0001-01-01 .. 9999-12-31
+near_month_end_prob = { min = 0.0, max = 1.0 }

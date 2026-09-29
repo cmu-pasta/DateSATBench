@@ -37,10 +37,8 @@ python -m datesatbench.legal_doc_constraints.generator.llm_extractor \
     --input datesatbench/legal_doc_constraints/processed_data/selected.jsonl \
     --output datesatbench/legal_doc_constraints/constraints/1.jsonl --provider anthropic
 
-# Grammar-fuzzer (needs the `fandango` CLI on PATH; step 2 needs solver results)
-python -m datesatbench.grammar_constraints.generator.generate_constraints -n 100
-python -m datesatbench.grammar_constraints.generator.pick_benchmarks
-python -m datesatbench.grammar_constraints.generator.merge_benchmarks
+# Grammar-fuzzer (needs fandango's Python API, e.g. the DateSat repo's .venv; settings in generator/flags.toml)
+python -m datesatbench.grammar_constraints.generator.generate_constraints
 ```
 
 ### Bounds
@@ -57,13 +55,13 @@ python -m datesatbench.utils.bounds remove                             # take th
 
 ### Three datasets, one schema
 
-Every entry in every dataset — synthetic, legal, grammar — is a JSON object with `declarations` (`"name: date|int|bool"` strings) and `constraints` (DateSAT DSL expression strings). That shared shape is why the same solver runner and the same `utils/bounds.py` work across all three. Per-dataset extras: `description` + `coverage_tags` (LLM), `description` + `provenance`/`parsed_id`/`filtered_id` (legal), `size` + `execution_time` (grammar).
+Every entry in every dataset — synthetic, legal, grammar — is a JSON object with `declarations` (`"name: date|int|bool"` strings) and `constraints` (DateSAT DSL expression strings). That shared shape is why the same solver runner and the same `utils/bounds.py` work across all three. Per-dataset extras: `description` + `coverage_tags` (LLM), `description` + `provenance`/`parsed_id`/`filtered_id` (legal), `size` (grammar).
 
 | Dataset | Source | File | Entries | ID form |
 |---|---|---|---|---|
 | `llm_constraints` | LLM synthesis, 5 coverage tags | `constraints/constraints.json` | 100 | `llm-<tag>-<n>` |
 | `legal_doc_constraints` | US Code Title 26 XML | `constraints/constraints.jsonl` | 200 | `legal-<n>` |
-| `grammar_constraints` | fandango fuzzer over `grammar.fan` | `constraints/constraints.json` | 150 | `grammar-<sat\|unsat\|timeout>-<n>` |
+| `grammar_constraints` | fandango fuzzer over `grammar.fan`, swarm-sampled via `flags.toml` | `constraints/constraints.json` | 300 | `grammar-<n>` |
 
 Each dataset directory follows the same layout: `generator/` (code), `constraints/` (shipped output), and for legal also `raw_data/` → `processed_data/` staging.
 
