@@ -1,17 +1,13 @@
 """
-Stage 6: cross-validate the router over every instance, to choose its settings and to
-measure how it does on constraints it has not seen.
+Stage 6: measure the router on constraints it has not seen, by cross-validation over every
+instance.
 
     python -m analysis.router.crossval_router --timeout 20000     # or set DATESAT_TIMEOUT_MS
 
-Why. Each pairwise forest weighs an example by the time gap between its two encodings, so
-a leaf says "A is faster" exactly when A's cost, averaged over the leaf's training
-instances, is lower than B's. With leaves allowed to rest on a single instance, that
-average is one instance's cost: the trees memorize the training constraints, above all
-the few whose timeouts carry most of the weight, and route new constraints with
-confidence they have not earned. A minimum number of instances per leaf makes every
-leaf's average rest on several constraints; the margin makes the router leave the
-fallback only on a clear vote. Cross-validation chooses both.
+It measures one fixed setting: by default the one train_router.py trains (its
+DEFAULT_SETTINGS and DEFAULT_TREES: leaf size, depth, margin and trees per forest), so
+the figures describe the model DateSat uses. It does not search for a better setting;
+--min-samples-leaf, --max-depth, --margin and --trees measure another one.
 
 How. The instances of joined.csv, dropped as in train_router.py (each one a single
 example per pair, its cost the median over its runs), are cut into --folds folds (default
@@ -19,31 +15,20 @@ example per pair, its cost the median over its runs), are cut into --folds folds
 every fold holds the same share of every corpus. For every fold, the router is trained on
 the other folds and routes the fold, so every instance is routed once by a router that
 has not seen it; the fallback is the best performing encoding on the other folds. The
-whole is repeated --repeats times (default 3), each time with a different cut into folds,
-and the results are averaged over the repeats. The cuts come from a fixed seed, so a run
-of this script always gives the same results.
-
-A setting is a leaf size (min_samples_leaf), a maximum depth and a margin; the number of
-trees stays at --trees. Its score is the out-of-fold total time, averaged over the
-repeats, with a timeout counting at the timeout cost. The best setting is the one with
-the lowest score; train_router.py's defaults should be it. The same cross-validation both
-chooses the best setting and reports how it does, so the report is slightly optimistic:
-part of why a setting wins is luck on these instances.
+whole is repeated --repeats times (default 5), each time with a different cut into folds,
+and the results are averaged over the repeats. The cuts come from a fixed seed and the
+forests use train_router.py's, so a run of this script always gives the same results.
 
 Writes to analysis/outputs/model_cross_validation/:
-    router_tuning.csv  one row per setting, best first: out-of-fold total time, its spread
-                       (standard deviation) over the repeats, timeouts, the share of
-                       instances it fell back on, always using the fold's fallback, the
-                       oracle, and the share of the gap between the two that it closes
-    router_eval.json   the best setting, averaged over the repeats, overall and for each
+    router_eval.json   the setting, and averaged over the repeats, overall and for each
                        corpus: a table of always each encoding, the router and the
                        oracle (total time, timeouts, speedups over always
                        --baseline), the router's picks and fallbacks, how often it picks
-                       the fastest encoding, and how much of the gap to the oracle it closes
-    router_eval.csv    the best setting, one row per repeat and instance: its fold and
-                       corpus, its cost on every encoding, the best encoding and its cost,
-                       the router's pick, whether it fell back, the fold's fallback and
-                       the router's cost
+                       the fastest encoding, how much of the gap to the oracle it closes,
+                       and the spread of the router's total over the repeats
+    router_eval.csv    one row per repeat and instance: its fold and corpus, its cost on
+                       every encoding, the best encoding and its cost, the router's pick,
+                       whether it fell back, the fold's fallback and the router's cost
 """
 
 import argparse
@@ -56,17 +41,12 @@ import pandas as pd
 from sklearn.model_selection import RepeatedStratifiedKFold
 
 from analysis.paths import CROSS_VALIDATION, OUTPUTS, REPO
-from analysis.router.train_router import (DEFAULT_SETTINGS, ROUTER, feature_columns,
-                                          fit_forests, instance_features, pair_probabilities,
+from analysis.router.train_router import (DEFAULT_SETTINGS, DEFAULT_TREES, ROUTER,
+                                          feature_columns, fit_forests, instance_features,
                                           route, training_set)
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 
 SEED = 0
-LEAF_SIZES = (1, 5, 10, 20, 40)
-DEPTHS = (4, 8, 16)
-MARGINS = (0.0, 0.1, 0.2, 0.3, 0.4)
-KEY = ["min_samples_leaf", "max_depth", "margin"]
-BEFORE_TUNING = (1, 8, 0.0)        # the settings the router had before cross-validation
 
 
 def strategy_costs(costs, picks):
@@ -148,15 +128,17 @@ def summary_json(s, encodings):
         "router_picks_fastest": round(s["picks_fastest"], 4),
         "gap_closed_to_oracle": {r: {k: None if v is None else round(v, 4) for k, v in c.items()}
                                  for r, c in s["gap_closed"].items()},
+        "router_total_sd_s": round(s.get("router_total_sd", 0.0), 3),
     }
 
 
-def out_of_fold_picks(costs, feats, strata, settings, margins, n_splits, repeats, trees):
-    """Route every instance of `costs` with routers trained on the other folds.
+def out_of_fold_picks(costs, feats, strata, min_samples_leaf, max_depth, margin, n_splits,
+                      repeats, trees):
+    """Route every instance of `costs` with routers trained on the other folds, with one
+    setting.
 
-    `settings` are (min_samples_leaf, max_depth) pairs; every one is combined with every
-    margin. Returns one row per repeat, setting, margin and instance: the fold, the pick,
-    whether it fell back, the fold's fallback, and the ids the router was trained on.
+    Returns one row per repeat and instance: the fold, the pick, whether it fell back, the
+    fold's fallback, and the ids the router was trained on.
     """
     encodings = sorted(costs.columns)
     folds = RepeatedStratifiedKFold(n_splits=n_splits, n_repeats=repeats, random_state=SEED)
@@ -165,44 +147,20 @@ def out_of_fold_picks(costs, feats, strata, settings, margins, n_splits, repeats
         repeat, fold = divmod(k, n_splits)
         c_train, c_test = costs.iloc[train], costs.iloc[test]
         fallback = c_train.sum().idxmin()
-        trained_on = tuple(c_train.index)
-        for leaf, depth in settings:
-            forests = fit_forests(c_train, feats.loc[c_train.index], trees, depth, leaf, n_jobs=-1)
-            probs = pair_probabilities(forests, feats.loc[c_test.index])
-            for margin in margins:
-                picks, fell_back, _ = route(forests, encodings, feats.loc[c_test.index],
-                                            fallback, margin, probs=probs)
-                rows += [{"repeat": repeat, "fold": fold, "id": iid, "min_samples_leaf": leaf,
-                          "max_depth": depth, "margin": margin, "pick": picks[iid],
-                          "fell_back": bool(fell_back[iid]), "fallback": fallback,
-                          "trained_on": trained_on}
-                         for iid in c_test.index]
+        forests = fit_forests(c_train, feats.loc[c_train.index], trees, max_depth,
+                              min_samples_leaf, n_jobs=-1)
+        picks, fell_back, _ = route(forests, encodings, feats.loc[c_test.index], fallback, margin)
+        rows += [{"repeat": repeat, "fold": fold, "id": iid, "pick": picks[iid],
+                  "fell_back": bool(fell_back[iid]), "fallback": fallback,
+                  "trained_on": tuple(c_train.index)}
+                 for iid in c_test.index]
     return pd.DataFrame(rows)
 
 
-def score(oof, costs, timeout_cost):
-    """One row per setting (indexed by KEY), best first: out-of-fold total time and
-    timeouts, the share of instances it fell back on, always using the fold's fallback,
-    the oracle, and the share of the gap from the fallback to the oracle it closes. Totals
-    are summed over the instances of a repeat and averaged over the repeats."""
-    lookup = costs.stack()
-    oof = oof.assign(cost=lookup.loc[list(zip(oof["id"], oof["pick"]))].to_numpy(),
-                     fallback_cost=lookup.loc[list(zip(oof["id"], oof["fallback"]))].to_numpy())
-    oof = oof.assign(timeout=oof["cost"] >= timeout_cost)
-    per_repeat = oof.groupby(KEY + ["repeat"]).agg(
-        total_s=("cost", "sum"), timeouts=("timeout", "sum"), fell_back=("fell_back", "mean"),
-        always_fallback_s=("fallback_cost", "sum"))
-    table = per_repeat.groupby(level=KEY).mean()
-    table["total_sd"] = per_repeat["total_s"].groupby(level=KEY).std()
-    table["oracle_s"] = costs.loc[oof["id"].unique()].min(axis=1).sum()
-    gap = table["always_fallback_s"] - table["oracle_s"]
-    table["gap_closed"] = (table["always_fallback_s"] - table["total_s"]) / gap
-    return table.sort_values(["total_s", "timeouts"])
-
-
 def average_summaries(summaries, baseline, best):
-    """The mean of summarize results, one per repeat, over the same
-    instances. The gap closed is recomputed from the averaged totals."""
+    """The mean of summarize results, one per repeat, over the same instances. The gap
+    closed is recomputed from the averaged totals, and router_total_sd is the standard
+    deviation of the router's total over the repeats."""
     table = pd.concat([s["table"] for s in summaries]).groupby(level=0, sort=False).mean()
     starts = dict.fromkeys([f"always {baseline}", f"always {best}"])
     return {
@@ -212,25 +170,9 @@ def average_summaries(summaries, baseline, best):
         "fell_back": sum(s["fell_back"] for s in summaries) / len(summaries),
         "picks_fastest": sum(s["picks_fastest"] for s in summaries) / len(summaries),
         "gap_closed": {"router": {s: gap_closed(table, s) for s in starts}},
+        "router_total_sd": float(np.std([s["table"].at["router", "total_s"] for s in summaries],
+                                        ddof=1)) if len(summaries) > 1 else 0.0,
     }
-
-
-def print_tuning(table):
-    default = tuple(DEFAULT_SETTINGS[k] for k in KEY)
-    show = table.head(10)
-    for extra in (BEFORE_TUNING, default):
-        if extra not in show.index:
-            show = pd.concat([show, table.loc[[extra]]])
-    print(f"\nout-of-fold, averaged over repeats; always the fallback: "
-          f"{table['always_fallback_s'].iloc[0]:.1f} s, oracle: {table['oracle_s'].iloc[0]:.1f} s")
-    print(f"{'leaf':>5} {'depth':>5} {'margin':>6} {'total s':>9} {'+/- sd':>7} {'timeouts':>9} "
-          f"{'fell back':>9} {'gap closed':>10}")
-    for setting, r in show.iterrows():
-        leaf, depth, margin = setting
-        mark = ("   (before tuning)" if setting == BEFORE_TUNING else "") + \
-               ("   (train_router's default)" if setting == default else "")
-        print(f"{leaf:5d} {depth:5d} {margin:6.1f} {r.total_s:9.1f} {r.total_sd:7.1f} "
-              f"{r.timeouts:9.1f} {r.fell_back:9.1%} {r.gap_closed:10.1%}{mark}")
 
 
 def main():
@@ -239,9 +181,15 @@ def main():
     add_timeout_arg(ap)
     ap.add_argument("--timeout-cost", type=float,
                     help="ms that a timed-out run counts as (default: the timeout)")
-    ap.add_argument("--trees", type=int, default=50, help="trees per forest")
+    ap.add_argument("--trees", type=int, default=DEFAULT_TREES, help="trees per forest")
+    ap.add_argument("--max-depth", type=int, default=DEFAULT_SETTINGS["max_depth"],
+                    help="maximum depth of each tree")
+    ap.add_argument("--min-samples-leaf", type=int, default=DEFAULT_SETTINGS["min_samples_leaf"],
+                    help="fewest training instances a leaf may rest on")
+    ap.add_argument("--margin", type=float, default=DEFAULT_SETTINGS["margin"],
+                    help="how far above 0.5 a pick must beat the fallback to be kept")
     ap.add_argument("--folds", type=int, default=5)
-    ap.add_argument("--repeats", type=int, default=3)
+    ap.add_argument("--repeats", type=int, default=5)
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
     ap.add_argument("--output-dir", default=str(CROSS_VALIDATION))
     args = ap.parse_args()
@@ -249,6 +197,9 @@ def main():
     timeout_cost = timeout if args.timeout_cost is None else args.timeout_cost / 1000
     if timeout_cost < timeout:
         ap.error(f"--timeout-cost must be at least the timeout ({timeout * 1000:g} ms)")
+    if not 0 <= args.margin < 0.5:
+        ap.error(f"--margin must be in [0, 0.5), got {args.margin:g}")
+    leaf, depth, margin = args.min_samples_leaf, args.max_depth, args.margin
 
     joined = pd.read_csv(args.joined)
     joined = joined[joined["encoding"] != ROUTER]
@@ -260,24 +211,18 @@ def main():
         ap.error(f"--baseline {args.baseline!r} is not one of {encodings}")
     best = costs.sum().idxmin()
 
-    settings = [(leaf, depth) for leaf in LEAF_SIZES for depth in DEPTHS]
     print(f"{len(costs)} instances (dropped {dropped['errored_or_missing']} errored or missing "
           f"and {dropped['all_timeout']} all-timeout): "
           + ", ".join(f"{c} {n}" for c, n in corpus.value_counts().sort_index().items())
           + f"; timeouts count as {timeout_cost:g} s")
-    print(f"{len(settings)} settings x {len(MARGINS)} margins, {args.folds}-fold cross-validation "
-          f"stratified by corpus, repeated {args.repeats} times ...")
-    oof = out_of_fold_picks(costs, feats, corpus, settings, MARGINS, args.folds, args.repeats,
-                            args.trees)
-    table = score(oof, costs, timeout_cost)
-    print_tuning(table)
+    print(f"setting: {args.trees} trees, depth <= {depth}, at least {leaf} instances per leaf, "
+          f"margin {margin:g}; {args.folds}-fold cross-validation stratified by corpus, "
+          f"repeated {args.repeats} times ...")
+    oof = out_of_fold_picks(costs, feats, corpus, leaf, depth, margin, args.folds, args.repeats,
+                            args.trees).drop(columns="trained_on")
 
-    # ---- the best setting: its tables, overall and per corpus ------------------
-    leaf, depth, margin = table.index[0]
-    chosen = oof[(oof["min_samples_leaf"] == leaf) & (oof["max_depth"] == depth)
-                 & (oof["margin"] == margin)].drop(columns="trained_on")
     overall, by_corpus, logs = [], {c: [] for c in sorted(corpus.unique())}, []
-    for repeat, g in chosen.groupby("repeat"):
+    for repeat, g in oof.groupby("repeat"):
         g = g.set_index("id").loc[costs.index]
         strategies = strategy_costs(costs, g["pick"])
         overall.append(summarize(strategies, g["pick"], g["fell_back"], args.baseline, best,
@@ -299,30 +244,28 @@ def main():
     overall = average_summaries(overall, args.baseline, best)
     by_corpus = {c: average_summaries(s, args.baseline, best) for c, s in by_corpus.items()}
 
-    fallbacks = sorted(chosen["fallback"].unique())
-    print(f"\n===== best setting: min_samples_leaf {leaf}, max_depth {depth}, margin {margin:g}; "
-          f"out-of-fold, averaged over {args.repeats} repeats =====")
-    print(f"(chosen by the same cross-validation, so slightly optimistic)")
+    fallbacks = sorted(oof["fallback"].unique())
+    print(f"\n===== out-of-fold, averaged over {args.repeats} repeats =====")
+    print(f"router total over the repeats: {overall['table'].at['router', 'total_s']:.1f} s "
+          f"+/- {overall['router_total_sd']:.1f} s (standard deviation)")
     print_summary("all corpora", overall, args.baseline, encodings, "/".join(fallbacks), margin)
     for c, s in by_corpus.items():
         print_summary(c, s, args.baseline, encodings, "/".join(fallbacks), margin)
 
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    table.to_csv(out / "router_tuning.csv", float_format="%.6g")
     pd.concat(logs).to_csv(out / "router_eval.csv", index_label="id", float_format="%.6g")
     summary = {
         "joined": os.path.relpath(args.joined, REPO),
         "evaluated_on": f"every instance, out of fold: {args.folds}-fold cross-validation "
-                        f"stratified by corpus, repeated {args.repeats} times; the setting "
-                        f"is chosen by the same cross-validation",
+                        f"stratified by corpus, repeated {args.repeats} times",
         "instances": len(costs),
         "dropped": dropped,
         "timeout_cost_s": timeout_cost,
         "folds": args.folds,
         "repeats": args.repeats,
         "trees": args.trees,
-        "setting": {"min_samples_leaf": int(leaf), "max_depth": int(depth), "margin": float(margin)},
+        "setting": {"min_samples_leaf": leaf, "max_depth": depth, "margin": margin},
         "fallbacks": fallbacks,
         "baseline": args.baseline,
         "best_performing_encoding": best,
@@ -331,12 +274,10 @@ def main():
     }
     (out / "router_eval.json").write_text(json.dumps(summary, indent=1))
 
-    setting = {"min_samples_leaf": leaf, "max_depth": depth, "margin": margin}
-    if setting != DEFAULT_SETTINGS:
-        print(f"\nNOTE: train_router.py's defaults are {DEFAULT_SETTINGS}; the best setting is "
-              f"{setting}. Update DEFAULT_SETTINGS there.")
-    print(f"\nWrote {out / 'router_tuning.csv'}, {out / 'router_eval.json'} and "
-          f"{out / 'router_eval.csv'}")
+    if summary["setting"] != DEFAULT_SETTINGS or args.trees != DEFAULT_TREES:
+        print(f"\nNOTE: this is not the setting train_router.py trains by default "
+              f"({DEFAULT_SETTINGS}, {DEFAULT_TREES} trees)")
+    print(f"\nWrote {out / 'router_eval.json'} and {out / 'router_eval.csv'}")
 
 
 if __name__ == "__main__":

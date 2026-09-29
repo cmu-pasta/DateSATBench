@@ -58,7 +58,7 @@ def router_section(cv_path, meta_path):
     """The router's cross-validated results (crossval_router.py) and the settings of the
     model trained on every instance (train_router.py), or None when there are no
     cross-validated results. `matches_cv` says whether the model was trained with the
-    setting the cross-validation chose."""
+    setting the cross-validation measured."""
     cv_path, meta_path = Path(cv_path), Path(meta_path)
     if not cv_path.exists():
         return None

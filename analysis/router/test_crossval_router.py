@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from analysis.router.crossval_router import (average_summaries, out_of_fold_picks, score,
+from analysis.router.crossval_router import (average_summaries, out_of_fold_picks,
                                              strategy_costs, summarize, summary_table)
 from analysis.router.test_train_router import random_instances
 
@@ -9,9 +9,9 @@ from analysis.router.test_train_router import random_instances
 def test_every_instance_is_routed_once_per_repeat_by_a_router_that_did_not_see_it():
     costs, feats = random_instances(30)
     strata = pd.Series(["llm"] * 15 + ["legal"] * 15, index=costs.index)
-    oof = out_of_fold_picks(costs, feats, strata, settings=[(1, 8), (5, 4)],
-                            margins=[0.0, 0.2], n_splits=3, repeats=2, trees=3)
-    for _, g in oof.groupby(["repeat", "min_samples_leaf", "max_depth", "margin"]):
+    oof = out_of_fold_picks(costs, feats, strata, min_samples_leaf=1, max_depth=8, margin=0.0,
+                            n_splits=3, repeats=2, trees=3)
+    for _, g in oof.groupby("repeat"):
         assert sorted(g["id"]) == sorted(costs.index)
     for _, g in oof.groupby(["repeat", "fold"]):
         assert not set(g["id"]) & set(g["trained_on"].iloc[0])
@@ -20,26 +20,10 @@ def test_every_instance_is_routed_once_per_repeat_by_a_router_that_did_not_see_i
 def test_every_fold_holds_the_same_share_of_every_corpus():
     costs, feats = random_instances(60)
     strata = pd.Series(["llm"] * 20 + ["legal"] * 40, index=costs.index)
-    oof = out_of_fold_picks(costs, feats, strata, settings=[(1, 8)], margins=[0.0],
+    oof = out_of_fold_picks(costs, feats, strata, min_samples_leaf=1, max_depth=8, margin=0.0,
                             n_splits=5, repeats=2, trees=3)
     for _, g in oof.groupby(["repeat", "fold"]):
         assert strata.loc[g["id"]].value_counts().to_dict() == {"llm": 4, "legal": 8}
-
-
-def test_score_averages_the_out_of_fold_totals_over_repeats():
-    costs = pd.DataFrame({"x": [1.0, 20.0], "y": [3.0, 2.0]}, index=["i1", "i2"])
-    oof = pd.DataFrame({
-        "repeat": [0, 0, 1, 1], "fold": [0, 1, 0, 1], "id": ["i1", "i2", "i1", "i2"],
-        "min_samples_leaf": 5, "max_depth": 8, "margin": 0.1,
-        "pick": ["x", "y", "x", "x"], "fell_back": [False, False, False, True],
-        "fallback": ["y", "y", "x", "x"],
-    })
-    table = score(oof, costs, timeout_cost=20.0)
-    row = table.loc[(5, 8, 0.1)]
-    assert row["total_s"] == 12.0            # repeat 0: 1 + 2 = 3; repeat 1: 1 + 20 = 21
-    assert row["timeouts"] == 0.5
-    assert row["always_fallback_s"] == 13.0  # repeat 0: 3 + 2 = 5; repeat 1: 1 + 20 = 21
-    assert row["oracle_s"] == 3.0
 
 
 def test_average_summaries_averages_the_repeats():
@@ -53,6 +37,7 @@ def test_average_summaries_averages_the_repeats():
     assert avg["picks"].to_dict() == {"x": 1.5, "y": 0.5}
     assert avg["picks_fastest"] == 0.75                         # 2 of 2, then 1 of 2
     assert avg["fell_back"] == 1
+    assert np.isclose(avg["router_total_sd"], np.std([3.0, 21.0], ddof=1))
 
 
 def test_summary_table():
@@ -82,7 +67,6 @@ def test_the_router_costs_its_picks_recorded_solve_time():
 if __name__ == "__main__":
     test_every_instance_is_routed_once_per_repeat_by_a_router_that_did_not_see_it()
     test_every_fold_holds_the_same_share_of_every_corpus()
-    test_score_averages_the_out_of_fold_totals_over_repeats()
     test_average_summaries_averages_the_repeats()
     test_summary_table()
     test_the_router_costs_its_picks_recorded_solve_time()

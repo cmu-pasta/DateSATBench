@@ -25,9 +25,8 @@ teach the router which choices are dangerous.
 
 Overfitting. With leaves allowed to rest on one instance, the forests memorize the
 training constraints. --min-samples-leaf keeps every leaf on several. Its default, with
-the depth and margin defaults (DEFAULT_SETTINGS), should be the best setting that
-crossval_router.py finds by cross-validation over every instance; crossval_router.py
-says when it is not.
+the depth, margin and tree defaults (DEFAULT_SETTINGS, DEFAULT_TREES), is the router's
+setting; crossval_router.py measures it by cross-validation, and does not change it.
 
 Examples. For the A-vs-B forest, every instance on which A and B cost different amounts
 is one example. The input is its features (every feature column, but not corpus, so the
@@ -74,8 +73,9 @@ TOP_FEATURES = 5
 ROUTER = "router"                  # the encoding name the router's own results carry
 FORMAT_VERSION = 1                 # of router.json
 EXPORT_TOLERANCE = 1e-9
-# The best setting that crossval_router.py found by cross-validation over every instance.
+# The router's setting. crossval_router.py measures it; ROUTER.md says why it was chosen.
 DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "margin": 0.0}
+DEFAULT_TREES = 50                 # trees per forest
 
 # The columns join_results.py writes ahead of the feature columns.
 RESULT_COLS = {"id", "corpus", "encoding", "run", "time", "status", "solved",
@@ -262,7 +262,7 @@ def main():
     add_timeout_arg(ap)
     ap.add_argument("--timeout-cost", type=float,
                     help="ms that a timed-out run counts as (default: the timeout)")
-    ap.add_argument("--trees", type=int, default=50, help="trees per forest")
+    ap.add_argument("--trees", type=int, default=DEFAULT_TREES, help="trees per forest")
     ap.add_argument("--max-depth", type=int, default=DEFAULT_SETTINGS["max_depth"],
                     help="maximum depth of each tree")
     ap.add_argument("--min-samples-leaf", type=int, default=DEFAULT_SETTINGS["min_samples_leaf"],

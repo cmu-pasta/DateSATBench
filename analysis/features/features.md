@@ -1,4 +1,4 @@
-# features(5): the 37 columns of features.csv
+# features(5): the 59 columns of features.csv
 
 Each entry gives the feature's meaning in one or two lines, then a small example with the
 value it produces. `test_features_md.py` runs every example below through
@@ -570,3 +570,271 @@ a.year == y;  a.month == 2                                →  1   (only the fir
 
 ---
 
+
+
+
+## ARITHMETIC STRUCTURE
+
+What the `date ± period` operations on variables connect, and how large their steps are.
+`n_date_period_ops` and the `max_abs_*` columns above treat every such operation alike, but
+two operations with the same period can cost a solver very different amounts: `a != a +
+Period(0,0,1000)` compares a date with itself and is decided almost for free, while `a != b
++ Period(0,0,1000)` ties two dates together.
+
+Each operation is classified by the date comparison it sits in, from the variables (of any
+sort) that each side of the comparison mentions:
+
+- **self-referential**: both sides mention the same single variable, `a < a + Period(0,1,0)`;
+- **constant**: one side mentions no variable, `a + Period(1,0,0) < Date(2020,1,1)`;
+- **cross**: anything else, `b < a + Period(0,1,0)`.
+
+Only `date ± period` operations on a variable count, as in `n_date_period_ops`; operations
+on a literal date fold to a constant. Unless a column says otherwise, it counts the cross
+and constant operations and leaves the self-referential ones out. A comparison on a field,
+such as `(a + Period(0,1,0)).year == 2020`, compares ints and holds no counted operation.
+
+
+
+### n_self_ops
+
+Self-referential operations.
+
+```
+b < a + Period(0,1,0);  a != a + Period(0,0,3);  a + Period(1,0,0) < Date(2020,1,1)
+                                                          →  1   (a != a + 3d)
+```
+
+
+
+### n_cross_ops
+
+Cross operations.
+
+```
+(same example)                                            →  1   (b < a + 1mo)
+```
+
+
+
+### n_const_ops
+
+Constant operations.
+
+```
+(same example)                                            →  1   (a + 1y < Date(2020,1,1))
+```
+
+
+
+### self_op_frac
+
+`n_self_ops` / all three kinds.
+
+```
+(same example)                                            →  0.333   (1 of 3)
+```
+
+
+
+### n_year_ops
+
+Operations whose period has a years part.
+
+```
+b < a + Period(1,2,0);  c > b - Period(0,0,40);  a != a + Period(3,0,0)
+                                                          →  1   (the self-referential 3y is left out)
+```
+
+
+
+### n_month_ops
+
+Operations whose period has a months part. Years are not converted to months here, so
+`Period(1,0,0)` does not count.
+
+```
+(same example)                                            →  1
+```
+
+
+
+### n_day_ops
+
+Operations whose period has a days part.
+
+```
+(same example)                                            →  1
+```
+
+
+
+### n_mixed_ops
+
+Operations whose period has both days and months, with years counting as months, as in
+`mixed_frac`.
+
+```
+b < a + Period(1,0,40);  c > b - Period(0,2,0)            →  1   (the first)
+```
+
+
+
+### n_day_steps_ge28
+
+Operations whose days part is 28 or more (either sign), a step that can cross a month end
+whatever day it starts from.
+
+```
+b < a + Period(0,0,28);  c > b - Period(0,1,27);  a != a + Period(0,0,90)
+                                                          →  1   (the 28)
+```
+
+
+
+### sum_abs_days
+
+Sum of the days parts, ignoring their sign. `max_abs_days` records only the largest.
+
+```
+b < a + Period(0,1,40);  c > b - Period(0,0,5);  a != a + Period(0,0,90)
+                                                          →  45   (40 + 5)
+```
+
+
+
+### sum_abs_months
+
+Sum of the months parts, ignoring their sign, with years counting as 12 months each.
+
+```
+b < a + Period(1,2,0);  c > b - Period(0,5,0);  a != a + Period(3,0,0)
+                                                          →  19   (14 + 5)
+```
+
+
+
+### max_abs_days_nonself
+
+Largest days part, ignoring its sign: `max_abs_days` without the self-referential operations.
+
+```
+b < a + Period(0,0,40);  a != a + Period(0,0,1000)        →  40   (max_abs_days is 1000)
+```
+
+
+
+### max_abs_months_nonself
+
+Largest months part, ignoring its sign, with years counting as 12 months each, and without
+the self-referential operations. (`max_abs_months` counts only the months part.)
+
+```
+b < a + Period(1,2,0);  a != a + Period(0,50,0)           →  14   (max_abs_months is 50)
+```
+
+
+
+### sum_abs_days_all
+
+Sum of the days parts, ignoring their sign, over **every** operation on a variable:
+self-referential ones included, and wherever the operation sits, a field access included.
+An encoding that steps through days one at a time pays for each of them.
+
+```
+b < a + Period(0,1,40);  a != a + Period(0,0,90);  b > Date(2020,1,1) + Period(0,0,7)
+                                                          →  130   (the literal's 7 folds)
+```
+
+
+
+### n_arith_unit
+
+Operations in a top-level conjunct that has no `||` once negations are pushed to the leaves
+(see `n_unit_constraints`), so the solver must satisfy them.
+
+```
+b > a + Period(0,0,7);  c > b + Period(0,0,7) || c == a;  f -> c < a + Period(0,1,0)
+                                                          →  1   (the first)
+```
+
+
+
+### n_arith_in_disj
+
+Operations in a top-level conjunct with an `||`, including one written as `->`.
+
+```
+(same example)                                            →  2
+```
+
+
+
+### n_arith_neq
+
+Operations in a `!=` comparison. The comparison counts as written: a negated `==` is not a
+`!=`.
+
+```
+b != a + Period(0,1,0);  !(c == b + Period(0,0,1));  c < a + Period(1,0,0)
+                                                          →  1   (the first)
+```
+
+
+
+### n_date_eq
+
+Date comparisons with `==`, counted as written, as for `n_arith_neq`. A field comparison
+such as `a.year == 2020` compares ints and does not count.
+
+```
+a == Date(2020,1,1);  b != a;  !(c == b);  a.year == 2020 →  2   (a == ..., c == b)
+```
+
+
+
+### n_date_neq
+
+Date comparisons with `!=`, counted the same way.
+
+```
+(same example)                                            →  1
+```
+
+
+
+### arith_graph_diameter
+
+The graph has one node per variable and an edge between two variables that sit on opposite
+sides of a comparison holding a cross operation. This is the most edges on a shortest path
+between two of its variables: how long a chain of date arithmetic links one variable to
+another.
+
+```
+b >= a + Period(0,0,7);  c >= b + Period(0,0,7);  d >= c + Period(0,0,7);  e < d
+                                                          →  3   (a-b-c-d; e < d has no arithmetic)
+```
+
+
+
+### n_arith_vars
+
+Variables with at least one edge in that graph.
+
+```
+(same example)                                            →  4
+```
+
+
+
+### lit_year_span
+
+Largest minus smallest year over the literal dates, 0 when there are none. `Date(1,1,1)` and
+`Date(9999,12,31)`, the calendar's first and last day, are left out, because they are the
+injected bounds. As in CALENDAR CORNERS, only literal dates count.
+
+```
+a > Date(2010,5,1);  a < Date(2024,1,1);  b == Date(a.year,2,29);  a >= Date(1,1,1)
+                                                          →  14
+```
+
+---
