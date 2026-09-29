@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """
-Generate and convert constraints from grammar to JSON format.
+Generate the grammar-based dataset: randomly sample constraint sets from the
+grammar and convert them to JSON format.
+
+The dataset is the raw random sample. No selection or filtering is applied
+afterwards; the generated constraints.json is the shipped benchmark.
 
 Steps:
-1. Generate constraints using fandango fuzzer
+1. Generate constraints using fandango fuzzer (default: 300 samples)
 2. Convert from text format to JSON format
 3. Clean up temporary files
 
@@ -140,6 +144,13 @@ def generate_constraints_with_fandango(
             str(num_samples),
             "--max-nodes",
             str(max_nodes),
+            # Sample the whole population once and skip evolution: fandango's
+            # crossover copies constraints between individuals, which left
+            # ~75% of constraints as duplicates and skewed every distribution.
+            "--population-size",
+            str(num_samples),
+            "-N",
+            "1",
             "-o",
             str(output_file),
         ]
@@ -168,14 +179,14 @@ def generate_constraints_with_fandango(
 def main():
     # Parse command line arguments
     parser = argparse.ArgumentParser(
-        description="Generate constraints using fandango and convert to JSON format"
+        description="Randomly sample constraint sets from the grammar with fandango and convert to JSON format"
     )
     parser.add_argument(
         "-n",
         "--num-samples",
         type=int,
-        default=10,
-        help="Number of constraint sets to generate (default: 10)",
+        default=300,
+        help="Number of constraint sets to generate (default: 300)",
     )
     parser.add_argument(
         "-m",

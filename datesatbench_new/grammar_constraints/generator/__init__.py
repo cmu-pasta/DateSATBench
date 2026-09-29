@@ -1,2 +1,0 @@
-"""Grammar constraint generation scripts."""
-

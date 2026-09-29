@@ -86,8 +86,6 @@ Both LLM generators are closed loops, not one-shot calls: parse JSON → check s
 
 ## Gotchas
 
-- `merge_benchmarks.py` globs every `*.json` in `grammar_constraints/constraints/` and excludes only `merged_benchmarks.json` — the existing `constraints.json` gets folded into its own replacement, duplicating entries. Delete or move it before merging.
 - `combine_constraints.py` does the right thing (it excludes `constraints.json`), but it **reassigns every `id`** in alphabetical file order, preserving the old one as `generated_id`. Adding a new tag file renumbers downstream IDs, breaking cross-references to prior results.
-- `pick_benchmarks.py` reads `grammar_constraints/results/naive_int.json`, which is produced by the DateSAT solver repo and is not committed here.
 - `legal_doc_constraints/raw_data/title26.xml` is not committed; download it from the US Code site before running `parse.py`.
 - `random_select.py` uses a fixed seed (42) so the 200-record selection is reproducible — don't change it without renumbering the whole legal dataset.

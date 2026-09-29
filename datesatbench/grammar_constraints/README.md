@@ -1,47 +1,37 @@
-# DateSATBench's Grammar-Based Dataset Generator
+# DateSATBench's Grammar-Based Dataset
 
-This directory holds grammar definitions and generator code for producing DateSAT constraints from a formal grammar. Outputs and bundled examples live under `constraints/`; source for generation is under `generator/`.
+This directory holds the grammar definition and generator code for producing DateSAT constraints from a formal grammar. The shipped dataset lives under `constraints/`; the grammar and generator source are under `generator/`.
 
-## Processing Pipeline
+## How the dataset is built
 
-### Step 1: Generate Constraints (`generate_constraints.py`)
+We take the formal grammar in `generator/grammar.fan` and randomly produce 300 constraint sets from it using the [fandango](https://github.com/fandango-fuzzer/fandango) fuzzer. There is no further selection or filtering step: the 300 randomly sampled constraint sets are the dataset.
 
-Uses the [fandango](https://github.com/fandango-fuzzer/fandango) fuzzer to sample constraint sets from the formal grammar defined in `generator/grammar.fan`, then converts the output to JSON.
+Date literals in the generated constraints range over the full positive-years range 0001-01-01 to 9999-12-31, the same bounds as the `positive_years` variant under `datesatbench_bounded/`. Unlike the LLM and legal datasets, the grammar dataset is not restricted to 1900–2100.
+
+## Generating the dataset (`generate_constraints.py`)
+
+Samples constraint sets from the grammar with fandango and converts the output to JSON. The `fandango` CLI must be installed and on your `PATH`.
 
 ```bash
-# From repository root — generate 10 constraint sets (default)
+# From repository root — generate the 300-constraint dataset (default)
 python -m datesatbench.grammar_constraints.generator.generate_constraints
 
-# Generate a custom number of constraint sets
+# Generate a different number of constraint sets
 python -m datesatbench.grammar_constraints.generator.generate_constraints -n 100
 ```
 
 **Command line arguments:**
 
-- `-n`/`--num-samples`: Number of constraint sets to generate (default: `10`)
+- `-n`/`--num-samples`: Number of constraint sets to generate (default: `300`)
 - `-m`/`--max-nodes`: Maximum AST nodes per generated sample (default: `1000`)
 
-Output is written to `datesatbench/grammar_constraints/constraints/constraints.json`.
-
-### Step 2: Pick Benchmarks (`pick_benchmarks.py`)
-
-Reads solver results from `results/naive_int.json` and splits constraints into three files based on their solver status. Within each category, constraints are sorted by execution time (slowest first) so the hardest instances are ranked at the top. Duplicate constraints (matched by exact constraint list) are skipped when appending to existing files.
-
-```bash
-python -m datesatbench.grammar_constraints.generator.pick_benchmarks
-```
-
-Outputs (written to `constraints/`):
-- `sat_constraints.json` — satisfiable constraints
-- `unsat_constraints.json` — unsatisfiable constraints
-- `timeout_constraints.json` — constraints that exceeded the solver timeout
-
-### Step 3: Merge Benchmarks (`merge_benchmarks.py`)
-
-Merges all JSON files in the `constraints/` directory into a single `constraints.json` for distribution.
-
-```bash
-python -m datesatbench.grammar_constraints.generator.merge_benchmarks
-```
-
 Output is written to `datesatbench/grammar_constraints/constraints/constraints.json`. This file serves as the grammar-based benchmark in DateSATBench.
+
+## Output format
+
+Each entry in `constraints.json` is a JSON object with:
+
+- `id`: `grammar-<n>`, numbered in generation order
+- `declarations`: variable declarations inferred from the constraints (`D0`–`D9` dates, `B0`–`B9` bools, `I0`–`I9` ints)
+- `constraints`: list of DateSAT DSL constraint strings
+- `size`: number of constraints in the entry
