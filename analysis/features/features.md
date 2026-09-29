@@ -25,7 +25,7 @@ Sections follow the column order of `features.csv` and of the heatmaps.
 ## INJECTED BOUNDS (`--bounds keep|strip`)
 
 Features are extracted from `datesatbench_bounded/positive_years`, the variant the solver
-results were run on. `tools/inject_bounds.py` appended two constraints to the end of every
+results were run on. `datesatbench/utils/bounds.py inject` appended two constraints to the end of every
 entry for each date variable `d`:
 
 ```
@@ -63,12 +63,12 @@ affects `features.csv`. To carry it through the analysis, rerun the downstream s
 
 ```
 export DATESAT_TIMEOUT_MS=60000                    # the --timeout the results were run with
-python analysis/extract_features.py --bounds keep
-python analysis/join_results.py
-python analysis/cluster.py
-python analysis/plot_speedup_heatmap.py            # and --corpus llm|legal|grammar
-python analysis/plot_feature_correlation.py
-python analysis/build_report.py
+python -m analysis.features.extract_features --bounds keep
+python -m analysis.stats.join_results
+python -m analysis.stats.cluster
+python -m analysis.stats.plot_speedup_heatmap            # and --corpus llm|legal|grammar
+python -m analysis.stats.plot_feature_correlation
+python -m analysis.report.build_report
 ```
 
 `join_results.py` and `build_report.py` refuse to run without a timeout: pass `--timeout <ms>`

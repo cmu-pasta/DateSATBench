@@ -1,10 +1,10 @@
 """
 Summarise what each encoding did: status counts, solve times and wins over the baseline.
 
-    python analysis/solver_outcomes.py                    # all corpora pooled
-    python analysis/solver_outcomes.py --corpus legal     # one corpus
-    python analysis/solver_outcomes.py --compare          # pooled, then every corpus
-    python analysis/solver_outcomes.py --compare --output analysis/outcomes.csv
+    python -m analysis.stats.solver_outcomes                    # all corpora pooled
+    python -m analysis.stats.solver_outcomes --corpus legal     # one corpus
+    python -m analysis.stats.solver_outcomes --compare          # pooled, then every corpus
+    python -m analysis.stats.solver_outcomes --compare --output analysis/outputs/outcomes.csv
 
 Reads joined.csv and prints one row per encoding for each scope. --output writes the
 same rows as CSV with a `scope` column (all, llm, legal, grammar). build_report.py
@@ -31,11 +31,11 @@ The baseline's win and speedup columns are empty: it is not compared with itself
 """
 
 import argparse
-from pathlib import Path
 
 import pandas as pd
 
-HERE = Path(__file__).parent
+from analysis.paths import OUTPUTS
+
 CORPORA = ["llm", "legal", "grammar"]
 KEY = ["id", "run"]
 COUNTS = ["rows", "sat", "unsat", "timeout", "error", "solved", "n_common",
@@ -116,7 +116,7 @@ def display(t, scope):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--joined", default=str(HERE / "joined.csv"))
+    ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
     ap.add_argument("--baseline", default="simple")
     scope = ap.add_mutually_exclusive_group()
     scope.add_argument("--corpus", choices=CORPORA, help="one corpus instead of all pooled")

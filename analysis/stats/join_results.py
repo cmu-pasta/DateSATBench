@@ -1,7 +1,7 @@
 """
 Join solver timings to the feature matrix.
 
-    python analysis/join_results.py --results results/bench-datetime-bound --timeout 60000
+    python -m analysis.stats.join_results --results results/bench-datetime-bound --timeout 60000
 
 Reads every <corpus>/run_N/<approach>_<impl>.json (or, for a single-run eval,
 <corpus>/<approach>_<impl>.json) under the results root and joins each record to
@@ -29,7 +29,7 @@ Rows are never dropped from joined.csv; analyses skip rows with an empty speedup
 `time` and `baseline_time` stay as measured; filter on `solved` before using `time` as
 a measurement.
 
-Writes analysis/joined.csv, one row per (instance, encoding, run).
+Writes analysis/outputs/joined.csv, one row per (instance, encoding, run).
 """
 
 import argparse
@@ -38,7 +38,8 @@ import json
 import os
 from pathlib import Path
 
-HERE = Path(__file__).parent
+from analysis.paths import OUTPUTS, REPO
+
 FINISHED = {"sat", "unsat"}
 TIMEOUT_ENV = "DATESAT_TIMEOUT_MS"
 
@@ -90,12 +91,12 @@ def speedup_and_bound(time, status, base_time, base_status, timeout):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--results", default=str(HERE.parent / "results/bench-datetime-bound"),
+    ap.add_argument("--results", default=str(REPO / "results/bench-datetime-bound"),
                     help="results directory (multi-run <corpus>/run_N/ or single-run <corpus>/)")
-    ap.add_argument("--features", default=str(HERE / "features.csv"))
+    ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
     add_timeout_arg(ap)
-    ap.add_argument("--output", default=str(HERE / "joined.csv"))
+    ap.add_argument("--output", default=str(OUTPUTS / "joined.csv"))
     args = ap.parse_args()
     timeout = timeout_seconds(ap, args)
     check_run_config(args.results, timeout)

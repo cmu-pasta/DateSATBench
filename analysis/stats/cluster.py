@@ -1,7 +1,7 @@
 """
 Cluster DateSATBench instances on the extracted feature set and project to 3D.
 
-    python analysis/cluster.py --input analysis/features.csv --output analysis/clusters.json
+    python -m analysis.stats.cluster --input analysis/outputs/features.csv --output analysis/outputs/clusters.json
 
 Clustering is BLIND to the corpus label; agreement with corpus is measured
 afterwards (adjusted Rand index) to test whether the features find structure
@@ -23,6 +23,8 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from sklearn.metrics import adjusted_rand_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
+
+from analysis.paths import OUTPUTS
 
 SKEW_THRESHOLD = 2.0
 RANDOM_STATE = 0
@@ -82,9 +84,8 @@ def profile_clusters(Z, labels, feature_names, top=6):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    here = Path(__file__).parent
-    ap.add_argument("--input", default=str(here / "features.csv"))
-    ap.add_argument("--output", default=str(here / "clusters.json"))
+    ap.add_argument("--input", default=str(OUTPUTS / "features.csv"))
+    ap.add_argument("--output", default=str(OUTPUTS / "clusters.json"))
     args = ap.parse_args()
 
     df = pd.read_csv(args.input)

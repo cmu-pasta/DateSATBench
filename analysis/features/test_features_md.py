@@ -1,7 +1,7 @@
 """
 Run every example in features.md through extract_features.py.
 
-    python3 analysis/test_features_md.py
+    python -m analysis.features.test_features_md
 
 An example is a line (or wrapped line) inside a code block under a `### <column>` heading:
 
@@ -21,8 +21,7 @@ import re
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent))
-from extract_features import COLUMNS, features_for  # noqa: E402
+from analysis.features.extract_features import COLUMNS, features_for
 
 HERE = Path(__file__).parent
 FEATURES = [c for c in COLUMNS if c not in ("id", "corpus") and not c.startswith("label_")]

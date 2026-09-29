@@ -1,13 +1,13 @@
 """
 Stage 5: build the standalone analysis report from the outputs of stages 2-4.
 
-    python analysis/build_report.py --timeout 60000     # or set DATESAT_TIMEOUT_MS
+    python -m analysis.report.build_report --timeout 60000     # or set DATESAT_TIMEOUT_MS
 
 Reads features.csv (+ features_meta.json), joined.csv and clusters.json, computes the
 solver outcomes and speedup heatmaps for every corpus (and timeout mode) and the
 feature-feature correlation (same functions as solver_outcomes.py and the PNG scripts,
 so the numbers match), and inlines everything into
-report_template.html. Writes a single self-contained analysis/report.html. Only Plotly
+report_template.html. Writes a single self-contained analysis/outputs/report.html. Only Plotly
 and the IBM Plex webfonts are fetched from a CDN when the page opens.
 """
 
@@ -20,15 +20,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from cluster import build_matrix, profile_clusters
-from extract_features import FEATURE_GROUPS
-from join_results import add_timeout_arg, check_run_config, timeout_seconds
-from plot_feature_correlation import constant_features, feature_correlation
-from plot_speedup_heatmap import speedup_correlations
-from solver_outcomes import COUNTS as OUTCOME_COUNTS, solver_outcomes
+from analysis.features.extract_features import FEATURE_GROUPS
+from analysis.paths import OUTPUTS, REPO
+from analysis.stats.cluster import build_matrix, profile_clusters
+from analysis.stats.join_results import add_timeout_arg, check_run_config, timeout_seconds
+from analysis.stats.plot_feature_correlation import constant_features, feature_correlation
+from analysis.stats.plot_speedup_heatmap import speedup_correlations
+from analysis.stats.solver_outcomes import COUNTS as OUTCOME_COUNTS, solver_outcomes
 
 HERE = Path(__file__).parent
-REPO = HERE.parent
 CORPORA = ["llm", "legal", "grammar"]
 
 
@@ -54,14 +54,14 @@ def rel(path):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--features", default=str(HERE / "features.csv"))
-    ap.add_argument("--joined", default=str(HERE / "joined.csv"))
-    ap.add_argument("--clusters", default=str(HERE / "clusters.json"))
+    ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
+    ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
+    ap.add_argument("--clusters", default=str(OUTPUTS / "clusters.json"))
     ap.add_argument("--results", default=str(REPO / "results/bench-datetime-bound"))
     ap.add_argument("--baseline", default="simple")
     add_timeout_arg(ap)
     ap.add_argument("--template", default=str(HERE / "report_template.html"))
-    ap.add_argument("--output", default=str(HERE / "report.html"))
+    ap.add_argument("--output", default=str(OUTPUTS / "report.html"))
     args = ap.parse_args()
     timeout_s = timeout_seconds(ap, args)
     check_run_config(args.results, timeout_s)

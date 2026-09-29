@@ -1,13 +1,13 @@
 """
 Plot the Spearman correlation between features over every benchmark instance.
 
-    python analysis/plot_feature_correlation.py
+    python -m analysis.stats.plot_feature_correlation
 
 Features only, no runtimes, so all instances in features.csv are used. Features are
 ordered by complete-linkage clustering on 1 - |rho|; a family is a group in which
 every pair has |rho| >= --family, and is outlined on the plot.
 
-Writes analysis/plots/feature_correlation.png.
+Writes analysis/outputs/plots/feature_correlation.png.
 """
 
 import argparse
@@ -23,7 +23,8 @@ from matplotlib.patches import Rectangle
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
 
-HERE = Path(__file__).parent
+from analysis.paths import OUTPUTS, PLOTS
+
 # Diverging scale: red (negative) -> grey (zero) -> green (positive). Green is the
 # desired direction everywhere it is used: for speedups it means the encoding gains.
 CMAP = LinearSegmentedColormap.from_list(
@@ -67,9 +68,9 @@ def feature_correlation(df, family=0.8):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--features", default=str(HERE / "features.csv"))
+    ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--family", type=float, default=0.8, help="min |rho| between every pair in a family")
-    ap.add_argument("--output", default=str(HERE / "plots/feature_correlation.png"))
+    ap.add_argument("--output", default=str(PLOTS / "feature_correlation.png"))
     args = ap.parse_args()
 
     df = pd.read_csv(args.features)

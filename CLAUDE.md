@@ -18,7 +18,7 @@ pip install -e ".[llm]"   # adds python-dotenv, openai, anthropic — needed by 
 pip install -e ".[eval]"  # adds matplotlib, numpy, rich, pytest for eval/ (DateSat itself is installed separately)
 ```
 
-`python -m pytest` runs `eval/utils/test_validation.py` (needs DateSat installed). There is no linter config or CI.
+`python -m pytest` runs `eval/utils/test_validation.py` (needs DateSat installed). `analysis/` is a package too: run its scripts as modules, e.g. `python -m analysis.features.test_features_md` (see `analysis/README.md`). There is no linter config or CI.
 
 ### Regenerating datasets
 

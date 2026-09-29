@@ -3,8 +3,8 @@ Extract a descriptive feature set over DateSATBench.
 
 Writes one CSV row per benchmark instance. Usage:
 
-    python analysis/extract_features.py --output analysis/features.csv
-    python analysis/extract_features.py --bounds keep     # count the injected bound atoms
+    python -m analysis.features.extract_features --output analysis/outputs/features.csv
+    python -m analysis.features.extract_features --bounds keep     # count the injected bound atoms
 
 Conventions:
   * Identifier columns are `id` and `corpus`.
@@ -21,15 +21,15 @@ import math
 from itertools import combinations
 from pathlib import Path
 
-from datesat_parser import (
+from analysis.features.datesat_parser import (
     BinOp, BoolLit, DateAdd, DateCtor, Field, IntLit, PeriodConst, UnOp, Var,
     COMPARISONS, ORDERING,
     canonical, date_chain_base, date_chain_len, flatten, is_comparison,
     is_connective, is_ground_date, parse_constraint, parse_declarations,
     to_nnf, walk,
 )
+from analysis.paths import OUTPUTS, REPO
 
-REPO = Path(__file__).resolve().parent.parent
 # The results under results/bench-datetime-bound were run on this bounded variant, so
 # features are extracted from the same text. The injected bound atoms are stripped
 # before extraction unless --bounds keep is passed.
@@ -42,7 +42,7 @@ DATASETS = {
 
 
 def strip_injected_bounds(entry):
-    """Drop the atoms tools/inject_bounds.py appended: two per date variable, at the end.
+    """Drop the atoms datesatbench/utils/bounds.py injected: two per date variable, at the end.
 
     Checks the tail really is those atoms, so an entry is never silently truncated.
     """
@@ -369,11 +369,11 @@ COLUMNS = (["id", "corpus"]
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--output", default=str(Path(__file__).parent / "features.csv"))
+    ap.add_argument("--output", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--dataset-root", default=str(DATASET_ROOT),
                     help="dataset root containing the three *_constraints directories")
     ap.add_argument("--bounds", choices=("keep", "strip"), default="strip",
-                    help="keep or strip the atoms tools/inject_bounds.py appended (default: strip)")
+                    help="keep or strip the atoms utils/bounds.py injected (default: strip)")
     args = ap.parse_args()
 
     root = Path(args.dataset_root)

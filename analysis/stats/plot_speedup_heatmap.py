@@ -1,8 +1,8 @@
 """
 Plot how each feature relates to each encoding's speedup over the baseline.
 
-    python analysis/plot_speedup_heatmap.py
-    python analysis/plot_speedup_heatmap.py --corpus legal
+    python -m analysis.stats.plot_speedup_heatmap
+    python -m analysis.stats.plot_speedup_heatmap --corpus legal
 
 Reads joined.csv. A cell is the Spearman rho between a feature and `speedup`
 (baseline_time / time) for one encoding. rho > 0 (green): the encoding gains on the
@@ -17,7 +17,7 @@ Stars mark cells that survive Benjamini-Hochberg correction across the whole gri
 (* q < 0.05, ** q < 0.01). Rows keep the column order of features.csv, so every
 heatmap (pooled or per corpus) lists features in the same order.
 
-Writes analysis/plots/speedup_heatmap[_<corpus>][_exact].png.
+Writes analysis/outputs/plots/speedup_heatmap[_<corpus>][_exact].png.
 """
 
 import argparse
@@ -30,9 +30,9 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-from plot_feature_correlation import CMAP, INK, INK_2, SURFACE, ink_on
+from analysis.paths import OUTPUTS, PLOTS
+from analysis.stats.plot_feature_correlation import CMAP, INK, INK_2, SURFACE, ink_on
 
-HERE = Path(__file__).parent
 NON_FEATURES = {"id", "corpus", "encoding", "run", "time", "status", "solved",
                 "baseline_time", "baseline_status", "speedup", "speedup_bound"}
 
@@ -86,12 +86,12 @@ def speedup_correlations(df, baseline="simple", corpus=None, timeouts="bound"):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--joined", default=str(HERE / "joined.csv"))
+    ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
     ap.add_argument("--baseline", default="simple")
     ap.add_argument("--corpus", help="restrict to one corpus (llm, grammar, legal)")
     ap.add_argument("--timeouts", choices=("bound", "drop"), default="bound",
                     help="keep one-sided timeouts at their bound, or use exact speedups only")
-    ap.add_argument("--output", help="default: plots/speedup_heatmap[_<corpus>].png")
+    ap.add_argument("--output", help="default: outputs/plots/speedup_heatmap[_<corpus>].png")
     args = ap.parse_args()
 
     rho, q, n = speedup_correlations(pd.read_csv(args.joined), args.baseline,
@@ -135,7 +135,7 @@ def main():
             transform=ax.transAxes, fontsize=8.5, color=INK_2)
 
     suffix = (f"_{args.corpus}" if args.corpus else "") + ("_exact" if args.timeouts == "drop" else "")
-    out = Path(args.output) if args.output else HERE / "plots" / f"speedup_heatmap{suffix}.png"
+    out = Path(args.output) if args.output else PLOTS / f"speedup_heatmap{suffix}.png"
     out.parent.mkdir(exist_ok=True)
     fig.savefig(out, dpi=120, facecolor=SURFACE, bbox_inches="tight")
     print(f"Wrote {out}")
