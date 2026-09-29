@@ -1,0 +1,18 @@
+{
+  "timeout_ms": 30000,
+  "hard_timeout_ms": 30000,
+  "approaches": [
+    "alpha_beta",
+    "epoch_days",
+    "hybrid_epoch",
+    "hybrid_ymd",
+    "simple"
+  ],
+  "datasets": [
+    "grammar"
+  ],
+  "maxsat": false,
+  "timestamp": "20260928_231808",
+  "tag": "grammar50-t30",
+  "datesatbench_root": "/Users/smtiwari/Documents/DateSAT/DateSatBench/datesatbench"
+}
