@@ -295,6 +295,10 @@ def features_for(entry, corpus):
     ]
     f["uses_feb29"] = int(any(n.m.value == 2 and n.d.value == 29 for n in lit_ctors))
     f["uses_leap_year"] = int(any(is_leap_year(n.y.value) for n in lit_ctors))
+    # Day 28 or later: where month steps clamp and day steps roll over into the next month.
+    f["near_month_end_frac"] = (
+        sum(1 for n in lit_ctors if n.d.value >= 28) / len(lit_ctors)
+    ) if lit_ctors else 0.0
 
     # ---- variable coupling ----------------------------------------------
     edges = set()
@@ -357,7 +361,7 @@ FEATURE_GROUPS = [
     ("Component extraction", [
         "n_dot_year", "n_dot_month", "n_dot_day", "property_access_frac",
         "n_symbolic_date_ctors"]),
-    ("Calendar corners", ["uses_feb29", "uses_leap_year"]),
+    ("Calendar corners", ["uses_feb29", "uses_leap_year", "near_month_end_frac"]),
     ("Variable coupling", [
         "n_components", "largest_component_frac", "graph_density", "mixed_sort_coupling"]),
 ]

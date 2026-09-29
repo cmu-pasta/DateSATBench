@@ -1,4 +1,4 @@
-# features(5): the 36 columns of features.csv
+# features(5): the 37 columns of features.csv
 
 Each entry gives the feature's meaning in one or two lines, then a small example with the
 value it produces. `test_features_md.py` runs every example below through
@@ -47,6 +47,7 @@ n_date_subexprs        14.61    12.61    450
 n_atoms                22.78    10.62    450
 n_date_comparisons     20.20     8.04    450
 n_unit_constraints     17.10     4.94    450
+near_month_end_frac     0.48     0.23    426
 ordering_cmp_frac       0.77     0.53    417
 implication_atom_frac   0.12     0.21    151
 property_access_frac    0.07     0.12    109
@@ -56,7 +57,10 @@ neg_ordering_frac       0.02     0.04     50
 All other features are identical in both modes. Each bound mentions a single variable, so the
 variable-coupling graph does not change; the bounds are `>=`/`<=`, not `==`, so nothing gets
 pinned; and the two bound literals are not leap years. `n_date_subexprs` changes because the
-two bound literals count as date values.
+two bound literals count as date values. `near_month_end_frac` changes because
+`Date(9999, 12, 31)` has day 31 and `Date(1, 1, 1)` has day 1: each date variable adds one
+literal that counts and one that does not, which pulls the share towards 0.5. Only instances
+whose share is already exactly 0.5 keep their value.
 
 The chosen mode is recorded in `features_meta.json` and shown in `report.html`. The flag only
 affects `features.csv`. To carry it through the analysis, rerun the downstream steps:
@@ -464,9 +468,9 @@ b == Date(a.year + 1, a.month, 1)                         →  1
 
 ## CALENDAR CORNERS
 
-Both flags look only at **literal** dates, `Date(y, m, d)` with three integer arguments. A
-symbolic constructor such as `Date(a.year, 2, 29)` is counted by `n_symbolic_date_ctors`,
-not here.
+All three columns look only at **literal** dates, `Date(y, m, d)` with three integer
+arguments. A symbolic constructor such as `Date(a.year, 2, 29)` is counted by
+`n_symbolic_date_ctors`, not here.
 
 
 
@@ -493,6 +497,28 @@ a < Date(2000,3,1)                                        →  1   (400-year rul
 a < Date(1900,3,1)                                        →  0   (100-year rule)
 a < Date(2024,2,29) + Period(0,0,1);  b == Date(a.year, 2, 29)
                                                           →  1   (the literal; the symbolic one is ignored)
+```
+
+
+
+### near_month_end_frac
+
+Literal dates whose day is 28 or later / all literal dates. Only the day number is checked,
+not the length of the month: the last day of every month counts, and so does day 28 of a
+31-day month. Month ends are where calendar arithmetic stops being uniform: a month or year
+step from day 29, 30 or 31 can run past the end of a shorter month and is clamped to its
+last day (Jan 31 + 1 month is Feb 28), and a day step from the last day of a month rolls
+over into the next month. The grammar generator's `near_month_end_prob` puts each literal on
+day 28 or later with that probability; with literals drawn uniformly over all dates, about
+1 in 9 lands there.
+
+```
+a >= Date(2020,1,5);  a <= Date(2020,1,31);  b == Date(2021,6,15)
+                                                          →  0.333   (day 31, of 3)
+a < Date(2023,2,28);  b > Date(2024,2,29)                 →  1   (both are the last day of February)
+a < Date(2023,3,28)                                       →  1   (day 28 counts, though March has 31)
+a < b + Period(0,1,0)                                     →  0   (no literal dates)
+a < Date(2024,1,5);  b == Date(a.year, 2, 29)             →  0   (the symbolic one is ignored)
 ```
 
 ---

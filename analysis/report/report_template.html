@@ -206,7 +206,7 @@ footer li { margin: 3px 0; }
   <header class="top">
     <div class="eyebrow">DateSATBench · analysis stage 5</div>
     <h1>Which constraint features predict an encoding's speedup over <span class="mono" id="h-base">simple</span>?</h1>
-    <p class="lede">Every benchmark instance is described by <span class="n-feat">36</span> static features computed from its constraint text. This page first shows how the instances group in feature space, then relates those features to how fast each SMT encoding solves the instance, relative to the <span class="mono">simple</span> baseline.</p>
+    <p class="lede">Every benchmark instance is described by <span class="n-feat">37</span> static features computed from its constraint text. This page first shows how the instances group in feature space, then relates those features to how fast each SMT encoding solves the instance, relative to the <span class="mono">simple</span> baseline.</p>
     <div class="prov" id="prov"></div>
   </header>
 
@@ -313,7 +313,7 @@ footer li { margin: 3px 0; }
     <div>Built by <span class="mono">analysis/report/build_report.py</span> from the pipeline outputs:</div>
     <ol>
       <li><span class="mono">datesat_parser.py</span>: parse and fold the DSL</li>
-      <li><span class="mono">extract_features.py</span> → <span class="mono">features.csv</span>: <span class="n-feat">36</span> features per instance (definitions in <span class="mono">features.md</span>)</li>
+      <li><span class="mono">extract_features.py</span> → <span class="mono">features.csv</span>: <span class="n-feat">37</span> features per instance (definitions in <span class="mono">features.md</span>)</li>
       <li><span class="mono">join_results.py</span> → <span class="mono">joined.csv</span>: one row per instance × encoding × run, with speedup</li>
       <li><span class="mono">cluster.py</span>, <span class="mono">solver_outcomes.py</span>, <span class="mono">plot_speedup_heatmap.py</span>, <span class="mono">plot_feature_correlation.py</span>: clusters, outcome tables and PNG plots</li>
       <li><span class="mono">build_report.py</span> → this page</li>
