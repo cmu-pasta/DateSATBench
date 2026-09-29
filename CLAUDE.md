@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 DateSATBench is a **dataset repository plus the generators that produced it**. The shipped artifacts (the `constraints.json` / `constraints.jsonl` files) are the product; the generator scripts are provenance and are only re-run to extend or regenerate a dataset. Treat the committed constraint files as data — regenerating them costs LLM API calls and changes IDs.
 
-The benchmark is consumed by the separate **DateSAT** solver repo (not vendored here), whose `eval/run_benchmarks.py --datesatbench-repo <path>` points at either `datesatbench/` or a variant under `datesatbench_bounded/`.
+The benchmark is consumed by the separate **DateSAT** solver repo (not vendored here), whose `eval/run_benchmarks.py --datesatbench-repo <path>` points at `datesatbench/`.
 
 ## Commands
 
@@ -43,20 +43,21 @@ python -m datesatbench.grammar_constraints.generator.pick_benchmarks
 python -m datesatbench.grammar_constraints.generator.merge_benchmarks
 ```
 
-### Bounded variants
+### Bounds
 
 ```bash
-python tools/inject_bounds.py                                              # regenerates both default variants
-python tools/inject_bounds.py --min 1950/1/1 --max 2050/12/31 --name years_1950_2050
+python -m datesatbench.utils.bounds inject                             # positive_years bounds, in place, on all three datasets
+python -m datesatbench.utils.bounds inject --min 1950/1/1 --max 2050/12/31 --name years_1950_2050
+python -m datesatbench.utils.bounds remove                             # take them out again
 ```
 
-`--min`, `--max`, `--name` must be given together. Output mirrors the source layout under `datesatbench_bounded/<name>/` plus a `bound_manifest.json`.
+`--min`, `--max`, `--name` must be given together, and only with `inject`. The files under `datesatbench/` (or `--root`) are rewritten in place.
 
 ## Architecture
 
 ### Three datasets, one schema
 
-Every entry in every dataset — synthetic, legal, grammar, bounded — is a JSON object with `declarations` (`"name: date|int|bool"` strings) and `constraints` (DateSAT DSL expression strings). That shared shape is why the same solver runner and the same `tools/inject_bounds.py` work across all three. Per-dataset extras: `description` + `coverage_tags` (LLM), `description` + `provenance`/`parsed_id`/`filtered_id` (legal), `size` + `execution_time` (grammar).
+Every entry in every dataset — synthetic, legal, grammar — is a JSON object with `declarations` (`"name: date|int|bool"` strings) and `constraints` (DateSAT DSL expression strings). That shared shape is why the same solver runner and the same `utils/bounds.py` work across all three. Per-dataset extras: `description` + `coverage_tags` (LLM), `description` + `provenance`/`parsed_id`/`filtered_id` (legal), `size` + `execution_time` (grammar).
 
 | Dataset | Source | File | Entries | ID form |
 |---|---|---|---|---|
@@ -80,9 +81,9 @@ Both LLM generators are closed loops, not one-shot calls: parse JSON → check s
 
 `datesatbench/utils/llm.py` is the single LLM entry point (`LLMClient`) for both generators: provider auto-detection (Anthropic preferred over OpenAI), extended-thinking config per provider, and the fence-stripping / smart-quote-normalizing JSON repair used on every response. Providers are gated by module-level `ENABLE_OPENAI` / `ENABLE_ANTHROPIC` flags — OpenAI is currently disabled there, so `--provider openai` errors out until that flag is flipped.
 
-### Bounded variants
+### Bounds
 
-`tools/inject_bounds.py` appends `<var> >= Date(...)` / `<var> <= Date(...)` for every `date`-typed declaration and records an `injected_bound` field per entry. The bound lives in the *benchmark text*, not the solver, so an unbounded solver run (`--bound none`) can be evaluated on bounded problems. Semantics deliberately differ from solver-level bounds: only declared variables are constrained, intermediate arithmetic results stay unbounded. Regenerating a variant is purely mechanical — re-run the tool rather than hand-editing files under `datesatbench_bounded/`.
+`utils/bounds.py inject` appends `<var> >= Date(...)` / `<var> <= Date(...)` for every `date`-typed declaration and records an `injected_bound` field per entry; `remove` takes both out again. The bound lives in the *benchmark text*, not the solver, so an unbounded solver run (`--bound none`) can be evaluated on bounded problems. Semantics deliberately differ from solver-level bounds: only declared variables are constrained, intermediate arithmetic results stay unbounded. Both actions are idempotent: `inject` leaves an entry that already carries the window alone and replaces a different window, so an entry never has more than one pair per variable; `remove` leaves an unbounded entry alone. Use the tool rather than hand-editing bounds. The LLM and legal datasets under `datesatbench` carry the `positive_years` bounds (see each entry's `injected_bound`). The grammar generator writes none, so run `bounds inject` after regenerating it.
 
 ## Gotchas
 
