@@ -18,5 +18,5 @@ env/
 .vscode/
 .idea/
 
-# SMT-LIB dumps written by DateSAT eval/run_benchmarks.py
+# SMT-LIB dumps written by older runs of eval/run_benchmarks.py
 results/**/*.smt2

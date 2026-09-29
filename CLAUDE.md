@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 DateSATBench is a **dataset repository plus the generators that produced it**. The shipped artifacts (the `constraints.json` / `constraints.jsonl` files) are the product; the generator scripts are provenance and are only re-run to extend or regenerate a dataset. Treat the committed constraint files as data — regenerating them costs LLM API calls and changes IDs.
 
-The benchmark is consumed by the separate **DateSAT** solver repo (not vendored here), whose `eval/run_benchmarks.py --datesatbench-repo <path>` points at `datesatbench/`.
+The repo also holds the evaluation of the separate **DateSAT** solver repo (not vendored here): `eval/run_benchmarks.py` runs DateSat on `datesatbench/` by default, or on another dataset directory given with `--datesatbench-repo`, and writes to `results/<tag>/`, which `analysis/` reads. DateSat must be installed into the same environment with `pip install -e <path to DateSat>`.
 
 ## Commands
 
@@ -15,9 +15,10 @@ All commands run from the repository root. `datesatbench/` is a Python package, 
 ```bash
 pip install -e .          # base install (no runtime deps)
 pip install -e ".[llm]"   # adds python-dotenv, openai, anthropic — needed by the LLM generators
+pip install -e ".[eval]"  # adds matplotlib, numpy, rich, pytest for eval/ (DateSat itself is installed separately)
 ```
 
-There is no test suite, linter config, or CI in this repo.
+`python -m pytest` runs `eval/utils/test_validation.py` (needs DateSat installed). There is no linter config or CI.
 
 ### Regenerating datasets
 
@@ -75,7 +76,7 @@ The LLM prompts restrict generated dates to **1900-03-01 … 2100-02-28**. Gramm
 
 Both LLM generators are closed loops, not one-shot calls: parse JSON → check schema → check constraint counts → validate by round-tripping through `datesat.constraint_parser.ConstraintParser.generate_builder_code()` → on any failure, append a structured error message to the prompt and retry. Hard API errors (401/rate limit) fail fast instead of retrying. Every attempt is appended to a timestamped `llm_calls_<ts>.jsonl` beside the output file.
 
-**`datesat` is an optional import that is not installed here.** When absent, `_validate_constraints_with_parser()` returns a "Missing dependency" failure, so the feedback loop will burn all retries and produce nothing. Parser-backed validation requires the DateSAT solver repo to be importable.
+**`datesat` is an optional import that this repo does not install.** When absent, `_validate_constraints_with_parser()` returns a "Missing dependency" failure, so the feedback loop will burn all retries and produce nothing. Parser-backed validation, like all of `eval/`, needs DateSat installed (`pip install -e <path to DateSat>`).
 
 `datesatbench/utils/llm.py` is the single LLM entry point (`LLMClient`) for both generators: provider auto-detection (Anthropic preferred over OpenAI), extended-thinking config per provider, and the fence-stripping / smart-quote-normalizing JSON repair used on every response. Providers are gated by module-level `ENABLE_OPENAI` / `ENABLE_ANTHROPIC` flags — OpenAI is currently disabled there, so `--provider openai` errors out until that flag is flipped.
 

@@ -20,6 +20,13 @@ llm = [
   "openai>=1.0",
   "anthropic>=0.30",
 ]
+# eval/ also needs DateSat itself, which is not on PyPI: pip install -e <path to DateSat>
+eval = [
+  "matplotlib>=3.5",
+  "numpy>=1.21",
+  "rich",
+  "pytest>=7.0",
+]
 
 [tool.setuptools]
 include-package-data = true
@@ -35,3 +42,7 @@ datesatbench = [
   "**/*.md",
 ]
 
+[tool.pytest.ini_options]
+# eval/ is not a package; the repo root on sys.path lets tests import eval.utils.*
+pythonpath = ["."]
+testpaths = ["eval"]

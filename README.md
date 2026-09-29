@@ -19,3 +19,7 @@ The `datesatbench/` directory is a Python package. If you run the generator scri
 ```bash
 python -m datesatbench.llm_constraints.generator.constraint_generator --help
 ```
+
+## Evaluation
+
+`eval/` runs the [DateSAT](https://github.com/cmu-pasta/DateSAT) solver on these datasets and writes results to `results/`. See `eval/README.md`.
