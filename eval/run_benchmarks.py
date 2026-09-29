@@ -48,13 +48,19 @@ def _solve_task(
             for name, value in vars_dict.items():
                 merged_solution[name] = str(value) if var_type == "dates" else value
 
-    return {
+    record = {
         "status": solve_result.get("status", "error"),
         "execution_time": solve_result.get("execution_time", 0.0),
         "build_time": solve_result.get("build_time"),
         "solve_time": solve_result.get("solve_time"),
         "solution": merged_solution or None,
     }
+    # The router approach also reports the encoding it picked and the time picking took
+    # (already part of execution_time).
+    for key in ("routed_to", "routing_time"):
+        if key in solve_result:
+            record[key] = solve_result[key]
+    return record
 
 
 def _benchmark_worker(conn) -> None:
@@ -237,7 +243,6 @@ ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
         "hybrid_ymd",
         "hybrid_epoch",
         "alpha_beta",
-        # "alpha_beta_table",  # excluded from default run; pass via --approaches to include
     ],
     "bitvector": [
         "simple",
@@ -248,6 +253,13 @@ ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
     ],
 }
 
+# Approaches that --approaches accepts but the default run leaves out. `router` picks one
+# of the int encodings per instance with a trained model (see DateSat's docs/router.md).
+OPT_IN_APPROACHES_BY_IMPL = {
+    "int": ["alpha_beta_table", "router"],
+    "bitvector": [],
+}
+
 IMPLEMENTATIONS = ["int"]  # Can add "bitvector" if needed
 
 
@@ -255,17 +267,18 @@ def _resolve_approach_pairs(approaches: list[str] | None) -> list[tuple[str, str
     """Build the (approach, implementation) pairs to run, honoring an optional approach filter."""
     runs = []
     for implementation in IMPLEMENTATIONS:
-        valid = ALL_SYMBOLIC_APPROACHES_BY_IMPL[implementation]
+        default = ALL_SYMBOLIC_APPROACHES_BY_IMPL[implementation]
+        valid = default + OPT_IN_APPROACHES_BY_IMPL[implementation]
         if approaches is not None:
             selected = [a for a in approaches if a in valid]
             if not selected:
                 print(
                     f"⚠️  Warning: No valid approaches for {implementation} in {approaches}. "
-                    f"Using all approaches for {implementation}."
+                    f"Using the default approaches for {implementation}."
                 )
-                selected = valid
+                selected = default
         else:
-            selected = valid
+            selected = default
         for approach in selected:
             runs.append((approach, implementation))
     return runs
@@ -414,8 +427,9 @@ def main():
         "--approaches",
         nargs="+",
         default=None,
-        help="List of approaches to test (e.g., --approaches alpha_beta_table alpha_beta_table_old). "
-        "If not specified, all approaches are tested.",
+        help="List of approaches to test (e.g., --approaches router simple). "
+        "If not specified, the default approaches are tested; the opt-in ones "
+        "(alpha_beta_table, router) only run when named here.",
     )
     parser.add_argument(
         "--datesatbenchs",
