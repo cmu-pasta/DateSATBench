@@ -7,7 +7,9 @@ Reads features.csv (+ features_meta.json), joined.csv and clusters.json, compute
 solver outcomes and speedup heatmaps for every corpus (and timeout mode) and the
 feature-feature correlation (same functions as solver_outcomes.py and the PNG scripts,
 so the numbers match), and inlines everything into
-report_template.html. Writes a single self-contained analysis/outputs/report.html. Only Plotly
+report_template.html. The specialized-router section comes from the outputs of stages 6
+and 7: crossval_router.py's router_eval.json and train_router.py's router_meta.json; it
+is left out when crossval_router.py has not been run. Writes a single self-contained analysis/outputs/report.html. Only Plotly
 and the IBM Plex webfonts are fetched from a CDN when the page opens.
 """
 
@@ -21,7 +23,7 @@ import numpy as np
 import pandas as pd
 
 from analysis.features.extract_features import FEATURE_GROUPS
-from analysis.paths import OUTPUTS, REPO
+from analysis.paths import CROSS_VALIDATION, MODEL, OUTPUTS, REPO
 from analysis.stats.cluster import build_matrix, profile_clusters
 from analysis.stats.join_results import add_timeout_arg, check_run_config, timeout_seconds
 from analysis.stats.plot_feature_correlation import constant_features, feature_correlation
@@ -52,6 +54,42 @@ def rel(path):
         return str(path)
 
 
+def router_section(cv_path, meta_path):
+    """The router's cross-validated results (crossval_router.py) and the settings of the
+    model trained on every instance (train_router.py), or None when there are no
+    cross-validated results. `matches_cv` says whether the model was trained with the
+    setting the cross-validation chose."""
+    cv_path, meta_path = Path(cv_path), Path(meta_path)
+    if not cv_path.exists():
+        return None
+    cv = json.loads(cv_path.read_text())
+    scopes = {"all": cv["overall"], **cv["by_corpus"]}
+    out = {
+        "cv": {k: cv[k] for k in ("instances", "dropped", "folds", "repeats", "trees", "setting",
+                                  "fallbacks", "baseline", "best_performing_encoding",
+                                  "timeout_cost_s")},
+        "scopes": {c: {"instances": s["instances"], "table": s["table"],
+                       "picks": s["router_picks"], "fell_back": s["router_fell_back"],
+                       "picks_fastest": s["router_picks_fastest"],
+                       "gap_closed": s["gap_closed_to_oracle"]["router"].get(
+                           f"always {cv['best_performing_encoding']}")}
+                   for c, s in scopes.items()},
+        "model": None,
+    }
+    if meta_path.exists():
+        m = json.loads(meta_path.read_text())
+        out["model"] = {
+            "encodings": m["encodings"], "trees": m["trees"], "max_depth": m["max_depth"],
+            "min_samples_leaf": m["min_samples_leaf"], "margin": m["margin"],
+            "fallback": m["fallback"], "trained_on": m["instances"]["trained_on"],
+            "n_features": len(m["feature_columns"]),
+            "pairs": [{"pair": pair, "top": [t["feature"] for t in p["top_features"][:2]]}
+                      for pair, p in m["pairs"].items()],
+            "matches_cv": all(m[k] == v for k, v in cv["setting"].items()) and m["trees"] == cv["trees"],
+        }
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
@@ -60,6 +98,10 @@ def main():
     ap.add_argument("--results", default=str(REPO / "results/bench-datetime-bound"))
     ap.add_argument("--baseline", default="simple")
     add_timeout_arg(ap)
+    ap.add_argument("--router-cv", default=str(CROSS_VALIDATION / "router_eval.json"),
+                    help="crossval_router.py's results")
+    ap.add_argument("--router-model", default=str(MODEL / "router_meta.json"),
+                    help="train_router.py's model settings")
     ap.add_argument("--template", default=str(HERE / "report_template.html"))
     ap.add_argument("--output", default=str(OUTPUTS / "report.html"))
     args = ap.parse_args()
@@ -138,6 +180,7 @@ def main():
         "heat": heat,
         "corr": corr,
         "clusters": cl,
+        "router": router_section(args.router_cv, args.router_model),
     }
 
     template = Path(args.template).read_text()

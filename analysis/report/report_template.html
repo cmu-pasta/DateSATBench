@@ -28,6 +28,8 @@
   --const: #e4e2dc;
   --muted-pt: #c4c2ba;
   --o-sat: #3d3c37; --o-unsat: #75736b; --o-timeout: #adaba2;
+  --rt-context: #95938b;   /* the single encodings behind the router: grey, >= 3:1 on the surface */
+  --rt-headroom: rgba(42, 120, 214, 0.13);   /* the accent, faint: what is left between router and ideal */
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -186,6 +188,27 @@ table.out td[data-tip]:hover { background: var(--chip); }
 .stat .v { font: 600 20px/1.2 var(--cond); margin-top: 3px; font-variant-numeric: tabular-nums; }
 .stat .s { font-size: 12.5px; color: var(--ink-2); }
 
+/* ---- specialized router ---- */
+.rt-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
+@media (max-width: 860px) { .rt-charts { grid-template-columns: 1fr; } }
+.rt-fig { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px 8px; }
+.rt-fig figcaption { font: 600 15px/1.3 var(--sans); color: var(--ink); margin: 0; }
+.rt-fig .cap-sub { display: block; font: 400 12.5px/1.4 var(--sans); color: var(--ink-3); margin-top: 2px; }
+.rt-chart { height: 340px; }
+.rt-details { margin-top: 18px; }
+.rt-details summary { cursor: pointer; font-size: 13px; color: var(--ink-2); width: max-content; }
+.rt-details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rt-details[open] summary { margin-bottom: 10px; }
+table.out.rt { width: auto; min-width: 0; }
+table.out.rt th, table.out.rt td { padding-inline: 16px; }
+table.out.rt tr.rt-router td { font-weight: 600; border-top: 1px solid var(--ink-3); }
+table.out.rt tr.rt-oracle td { color: var(--ink-2); }
+table.out.rt .minibar { width: 120px; }
+.rt-pairs { list-style: none; padding: 0; margin: 6px 0 0; font: 400 12.5px/1.35 var(--mono); color: var(--ink-2); }
+.rt-pairs li { display: grid; grid-template-columns: 29ch 1fr; gap: 10px; padding: 2px 0; }
+.rt-pairs li b { font-weight: 500; color: var(--ink); }
+.rt-warn { font-size: 13px; color: var(--ink); background: var(--chip); border-radius: 6px; padding: 8px 10px; }
+
 #corr { display: block; }   /* width and height are set by renderCorr() from the feature count */
 
 .tip {
@@ -214,6 +237,7 @@ footer li { margin: 3px 0; }
     <a href="#clusters">Instance clusters</a>
     <a href="#speedup">Feature × speedup</a>
     <a href="#outcomes">Solver outcomes</a>
+    <a href="#router">Specialized router</a>
     <a href="#correlation">Feature correlation</a>
   </nav>
 
@@ -303,6 +327,30 @@ footer li { margin: 3px 0; }
     <p class="note">Each encoding solves a different subset of instances, so the median over its own solves favours encodings that give up on the hard ones. The median over instances solved by every encoding compares them on the same work. “Beats it” counts speedups above 1 over the baseline, including one-sided timeouts at their bound. Median exact speedup uses only pairs both sides solved.</p>
   </section>
 
+  <section id="router">
+    <h2>Specialized router</h2>
+    <p class="sec-lede">A router looks at an instance's features before solving it and hands the instance to one encoding. Here it is measured on instances it has not seen, by cross-validation, and compared with always using one encoding and with the ideal router, the <em>oracle</em>, which picks the fastest encoding for every instance.</p>
+    <div class="controls" id="rt-controls">
+      <div class="ctl"><span class="ctl-label" id="lbl-rscope">Corpus</span>
+        <div class="seg" role="group" aria-labelledby="lbl-rscope" id="seg-rscope">
+          <button id="rscope-all" data-v="all" aria-pressed="true">All corpora</button>
+          <button id="rscope-llm" data-v="llm" aria-pressed="false">LLM</button>
+          <button id="rscope-legal" data-v="legal" aria-pressed="false">Legal</button>
+          <button id="rscope-grammar" data-v="grammar" aria-pressed="false">Grammar</button>
+        </div>
+      </div>
+    </div>
+    <div class="stats" id="rt-stats" style="margin: 0 0 26px"></div>
+    <div class="rt-charts">
+      <figure class="rt-fig"><figcaption>Speedup in total time<span class="cap-sub">Over always <span class="mono rt-base">simple</span>. Dominated by the slow instances and the timeouts.</span></figcaption><div class="rt-chart" id="rt-chart-total" role="img"></div></figure>
+      <figure class="rt-fig"><figcaption>Speedup on the typical instance<span class="cap-sub">Geometric mean over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-geo" role="img"></div></figure>
+    </div>
+    <details class="rt-details" id="rt-details"><summary>Show the numbers as a table</summary>
+      <div class="scroll"><table class="out rt" id="rt-table"></table></div>
+    </details>
+    <div class="aside heat-notes" id="rt-notes"></div>
+  </section>
+
   <section id="correlation">
     <h2>Feature correlation</h2>
     <p class="sec-lede">Spearman correlation between every pair of features over all instances, ordered so that related features sit together. Green is positive and red negative, darker for a stronger correlation. Hover a cell for its exact ρ.</p>
@@ -316,6 +364,7 @@ footer li { margin: 3px 0; }
       <li><span class="mono">extract_features.py</span> → <span class="mono">features.csv</span>: <span class="n-feat">37</span> features per instance (definitions in <span class="mono">features.md</span>)</li>
       <li><span class="mono">join_results.py</span> → <span class="mono">joined.csv</span>: one row per instance × encoding × run, with speedup</li>
       <li><span class="mono">cluster.py</span>, <span class="mono">solver_outcomes.py</span>, <span class="mono">plot_speedup_heatmap.py</span>, <span class="mono">plot_feature_correlation.py</span>: clusters, outcome tables and PNG plots</li>
+      <li><span class="mono">crossval_router.py</span> → <span class="mono">model_cross_validation/</span> and <span class="mono">train_router.py</span> → <span class="mono">model/</span>: the specialized router, cross-validated and trained on every instance</li>
       <li><span class="mono">build_report.py</span> → this page</li>
     </ol>
   </footer>
@@ -381,7 +430,7 @@ function showTip(e, html) {
 function hideTip() { tip.hidden = true; }
 
 /* ---------- segmented controls ---------- */
-const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", proj: "t", col: "c", sel: { k: 0, h: 0 } };
+const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", col: "c", sel: { k: 0, h: 0 } };
 function wireSeg(id, key, cb) {
   const seg = $(id);
   seg.addEventListener("click", (e) => {
@@ -522,6 +571,136 @@ $("#out").addEventListener("mouseover", (e) => {
 });
 $("#out").addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
 $("#out").addEventListener("mouseleave", hideTip);
+
+/* ---------- specialized router ---------- */
+const RT = DATA.router;
+const xf = (v) => v.toFixed(2) + "×";
+const pctf = (v) => (v == null ? "—" : (100 * v).toFixed(0) + "%");
+const numf = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
+function rtLabel(name) {
+  if (name === "router") return "router (cross-validated)";
+  if (name === "oracle") return "oracle (ideal)";
+  return `always <span class="mono">${esc(name.replace(/^always /, ""))}</span>`;
+}
+/* One panel: horizontal bars of each strategy's speedup, the router in the accent and the
+   single encodings in grey, with the oracle as a dashed ceiling line rather than a bar. */
+function rtChart(id, T, key, what) {
+  const o = T.oracle[key], r = T.router[key];
+  const singles = Object.keys(T).filter((n) => n !== "router" && n !== "oracle")
+    .sort((a, b) => T[a][key] - T[b][key]);
+  const order = [...singles, "router"];                    // Plotly puts the first category at the bottom
+  const label = (n) => (n === "router" ? "<b>router</b>" : n);
+  const isR = (n) => n === "router";
+  const trace = {
+    type: "bar", orientation: "h",
+    y: order.map(label), x: order.map((n) => T[n][key]),
+    marker: { color: order.map((n) => (isR(n) ? css("--accent") : css("--rt-context"))) },
+    // the router's value sits inside its bar, so the headroom band to its right stays free
+    text: order.map((n) => xf(T[n][key])), cliponaxis: false,
+    textposition: order.map((n) => (isR(n) ? "inside" : "outside")), insidetextanchor: "end",
+    textfont: { family: css("--mono"), size: 12.5, color: order.map((n) => (isR(n) ? "#ffffff" : css("--ink-2"))) },
+    customdata: order.map((n) => [T[n].total_s.toFixed(1), numf(T[n].timeouts), (100 * T[n][key] / o).toFixed(0),
+                                  isR(n) ? `<br>${xf(o / r)} headroom to the ideal` : ""]),
+    hovertemplate: `<b>%{y}</b><br>%{x:.2f}× over ${esc(RT.cv.baseline)}, ${what}<br>%{customdata[0]} s in total · %{customdata[1]} timeouts<br>%{customdata[2]}% of the ideal ${xf(o)}%{customdata[3]}<extra></extra>`,
+  };
+  const tick = { family: css("--mono"), size: 12, color: css("--ink-2") };
+  const layout = {
+    ...plotTheme(), height: 340, margin: { l: 10, r: 18, t: 30, b: 34 },
+    bargap: 0.45, showlegend: false,
+    xaxis: { range: [0, o * 1.16], ticksuffix: "×", gridcolor: css("--rule"), zeroline: true,
+             zerolinecolor: css("--ink-3"), tickfont: { ...tick, size: 11, color: css("--ink-3") }, fixedrange: true },
+    yaxis: { tickfont: tick, automargin: true, fixedrange: true,
+             ticks: "outside", ticklen: 8, tickcolor: "rgba(0,0,0,0)" },   // an invisible tick: room between label and bar
+    shapes: [
+      // headroom: from the router's bar to the ideal, on the router's row
+      { type: "rect", xref: "x", yref: "y", x0: r, x1: o, y0: order.length - 1 - 0.275, y1: order.length - 1 + 0.275,
+        fillcolor: css("--rt-headroom"), line: { width: 0 }, layer: "below" },
+      { type: "line", xref: "x", x0: o, x1: o, yref: "paper", y0: 0, y1: 1.02,
+        line: { color: css("--ink"), width: 1.5, dash: "dash" } },
+    ],
+    annotations: [
+      { x: o, xref: "x", y: 1.02, yref: "paper", yanchor: "bottom", xanchor: "right", showarrow: false,
+        text: `ideal (oracle) <b>${xf(o)}</b>`, font: { family: css("--mono"), size: 12, color: css("--ink") } },
+      { x: o, xref: "x", xshift: -8, y: order.length - 1, yref: "y", xanchor: "right", showarrow: false,
+        text: `${xf(o / r)} headroom`, font: { family: css("--mono"), size: 11.5, color: css("--ink-2") } },   // popped below when it does not fit
+    ],
+    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
+  };
+  const el = document.getElementById(id);
+  // Label the headroom band only when it is wide enough to hold the label (plot width
+  // estimated from the panel, less the margins and the y-axis labels).
+  const plotW = el.clientWidth - layout.margin.l - layout.margin.r - 150;
+  const hrText = `${xf(o / r)} headroom`;
+  if (((o - r) / (o * 1.16)) * plotW < hrText.length * 7.4 + 20) layout.annotations.pop();
+  el.setAttribute("aria-label", `Bar chart of speedup over ${RT.cv.baseline}, ${what}: router ${xf(T.router[key])}, ideal ${xf(o)}; ` +
+    singles.slice().reverse().map((n) => `${n} ${xf(T[n][key])}`).join(", "));
+  Plotly.react(el, [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
+function renderRouter() {
+  if (!RT) {
+    $("#rt-controls").hidden = true;
+    $("#rt-notes").innerHTML = '<p class="note">No cross-validated router results. Run <span class="mono">python -m analysis.router.crossval_router</span> and rebuild the report.</p>';
+    return;
+  }
+  const cv = RT.cv, S = RT.scopes[state.rscope], T = S.table;
+  const base = esc(cv.baseline), best = cv.best_performing_encoding, B = esc(best);
+  const r = T.router, o = T.oracle, b = T[`always ${best}`];
+  const vs = b.total_s / r.total_s;
+  $("#rt-stats").innerHTML = [
+    ["Router", xf(r.speedup_total), `faster than always <span class="mono">${base}</span> in total time; ${xf(r.speedup_geomean)} on the typical instance`],
+    ["Ideal router (oracle)", xf(o.speedup_total), `the most any router could reach; ${xf(o.speedup_geomean)} on the typical instance`],
+    [`Versus always ${B}`, xf(vs), `${vs >= 1 ? "faster" : "slower"} in total: ${r.total_s.toFixed(1)} s against ${b.total_s.toFixed(1)} s, ${numf(r.timeouts)} timeouts against ${numf(b.timeouts)}`],
+    ["Gap closed", pctf(S.gap_closed), `of the way from always <span class="mono">${B}</span> to the oracle, in total time`],
+    ["Picks the fastest", pctf(S.picks_fastest), `of the ${S.instances} instances`],
+  ].map(([k, v, sub]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`).join("");
+
+  const names = Object.keys(T);
+  let h = `<thead><tr><th class="l" rowspan="2">Strategy</th><th rowspan="2">Total time</th><th rowspan="2">Timeouts</th>
+    <th class="grp" colspan="2">Speedup over ${base}</th></tr>
+    <tr><th class="sub l">total time, as a share of the ideal</th><th class="sub">typical instance (geomean)</th></tr></thead><tbody>`;
+  for (const name of names) {
+    const t = T[name], share = t.speedup_total / o.speedup_total;
+    const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
+    const avg = name === "router" ? `, averaged over ${cv.repeats} repeats` : "";
+    h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>
+      <td${tipAttr(`${rtLabel(name)}<br>Sum over the ${S.instances} instances${avg}; a timeout counts as ${cv.timeout_cost_s} s.`)}>${t.total_s.toFixed(1)} s</td>
+      <td>${t.timeouts ? numf(t.timeouts) : zero(0)}</td>
+      <td class="l"${tipAttr(`${rtLabel(name)}<br>${xf(t.speedup_total)} over ${base} in total time: ${(100 * share).toFixed(0)}% of the oracle's ${xf(o.speedup_total)}.`)}><span class="bar-cell"><span class="minibar"><i style="width:${Math.min(100, 100 * share).toFixed(1)}%"></i></span>${xf(t.speedup_total)}</span></td>
+      <td${tipAttr(`${rtLabel(name)}<br>Geometric mean over instances of ${base}'s time divided by this strategy's time.`)}>${xf(t.speedup_geomean)}</td></tr>`;
+  }
+  $("#rt-table").innerHTML = h + "</tbody>";
+  document.querySelectorAll(".rt-base").forEach((el) => { el.textContent = cv.baseline; });
+  if (window.Plotly) {
+    rtChart("rt-chart-total", T, "speedup_total", "in total time");
+    rtChart("rt-chart-geo", T, "speedup_geomean", "on the typical instance");
+  } else {
+    document.querySelector(".rt-charts").hidden = true;
+    $("#rt-details").open = true;                       // no Plotly: the table is the only view
+  }
+
+  const md = RT.model;
+  const modelBlk = md
+    ? `<h3>The model</h3><p>The router is made of ${md.pairs.length} random forests, one per pair of the ${md.encodings.length} encodings. Each has ${md.trees} trees of depth at most ${md.max_depth}, and no leaf rests on fewer than ${md.min_samples_leaf} training instances. A forest predicts from the ${md.n_features} features which of its two encodings is faster. Every training instance is weighted by the two encodings' time difference, so avoiding a timeout counts far more than winning a near-tie.</p>
+       <p>The encoding that wins the most pairs is picked. On a tie, or when the pick does not beat <span class="mono">${esc(md.fallback)}</span> in their own forest${md.margin > 0 ? ` by more than ${md.margin}` : ""}, the router uses <span class="mono">${esc(md.fallback)}</span>, the best single encoding. The model DateSat uses, <span class="mono">outputs/model/router.json</span>, is trained on all ${md.trained_on} instances with these settings.</p>`
+      + (md.matches_cv ? "" : `<p class="rt-warn">This model was not trained with the setting the cross-validation chose (leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth}, margin ${cv.setting.margin}); retrain it with <span class="mono">train_router.py</span>.</p>`)
+    : `<h3>The model</h3><p>No trained model was found in <span class="mono">outputs/model/</span>.</p>`;
+  const pairsBlk = md
+    ? `<h3>What each forest looks at</h3><p>The two most important features of each pair's forest.</p><ul class="rt-pairs">${md.pairs.map((p) => `<li><b>${esc(p.pair)}</b><span>${p.top.map(esc).join(", ")}</span></li>`).join("")}</ul>`
+    : "";
+  $("#rt-notes").innerHTML = [
+    modelBlk,
+    `<h3>How it is measured</h3><p>${cv.folds}-fold cross-validation over the ${cv.instances} instances, leaving out the ${cv.dropped.all_timeout} on which every encoding timed out. Every fold holds the same share of every corpus. Each instance is routed by a router trained on the other folds, so no router routes an instance it was trained on. The whole procedure runs ${cv.repeats} times with different folds and the results are averaged, which is why the router's timeouts can be fractional. A timeout counts as ${cv.timeout_cost_s} s, and the router's own run time is not included.</p>`,
+    `<h3>The ideal maximum</h3><p>The oracle picks, for every instance, the encoding that turned out fastest. That is only known after running all ${md ? md.encodings.length : "the"} encodings, so no router that picks once, before solving, can do better. Its speedup is the ceiling, the dashed line in both charts.</p>`,
+    `<h3>A caveat</h3><p>The leaf size (${cv.setting.min_samples_leaf}), depth (${cv.setting.max_depth}) and margin (${cv.setting.margin}) were chosen by the same cross-validation, as the combination with the lowest total time. Part of why a setting wins is luck on these instances, so the router's numbers are slightly optimistic. Testing on new constraints gives an unbiased figure.</p>`,
+    pairsBlk,
+  ].filter(Boolean).map((x) => `<div class="blk">${x}</div>`).join("");
+}
+$("#rt-table").addEventListener("mouseover", (e) => {
+  const td = e.target.closest("td[data-tip]");
+  if (td) showTip(e, td.dataset.tip); else hideTip();
+});
+$("#rt-table").addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
+$("#rt-table").addEventListener("mouseleave", hideTip);
 
 /* ---------- clusters ---------- */
 const CL = DATA.clusters;
@@ -677,11 +856,12 @@ wireSeg("#seg-scope", "scope", renderHeat);
 wireSeg("#seg-to", "to", renderHeat);
 wireSeg("#seg-oscope", "oscope", renderOutcomes);
 wireSeg("#seg-oenc", "oenc", renderOutcomes);
+wireSeg("#seg-rscope", "rscope", renderRouter);
 wireSeg("#seg-proj", "proj", renderScatter);
 wireSeg("#seg-col", "col", renderScatter);
 
 function renderAll() {
-  renderHeat(); renderOutcomes(); renderClusterStats();
+  renderHeat(); renderOutcomes(); renderRouter(); renderClusterStats();
   if (window.Plotly) { renderScatter(); renderCorr(); }
   else {
     $("#scatter").innerHTML = '<p class="note" style="padding:16px">The 3D view needs Plotly, which could not be loaded from the CDN.</p>';
