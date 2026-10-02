@@ -1,17 +1,20 @@
 """
 Plot how each feature relates to each encoding's speedup over the baseline.
 
-    python -m analysis.stats.plot_speedup_heatmap
+    python -m analysis.stats.plot_speedup_heatmap --timeout 20000     # or set DATESAT_TIMEOUT_MS
     python -m analysis.stats.plot_speedup_heatmap --corpus legal
 
-Reads joined.csv. A cell is the Spearman rho between a feature and `speedup`
-(baseline_time / time) for one encoding. rho > 0 (green): the encoding gains on the
-baseline as the feature grows; rho < 0 (red): it loses ground.
+Reads joined.csv. A cell is the Spearman rho, over the usable instances, between a
+feature and one encoding's speedup (the baseline's cost / the encoding's cost). rho > 0
+(green): the encoding gains on the baseline as the feature grows; rho < 0 (red): it loses
+ground.
 
-By default rows where only one side timed out are kept at their bound (see
-join_results.py): the true speedup is at least as extreme, so ranking it at the bound
-is conservative. Rows where both timed out have no speedup and are left out.
-`--timeouts drop` uses exact speedups only (both sides finished).
+Costs and usable instances are instance_costs.py's, as in every other stage: one cost per
+instance, the median over its runs, with a timed-out run counting at the timeout. So by
+default an instance where only one side timed out is ranked at that bound (the true
+speedup is at least as extreme, so this is conservative), and one where both timed out
+has speedup 1. `--timeouts drop` is a check on that: it keeps only the instances both
+sides solved.
 
 Stars mark cells that survive Benjamini-Hochberg correction across the whole grid
 (* q < 0.05, ** q < 0.01). Rows keep the column order of features.csv, so every
@@ -31,6 +34,8 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 from analysis.paths import OUTPUTS, PLOTS
+from analysis.stats.instance_costs import usable_costs
+from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 from analysis.stats.plot_feature_correlation import CMAP, INK, INK_2, SURFACE, ink_on
 
 NON_FEATURES = {"id", "corpus", "encoding", "run", "time", "status", "solved",
@@ -52,31 +57,34 @@ def bh_qvalues(p):
     return q
 
 
-def speedup_correlations(df, baseline="simple", corpus=None, timeouts="bound"):
-    """Spearman rho, BH q-value and row count per (feature, encoding).
+def speedup_correlations(df, timeout_cost, baseline="simple", corpus=None, timeouts="bound"):
+    """Spearman rho, BH q-value and instance count per (feature, encoding), over the usable
+    instances (only those both sides solved with timeouts="drop").
 
     Returns (rho, q, n): two DataFrames indexed by feature with one column per
-    encoding, and a dict encoding -> number of rows used.
+    encoding, and a dict encoding -> number of instances used.
     """
     if corpus:
         df = df[df["corpus"] == corpus]
-    df = df[df["speedup"].notna() & (df["encoding"] != baseline)]
-    if timeouts == "drop":
-        df = df[df["speedup_bound"] == "exact"]
+    costs, _ = usable_costs(df, timeout_cost)
     features = [c for c in df.columns if c not in NON_FEATURES and not c.startswith("label_")]
-    encodings = sorted(df["encoding"].unique())
+    feats = df.groupby("id")[features].first().loc[costs.index]
+    encodings = sorted(e for e in costs.columns if e != baseline)
 
     rho = pd.DataFrame(np.nan, index=features, columns=encodings)
     pval = rho.copy()
     n = {}
     for e in encodings:
-        sub = df[df["encoding"] == e]
-        n[e] = len(sub)
+        speedup = costs[baseline] / costs[e]
+        keep = pd.Series(True, index=costs.index)
+        if timeouts == "drop":
+            keep = (costs[baseline] < timeout_cost) & (costs[e] < timeout_cost)
+        n[e] = int(keep.sum())
         for f in features:
-            x = sub[f].astype(float)
+            x = feats.loc[keep, f].astype(float)
             if x.nunique() < 2:
                 continue            # constant within this subset: no correlation to report
-            r, p = spearmanr(x, sub["speedup"])
+            r, p = spearmanr(x, speedup[keep])
             rho.loc[f, e], pval.loc[f, e] = r, p
 
     q = pd.DataFrame(bh_qvalues(pval.values.ravel()).reshape(pval.shape),
@@ -89,12 +97,15 @@ def main():
     ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
     ap.add_argument("--baseline", default="simple")
     ap.add_argument("--corpus", help="restrict to one corpus (llm, grammar, legal)")
+    add_timeout_arg(ap)
     ap.add_argument("--timeouts", choices=("bound", "drop"), default="bound",
-                    help="keep one-sided timeouts at their bound, or use exact speedups only")
+                    help="count timeouts at the timeout (the measurement every stage uses), "
+                         "or keep only the instances both sides solved")
     ap.add_argument("--output", help="default: outputs/plots/speedup_heatmap[_<corpus>].png")
     args = ap.parse_args()
+    timeout = timeout_seconds(ap, args)
 
-    rho, q, n = speedup_correlations(pd.read_csv(args.joined), args.baseline,
+    rho, q, n = speedup_correlations(pd.read_csv(args.joined), timeout, args.baseline,
                                      args.corpus, args.timeouts)
     encodings = list(rho.columns)
     order = list(rho.index)
@@ -128,8 +139,8 @@ def main():
     scope = f"{args.corpus} corpus" if args.corpus else "all corpora"
     ax.set_title(f"Feature vs speedup over {args.baseline}, {scope}", loc="left",
                  fontsize=13, color=INK, fontweight="semibold", pad=64)
-    note = ("One-sided timeouts kept at their bound." if args.timeouts == "bound"
-            else "Both sides solved only.")
+    note = ("One cost per instance; timeouts count at the timeout." if args.timeouts == "bound"
+            else "Only instances both sides solved.")
     ax.text(0, 1.045, "Green: encoding gains on baseline as feature grows; red: it loses ground. "
             f"{note}\n* BH q < 0.05, ** q < 0.01",
             transform=ax.transAxes, fontsize=8.5, color=INK_2)

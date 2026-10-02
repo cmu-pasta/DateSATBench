@@ -16,7 +16,8 @@ Rows of joined.csv whose encoding is `router` are results of the router itself, 
 training data, and are ignored.
 
 Costs. An instance's cost on an encoding is the median time over its runs, with a
-timed-out run counting at --timeout-cost (default: the timeout). Instances are dropped
+timed-out run counting at --timeout-cost (default: the timeout); the definition is
+analysis/stats/instance_costs.py's, which every other stage uses too. Instances are dropped
 when
     - any encoding has an errored or missing run on them, or
     - every encoding timed out on them, so no encoding is faster than another.
@@ -66,7 +67,9 @@ import sklearn
 from sklearn.ensemble import RandomForestClassifier
 
 from analysis.paths import MODEL, OUTPUTS, REPO
-from analysis.stats.join_results import FINISHED, add_timeout_arg, timeout_seconds
+from analysis.stats.instance_costs import all_timeout_ids, cost_table  # noqa: F401 (re-exported)
+from analysis.stats.instance_costs import usable_costs as training_set
+from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 
 RANDOM_STATE = 0
 TOP_FEATURES = 5
@@ -85,38 +88,6 @@ RESULT_COLS = {"id", "corpus", "encoding", "run", "time", "status", "solved",
 def feature_columns(joined):
     """The router's inputs: the feature columns of joined.csv, in order."""
     return [c for c in joined.columns if c not in RESULT_COLS and not c.startswith("label_")]
-
-
-def cost_table(joined, timeout_cost):
-    """Cost in seconds of each encoding on each instance: one row per id, one column per
-    encoding. A timed-out run counts at `timeout_cost`, and runs are combined by their
-    median. A cell is NaN when any of its runs errored or it has no runs."""
-    finished = joined["status"].isin(FINISHED)
-    timed_out = joined["status"] == "timeout"
-    cost = joined["time"].where(finished, timeout_cost).where(finished | timed_out)
-    runs = joined.assign(cost=cost).groupby(["id", "encoding"])["cost"]
-    return runs.median().where(runs.count() == runs.size()).unstack("encoding")
-
-
-def all_timeout_ids(joined):
-    """Instances on which every encoding timed out in every run."""
-    timed_out = joined["status"].eq("timeout").groupby(joined["id"]).all()
-    return set(timed_out.index[timed_out])
-
-
-def training_set(joined, timeout_cost):
-    """The cost table the router trains on, and how many instances were dropped.
-
-    Drops instances with an errored or missing run on any encoding, then those on which
-    every encoding timed out. Returns (costs, dropped), where dropped counts each kind:
-    {"errored_or_missing": n, "all_timeout": n}.
-    """
-    costs = cost_table(joined, timeout_cost)
-    incomplete = costs.isna().any(axis=1)
-    costs = costs[~incomplete]
-    all_timeout = costs.index.isin(all_timeout_ids(joined))
-    return costs[~all_timeout], {"errored_or_missing": int(incomplete.sum()),
-                                 "all_timeout": int(all_timeout.sum())}
 
 
 def instance_features(joined, cols, ids):
