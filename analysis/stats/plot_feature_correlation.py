@@ -7,10 +7,15 @@ Features only, no runtimes, so all instances in features.csv are used. Features 
 ordered by complete-linkage clustering on 1 - |rho|; a family is a group in which
 every pair has |rho| >= --family, and is outlined on the plot.
 
-Writes analysis/outputs/plots/feature_correlation.png.
+With --selected, only the features select_features.py kept (selected_features.json) are
+plotted, to show what correlation is left among them.
+
+Writes analysis/outputs/plots/feature_correlation.png, or with --selected
+feature_correlation_selected.png.
 """
 
 import argparse
+import json
 from pathlib import Path
 
 import matplotlib
@@ -23,7 +28,7 @@ from matplotlib.patches import Rectangle
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
 
-from analysis.paths import OUTPUTS, PLOTS
+from analysis.paths import OUTPUTS, PLOTS, SELECTED_FEATURES
 
 # Diverging scale: red (negative) -> grey (zero) -> green (positive). Green is the
 # desired direction everywhere it is used: for speedups it means the encoding gains.
@@ -70,10 +75,18 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--family", type=float, default=0.8, help="min |rho| between every pair in a family")
-    ap.add_argument("--output", default=str(PLOTS / "feature_correlation.png"))
+    ap.add_argument("--selected", action="store_true",
+                    help="plot only the features in selected_features.json (select_features.py)")
+    ap.add_argument("--output", help="default: plots/feature_correlation.png, or "
+                                     "feature_correlation_selected.png with --selected")
     args = ap.parse_args()
+    if args.output is None:
+        args.output = str(PLOTS / ("feature_correlation_selected.png" if args.selected
+                                   else "feature_correlation.png"))
 
     df = pd.read_csv(args.features)
+    if args.selected:
+        df = df[["id", "corpus"] + json.loads(SELECTED_FEATURES.read_text())["selected"]]
     const = constant_features(df)
     if const:
         print(f"left out {len(const)} constant column(s): {', '.join(const)}")
@@ -109,7 +122,8 @@ def main():
     cbar = fig.colorbar(im, ax=ax, shrink=0.6, pad=0.02)
     cbar.set_label("Spearman rho", color=INK_2)
     cbar.outline.set_visible(False)
-    ax.set_title(f"Feature correlation, all {len(df)} instances", loc="left", fontsize=15,
+    what = f" of the {n} selected features" if args.selected else ""
+    ax.set_title(f"Feature correlation{what}, all {len(df)} instances", loc="left", fontsize=15,
                  color=INK, fontweight="semibold", pad=28)
     ax.text(0, 1.012, f"Green: positive, red: negative. Boxes = families (every pair |rho| >= {args.family}).",
             transform=ax.transAxes, fontsize=10, color=INK_2)

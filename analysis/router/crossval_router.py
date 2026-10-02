@@ -9,6 +9,10 @@ DEFAULT_SETTINGS and DEFAULT_TREES: leaf size, depth, margin and trees per fores
 the figures describe the model DateSat uses. It does not search for a better setting;
 --min-samples-leaf, --max-depth, --margin and --trees measure another one.
 
+Features. By default the router sees every feature column. With --selected it sees only
+the features select_features.py kept (outputs/selected_features.json), and the results go
+to model_cross_validation_selected/ instead, so the two can be compared.
+
 How. The instances of joined.csv, dropped as in train_router.py (each one a single
 example per pair, its cost the median over its runs), are cut into --folds folds (default
 5), stratified by corpus: each corpus is shuffled and dealt evenly into the folds, so
@@ -19,11 +23,14 @@ whole is repeated --repeats times (default 5), each time with a different cut in
 and the results are averaged over the repeats. The cuts come from a fixed seed and the
 forests use train_router.py's, so a run of this script always gives the same results.
 
-Writes to analysis/outputs/model_cross_validation/:
-    router_eval.json   the setting, and averaged over the repeats, overall and for each
+Writes to analysis/outputs/model_cross_validation/ (with --selected,
+model_cross_validation_selected/):
+    router_eval.json   the setting, the feature columns, and averaged over the repeats,
+                       overall and for each
                        corpus: a table of always each encoding, the router and the
-                       oracle (total time, timeouts, speedups over always
-                       --baseline), the router's picks and fallbacks, how often it picks
+                       oracle (total time, timeouts, and speedups over always
+                       --baseline: of the totals, and the median and geometric mean of
+                       the per-instance speedup), the router's picks and fallbacks, how often it picks
                        the fastest encoding, how much of the gap to the oracle it closes,
                        and the spread of the router's total over the repeats
     router_eval.csv    one row per repeat and instance: its fold and corpus, its cost on
@@ -40,11 +47,12 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import RepeatedStratifiedKFold
 
-from analysis.paths import CROSS_VALIDATION, OUTPUTS, REPO
+from analysis.paths import CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, OUTPUTS, REPO
 from analysis.router.train_router import (DEFAULT_SETTINGS, DEFAULT_TREES, ROUTER,
                                           feature_columns, fit_forests, instance_features,
                                           route, training_set)
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
+from analysis.stats.select_features import selected_columns
 
 SEED = 0
 
@@ -60,13 +68,16 @@ def strategy_costs(costs, picks):
 
 def summary_table(strategies, baseline, timeout_cost):
     """Total time, timeouts and speedup over always-`baseline`, one row per strategy of
-    strategy_costs."""
+    strategy_costs: of the totals, and the median and geometric mean over instances of the
+    per-instance speedup (as in solver_outcomes.py, timeouts at the timeout)."""
     base = strategies[f"always {baseline}"]
+    per_instance = strategies.rdiv(base, axis=0)
     return pd.DataFrame({
         "total_s": strategies.sum(),
         "timeouts": (strategies >= timeout_cost).sum(),
         "speedup_total": base.sum() / strategies.sum(),
-        "speedup_geomean": np.exp(np.log(strategies.rdiv(base, axis=0)).mean()),
+        "speedup_median": per_instance.median(),
+        "speedup_geomean": np.exp(np.log(per_instance).mean()),
     })
 
 
@@ -103,10 +114,10 @@ def number(x):
 def print_summary(title, s, baseline, encodings, fallback, margin):
     print(f"\n{title} ({s['instances']} instances)")
     print(f"{'strategy':22} {'total s':>9} {'timeouts':>9}   speedup over always {baseline}")
-    print(f"{'':22} {'':>9} {'':>9}   {'total':>7} {'geomean':>8}")
+    print(f"{'':22} {'':>9} {'':>9}   {'total':>7} {'median':>8}")
     for name, r in s["table"].iterrows():
         print(f"{name:22} {r.total_s:9.1f} {number(r.timeouts):>9}   "
-              f"{r.speedup_total:6.2f}x {r.speedup_geomean:7.2f}x")
+              f"{r.speedup_total:6.2f}x {r.speedup_median:7.2f}x")
     print("router picks: " + ", ".join(f"{e} {number(s['picks'].get(e, 0))}" for e in encodings))
     print(f"fell back to {fallback} on {number(s['fell_back'])} instances (margin {margin:g})")
     print(f"router picks the fastest encoding on {s['picks_fastest']:.1%} of instances")
@@ -121,6 +132,7 @@ def summary_json(s, encodings):
         "instances": s["instances"],
         "table": {name: {"total_s": round(float(r.total_s), 3), "timeouts": number(r.timeouts),
                          "speedup_total": round(float(r.speedup_total), 4),
+                         "speedup_median": round(float(r.speedup_median), 4),
                          "speedup_geomean": round(float(r.speedup_geomean), 4)}
                   for name, r in s["table"].iterrows()},
         "router_picks": {e: number(s["picks"].get(e, 0)) for e in encodings},
@@ -191,8 +203,13 @@ def main():
     ap.add_argument("--folds", type=int, default=5)
     ap.add_argument("--repeats", type=int, default=5)
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
-    ap.add_argument("--output-dir", default=str(CROSS_VALIDATION))
+    ap.add_argument("--selected", action="store_true",
+                    help="use only the features in selected_features.json (select_features.py)")
+    ap.add_argument("--output-dir", help="default: outputs/model_cross_validation/, or "
+                                         "model_cross_validation_selected/ with --selected")
     args = ap.parse_args()
+    if args.output_dir is None:
+        args.output_dir = str(CROSS_VALIDATION_SELECTED if args.selected else CROSS_VALIDATION)
     timeout = timeout_seconds(ap, args)
     timeout_cost = timeout if args.timeout_cost is None else args.timeout_cost / 1000
     if timeout_cost < timeout:
@@ -204,7 +221,14 @@ def main():
     joined = pd.read_csv(args.joined)
     joined = joined[joined["encoding"] != ROUTER]
     costs, dropped = training_set(joined, timeout_cost)
-    feats = instance_features(joined, feature_columns(joined), costs.index)
+    cols = feature_columns(joined)
+    if args.selected:
+        selected = selected_columns()
+        missing = [c for c in selected if c not in cols]
+        if missing:
+            ap.error(f"selected features not in {args.joined}: {', '.join(missing)}")
+        cols = [c for c in cols if c in selected]
+    feats = instance_features(joined, cols, costs.index)
     corpus = joined.groupby("id")["corpus"].first().loc[costs.index]
     encodings = sorted(costs.columns)
     if args.baseline not in encodings:
@@ -215,6 +239,7 @@ def main():
           f"and {dropped['all_timeout']} all-timeout): "
           + ", ".join(f"{c} {n}" for c, n in corpus.value_counts().sort_index().items())
           + f"; timeouts count as {timeout_cost:g} s")
+    print(f"features: {len(cols)} columns" + (" (selected_features.json)" if args.selected else ""))
     print(f"setting: {args.trees} trees, depth <= {depth}, at least {leaf} instances per leaf, "
           f"margin {margin:g}; {args.folds}-fold cross-validation stratified by corpus, "
           f"repeated {args.repeats} times ...")
@@ -266,6 +291,7 @@ def main():
         "repeats": args.repeats,
         "trees": args.trees,
         "setting": {"min_samples_leaf": leaf, "max_depth": depth, "margin": margin},
+        "feature_columns": cols,
         "fallbacks": fallbacks,
         "baseline": args.baseline,
         "best_performing_encoding": best,
