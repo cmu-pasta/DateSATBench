@@ -7,7 +7,7 @@ Relates DateSAT's solver results on DateSATBench to features of the benchmark in
 | Folder | Stage | What it holds |
 |---|---|---|
 | `features/` | 1 | The constraint parser, `extract_features.py`, `emulate_encodings.py` (counts, without solving, what each DateSat encoding would emit), `features.md` (documents every feature column) and its tests |
-| `stats/` | 2–4 | `join_results.py` (joins solver timings to the features), `cluster.py`, `solver_outcomes.py` and the two `plot_*.py` scripts |
+| `stats/` | 2–4 | `join_results.py` (joins solver timings to the features), `cluster.py` (PCA and t-SNE projections of the features to 2D and 3D), `solver_outcomes.py` and the two `plot_*.py` scripts |
 | `report/` | 5 | `build_report.py` and the HTML template it fills in |
 | `router/` | 6–7 | `crossval_router.py` (measures the router's setting on unseen constraints, by cross-validation), `train_router.py` (trains the encoding router on every instance: one random forest per pair of encodings) and their tests |
 | `outputs/` | | Everything the stages write: `features.csv`, `features_meta.json`, `joined.csv`, `clusters.json`, `plots/`, `report.html`, `model/` (the router trained on every instance), `model_cross_validation/` (the cross-validation's results) |
