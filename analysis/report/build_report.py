@@ -1,7 +1,7 @@
 """
 Stage 5: build the standalone analysis report from the outputs of stages 2-4.
 
-    python -m analysis.report.build_report --timeout 60000     # or set DATESAT_TIMEOUT_MS
+    python -m analysis.report.build_report --timeout 20000     # or set DATESAT_TIMEOUT_MS
 
 Reads features.csv (+ features_meta.json), joined.csv and clusters.json (the PCA and
 t-SNE projections), computes the
@@ -179,7 +179,7 @@ def main():
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
     ap.add_argument("--clusters", default=str(OUTPUTS / "clusters.json"))
-    ap.add_argument("--results", default=str(REPO / "results/bench-datetime-bound"))
+    ap.add_argument("--results", default=str(REPO / "results/all-2runs-bounded"))
     ap.add_argument("--baseline", default="simple")
     add_timeout_arg(ap)
     ap.add_argument("--router-cv", default=str(CROSS_VALIDATION / "router_eval.json"),

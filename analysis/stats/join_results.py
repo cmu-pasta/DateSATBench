@@ -1,7 +1,7 @@
 """
 Join solver timings to the feature matrix.
 
-    python -m analysis.stats.join_results --results results/bench-datetime-bound --timeout 60000
+    python -m analysis.stats.join_results --results results/all-2runs-bounded --timeout 20000
 
 Reads every <corpus>/run_N/<approach>_<impl>.json (or, for a single-run eval,
 <corpus>/<approach>_<impl>.json) under the results root and joins each record to
@@ -91,7 +91,7 @@ def speedup_and_bound(time, status, base_time, base_status, timeout):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--results", default=str(REPO / "results/bench-datetime-bound"),
+    ap.add_argument("--results", default=str(REPO / "results/all-2runs-bounded"),
                     help="results directory (multi-run <corpus>/run_N/ or single-run <corpus>/)")
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")

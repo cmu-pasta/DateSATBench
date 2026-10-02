@@ -21,7 +21,7 @@ Relates DateSAT's solver results on DateSATBench to features of the benchmark in
 `analysis` is a package, so run each stage as a module from the repository root:
 
 ```
-export DATESAT_TIMEOUT_MS=60000                          # the --timeout the results were run with
+export DATESAT_TIMEOUT_MS=20000                          # the --timeout the results were run with
 python -m analysis.features.extract_features             # 1: outputs/features.csv
 python -m analysis.stats.join_results                    # 2: outputs/joined.csv
 python -m analysis.stats.cluster                         # 3: outputs/clusters.json

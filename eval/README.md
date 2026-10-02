@@ -31,7 +31,7 @@ Add approach filtering / timeout, etc.:
 
 ```bash
 python3 eval/run_benchmarks.py \
-  --timeout 60000 \
+  --timeout 20000 \
   --approaches alpha_beta_table \
   --datesatbenchs legal
 ```
