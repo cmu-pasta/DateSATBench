@@ -29,6 +29,7 @@ from analysis.features.datesat_parser import (
     is_connective, is_ground_date, parse_constraint, parse_declarations,
     to_nnf, walk,
 )
+from analysis.features.emulate_encodings import ENCODINGS, emulate
 from analysis.paths import OUTPUTS, REPO
 
 # The results under results/bench-datetime-bound were run on this bounded variant, so
@@ -255,11 +256,69 @@ def arithmetic_structure(trees, sorts):
                                 if isinstance(n, DateAdd) and not is_ground_date(n))
     f["arith_graph_diameter"] = graph_diameter(edges)
     f["n_arith_vars"] = len({v for e in edges for v in e})
-    # The calendar's first and last day are left out: they are the injected bounds.
-    years = [n.y.value for t in trees for n in walk(t)
-             if isinstance(n, DateCtor) and all(isinstance(c, IntLit) for c in (n.y, n.m, n.d))
-             and (n.y.value, n.m.value, n.d.value) not in ((1, 1, 1), (9999, 12, 31))]
+    years = literal_years(trees)
     f["lit_year_span"] = max(years) - min(years) if years else 0
+    return f
+
+
+def literal_years(trees):
+    """Years of the literal dates, without the calendar's first and last day (the injected
+    bounds)."""
+    return [n.y.value for t in trees for n in walk(t)
+            if isinstance(n, DateCtor) and all(isinstance(c, IntLit) for c in (n.y, n.m, n.d))
+            and (n.y.value, n.m.value, n.d.value) not in ((1, 1, 1), (9999, 12, 31))]
+
+
+def chain_abs_days(n):
+    """Sum of |days| over a chain of `± period` steps, down to the date it starts from."""
+    total = 0
+    while isinstance(n, DateAdd):
+        total += abs(n.period.nd)
+        n = n.base
+    return total
+
+
+def representation_demands(trees):
+    """The Representation demands columns: which form each date value is needed in, how the
+    date comparisons are written, and how far the literals are from the encodings' epoch."""
+    f = dict.fromkeys(REPRESENTATION_DEMANDS, 0)
+    ym_bases, day_bases, field_bases = set(), set(), set()
+    kinds = {}                                    # date variable -> kinds of step applied to it
+    for t in trees:
+        for n in walk(t):
+            if isinstance(n, DateAdd) and not is_ground_date(n):
+                kind = "ym" if n.period.months else "day"
+                (ym_bases if kind == "ym" else day_bases).add(canonical(n.base))
+                root = date_chain_base(n)
+                if isinstance(root, Var):
+                    kinds.setdefault(root.name, set()).add(kind)
+                if isinstance(n.base, DateAdd):
+                    f["n_chained_ops"] += 1
+                    f["n_arith_kind_switches"] += (n.base.period.months != 0) != (kind == "ym")
+                f["max_chain_abs_days"] = max(f["max_chain_abs_days"], chain_abs_days(n))
+            elif isinstance(n, Field) and not is_ground_date(n.base):
+                field_bases.add(canonical(n.base))
+            elif is_comparison(n) and n.lhs.sort == "date":
+                ground = [is_ground_date(s) for s in (n.lhs, n.rhs)]
+                f["n_lit_date_cmps"] += any(ground) and not all(ground)
+                f["n_var_var_cmps"] += isinstance(n.lhs, Var) and isinstance(n.rhs, Var)
+                f["n_date_ordering_cmps"] += n.op in ORDERING
+    f["n_ym_bases"] = len(ym_bases)
+    f["n_day_bases"] = len(day_bases)
+    f["n_field_bases"] = len(field_bases)
+    f["n_vars_both_arith"] = sum(1 for k in kinds.values() if len(k) == 2)
+    f["max_lit_year_dist"] = max((abs(y - EPOCH_YEAR) for y in literal_years(trees)), default=0)
+    return f
+
+
+def encoding_emulation(trees, sorts):
+    """The Encoding emulation and Encoding contrasts columns, from emulate_encodings.py."""
+    counts = emulate(trees, sorts)
+    f = {f"emu_{e}_{m}": counts[e][m] for e, ms in EMULATED.items() for m in ms}
+    for measure in ("divmod", "ite"):
+        for a, b in combinations(sorted(ENCODINGS), 2):
+            f[f"log2_{measure}_{a}_vs_{b}"] = math.log2(
+                (counts[a][measure] + 1) / (counts[b][measure] + 1))
     return f
 
 
@@ -426,6 +485,10 @@ def features_for(entry, corpus):
     # ---- arithmetic structure -------------------------------------------
     f.update(arithmetic_structure(trees, sorts))
 
+    # ---- representation demands, encoding emulation and contrasts ------
+    f.update(representation_demands(trees))
+    f.update(encoding_emulation(trees, sorts))
+
     # ---- labels (solver output, NOT features) ---------------------------
     f["label_execution_time"] = entry.get("execution_time")
     entry_id = str(entry.get("id", ""))
@@ -440,6 +503,24 @@ ARITHMETIC_STRUCTURE = [
     "sum_abs_days", "sum_abs_months", "max_abs_days_nonself", "max_abs_months_nonself",
     "sum_abs_days_all", "n_arith_unit", "n_arith_in_disj", "n_arith_neq",
     "n_date_eq", "n_date_neq", "arith_graph_diameter", "n_arith_vars", "lit_year_span"]
+
+# Year of DateSat's epoch, 2000-03-01, which the day-count forms count from.
+EPOCH_YEAR = 2000
+REPRESENTATION_DEMANDS = [
+    "n_ym_bases", "n_day_bases", "n_field_bases", "n_vars_both_arith",
+    "n_arith_kind_switches", "n_chained_ops", "max_chain_abs_days",
+    "n_lit_date_cmps", "n_var_var_cmps", "n_date_ordering_cmps", "max_lit_year_dist"]
+# The emulated counts kept per encoding. `simple` converts nothing, and `simple` and
+# `alpha_beta` write every date comparison component by component, so those columns would
+# repeat other ones.
+EMULATED = {"simple": ("divmod", "ite"),
+            "epoch_days": ("divmod", "ite", "conversions"),
+            "hybrid_ymd": ("divmod", "ite", "conversions", "lex_cmps"),
+            "hybrid_epoch": ("divmod", "ite", "conversions", "lex_cmps"),
+            "alpha_beta": ("divmod", "ite", "conversions")}
+ENCODING_EMULATION = [f"emu_{e}_{m}" for e, ms in EMULATED.items() for m in ms]
+ENCODING_CONTRASTS = [f"log2_{measure}_{a}_vs_{b}" for measure in ("divmod", "ite")
+                      for a, b in combinations(sorted(ENCODINGS), 2)]
 
 FEATURE_GROUPS = [
     ("Search space", [
@@ -459,6 +540,9 @@ FEATURE_GROUPS = [
     ("Variable coupling", [
         "n_components", "largest_component_frac", "graph_density", "mixed_sort_coupling"]),
     ("Arithmetic structure", ARITHMETIC_STRUCTURE),
+    ("Representation demands", REPRESENTATION_DEMANDS),
+    ("Encoding emulation", ENCODING_EMULATION),
+    ("Encoding contrasts", ENCODING_CONTRASTS),
 ]
 
 COLUMNS = (["id", "corpus"]
