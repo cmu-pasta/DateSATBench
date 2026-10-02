@@ -40,7 +40,9 @@ did, per corpus. Every stage takes `--help`.
 
 The report's *Specialized router* section reads the outputs of stages 6 and 7
 (`model_cross_validation/router_eval.json` and `model/router_meta.json`), so rebuild the
-report after running them; without them the section says so and stays empty.
+report after running them; without them the section says so and stays empty. Its
+*Feature reduction* section reads `selected_features.json` and both cross-validations,
+with and without `--selected`.
 
 ## Fewer features
 

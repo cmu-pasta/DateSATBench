@@ -18,15 +18,12 @@
   --c-llm: #2a78d6;
   --c-legal: #eb6834;
   --c-grammar: #1baf7a;
-  --k1: #2a78d6; --k2: #eb6834; --k3: #1baf7a; --k4: #eda100;
-  --k5: #e87ba4; --k6: #008300; --k7: #4a3aa7; --k8: #e34948;
   --div-n2: #991b1b;   /* darkest red at rho = -1 */
   --div-n1: #e3807d;
   --div-0: #f0efec;
   --div-p1: #66b588;
   --div-p2: #166534;   /* darkest green at rho = +1 */
   --const: #e4e2dc;
-  --muted-pt: #c4c2ba;
   --o-sat: #3d3c37; --o-unsat: #75736b; --o-timeout: #adaba2;
   --rt-context: #95938b;   /* the single encodings behind the router: grey, >= 3:1 on the surface */
   --rt-headroom: rgba(42, 120, 214, 0.13);   /* the accent, faint: what is left between router and ideal */
@@ -164,25 +161,12 @@ table.out td[data-tip]:hover { background: var(--chip); }
 .minibar i { display: block; height: 100%; background: var(--ink-2); border-radius: 3px; }
 .dim { color: var(--ink-3); }
 
-/* ---- clusters ---- */
+/* ---- feature-space projection ---- */
 .cl-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
 @media (max-width: 860px) { .cl-layout { grid-template-columns: 1fr; } }
 #scatter { width: 100%; height: 640px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; }
 @media (max-width: 600px) { #scatter { height: 420px; } }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.chips button {
-  font: 500 12.5px/1 var(--mono); border: 1px solid var(--rule); background: var(--surface);
-  color: var(--ink-2); border-radius: 999px; padding: 6px 10px; cursor: pointer;
-}
-.chips button[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
-.mix { display: flex; height: 10px; border-radius: 3px; overflow: hidden; gap: 2px; margin: 6px 0 6px; }
-.mix i { display: block; height: 100%; }
 .mix-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 400 12px/1.3 var(--mono); color: var(--ink-2); }
-.drivers { list-style: none; padding: 0; margin: 6px 0 0; font: 400 12.5px/1.3 var(--mono); }
-.drivers li { display: grid; grid-template-columns: 1fr 44px 60px; gap: 8px; align-items: center; padding: 3px 0; }
-.drivers .z { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; }
-.drivers .zb { height: 6px; background: var(--chip); border-radius: 3px; position: relative; overflow: hidden; }
-.drivers .zb i { position: absolute; top: 0; bottom: 0; background: var(--ink-2); }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 20px; margin-top: 18px; }
 .stat .k { font: 500 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
 .stat .v { font: 600 20px/1.2 var(--cond); margin-top: 3px; font-variant-numeric: tabular-nums; }
@@ -208,8 +192,39 @@ table.out.rt .minibar { width: 120px; }
 .rt-pairs li { display: grid; grid-template-columns: 29ch 1fr; gap: 10px; padding: 2px 0; }
 .rt-pairs li b { font-weight: 500; color: var(--ink); }
 .rt-warn { font-size: 13px; color: var(--ink); background: var(--chip); border-radius: 6px; padding: 8px 10px; }
+.rt-row { margin-top: 20px; }
+.rt-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font: 400 12px/1.4 var(--mono); color: var(--ink-2); }
+.rt-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.rt-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
+.rt-legend .sw-vote { background: var(--accent); }
+.rt-legend .sw-fall { border: 1px solid var(--accent); background: repeating-linear-gradient(135deg, var(--accent) 0 1.5px, var(--surface) 1.5px 4px); }
+.rt-legend .sw-fast { width: 2px; height: 14px; border-radius: 0; background: var(--ink); margin-inline: 5px; }
+.rt-chart-picks { height: 312px; }
+.rt-row .rt-fig { display: flex; flex-direction: column; }
+.rt-row .rt-fig > .scroll { flex: 1; }
+table.out.rt-solve { width: 100%; height: calc(100% - 14px); margin-top: 14px; }   /* the rows share the card's height */
+table.out.rt-solve th, table.out.rt-solve td { padding-block: 0; }
+table.out.rt-solve thead th { padding-bottom: 7px; }
+.solve-cell { display: grid; grid-template-columns: minmax(90px, 1fr) 6.5ch 10ch; align-items: center; gap: 14px; }
+table.out.rt-solve .solve-cell .minibar { width: 100%; height: 8px; border-radius: 4px; }
+.solve-cell .minibar i { border-radius: 4px; background: var(--rt-context); }
+tr.rt-router .solve-cell .minibar i { background: var(--accent); }
+tr.rt-oracle .solve-cell .minibar i { background: transparent; border: 1.5px dashed var(--ink-2); }
+.solve-cell .rate { text-align: right; color: var(--ink); }
+.solve-cell .dim { text-align: right; font-size: 12px; }
+table.out.rt-picks { margin-top: 16px; }
 
-#corr { display: block; }   /* width and height are set by renderCorr() from the feature count */
+#corr, #corr-sel { display: block; }   /* width and height are set by renderCorr() from the feature count */
+
+/* ---- feature reduction ---- */
+table.out.fr { min-width: 1040px; }
+table.out.fr td.gain { color: var(--ink); font-weight: 600; }
+.fr-sub { font: 600 15px/1.3 var(--sans); margin: 30px 0 4px; }
+.fr-cap { font-size: 13px; color: var(--ink-3); margin: 0 0 12px; max-width: 80ch; }
+.fr-fam { list-style: none; padding: 0; margin: 0; font: 400 12.5px/1.35 var(--mono); color: var(--ink-2); columns: 2 520px; column-gap: 40px; }
+.fr-fam li { display: grid; grid-template-columns: 22ch 1fr; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--rule); break-inside: avoid; }
+.fr-fam li b { font-weight: 500; color: var(--ink); }
+.fr-fam li .r { color: var(--ink-3); }
 
 .tip {
   position: fixed; z-index: 20; pointer-events: none; max-width: 280px;
@@ -234,16 +249,17 @@ footer li { margin: 3px 0; }
   </header>
 
   <nav class="toc" aria-label="Sections">
-    <a href="#clusters">Instance clusters</a>
+    <a href="#projection">Feature space</a>
     <a href="#speedup">Feature × speedup</a>
     <a href="#outcomes">Solver outcomes</a>
     <a href="#router">Specialized router</a>
     <a href="#correlation">Feature correlation</a>
+    <a href="#reduction">Feature reduction</a>
   </nav>
 
-  <section id="clusters">
-    <h2>Instance clusters</h2>
-    <p class="sec-lede">Instances embedded in 3D from their standardised features (skewed counts log-scaled first). Clustering never sees the corpus label; the agreement score below says how much of the structure is just “which generator made this”. Drag to rotate.</p>
+  <section id="projection">
+    <h2>Instances in feature space</h2>
+    <p class="sec-lede">Every instance placed in 2D or 3D from its standardised features (skewed counts log-scaled first), by t-SNE or by PCA. Neither projection sees the corpus label; the colour adds it afterwards.</p>
     <div class="controls">
       <div class="ctl"><span class="ctl-label" id="lbl-proj">Projection</span>
         <div class="seg" role="group" aria-labelledby="lbl-proj" id="seg-proj">
@@ -251,11 +267,10 @@ footer li { margin: 3px 0; }
           <button id="proj-p" data-v="p" aria-pressed="false">PCA</button>
         </div>
       </div>
-      <div class="ctl"><span class="ctl-label" id="lbl-col">Colour by</span>
-        <div class="seg" role="group" aria-labelledby="lbl-col" id="seg-col">
-          <button id="col-c" data-v="c" aria-pressed="true">Corpus</button>
-          <button id="col-k" data-v="k" aria-pressed="false">K-means</button>
-          <button id="col-h" data-v="h" aria-pressed="false">HDBSCAN</button>
+      <div class="ctl"><span class="ctl-label" id="lbl-dim">Dimensions</span>
+        <div class="seg" role="group" aria-labelledby="lbl-dim" id="seg-dim">
+          <button id="dim-2" data-v="2" aria-pressed="false">2D</button>
+          <button id="dim-3" data-v="3" aria-pressed="true">3D</button>
         </div>
       </div>
     </div>
@@ -263,12 +278,11 @@ footer li { margin: 3px 0; }
       <div id="scatter" role="img" aria-label="3D scatter of benchmark instances"></div>
       <aside class="aside" id="cl-side"></aside>
     </div>
-    <div class="stats" id="cl-stats"></div>
   </section>
 
   <section id="speedup">
     <h2>Feature × speedup</h2>
-    <p class="sec-lede">Each cell is the Spearman correlation between one feature and one encoding's speedup over the baseline (<span class="mono">baseline_time / time</span>). Green: the encoding pulls ahead of the baseline as the feature grows. Red: it falls behind. Hover a cell for its exact value, q-value and sample size.</p>
+    <p class="sec-lede">Each cell is the Spearman correlation, over the instances, between one feature and one encoding's speedup over the baseline on each instance (the baseline's time divided by the encoding's, measured as in <a href="#outcomes">Solver outcomes</a>). Green: the encoding pulls ahead of the baseline as the feature grows. Red: it falls behind. Hover a cell for its exact value, q-value and sample size.</p>
     <div class="controls">
       <div class="ctl"><span class="ctl-label" id="lbl-scope">Corpus</span>
         <div class="seg" role="group" aria-labelledby="lbl-scope" id="seg-scope">
@@ -279,10 +293,10 @@ footer li { margin: 3px 0; }
           <button id="scope-compare" data-v="compare" aria-pressed="false">Side by side</button>
         </div>
       </div>
-      <div class="ctl"><span class="ctl-label" id="lbl-to">If only one side timed out</span>
+      <div class="ctl"><span class="ctl-label" id="lbl-to">Timed-out instances</span>
         <div class="seg" role="group" aria-labelledby="lbl-to" id="seg-to" aria-describedby="to-hint">
-          <button id="to-bound" data-v="bound" aria-pressed="true">Keep it, as a bound</button>
-          <button id="to-drop" data-v="drop" aria-pressed="false">Leave it out</button>
+          <button id="to-bound" data-v="bound" aria-pressed="true">Count at the time limit</button>
+          <button id="to-drop" data-v="drop" aria-pressed="false">Leave out</button>
         </div>
         <span class="ctl-hint" id="to-hint"></span>
       </div>
@@ -324,7 +338,7 @@ footer li { margin: 3px 0; }
     </div>
     <div class="olegend" id="olegend"></div>
     <div class="scroll"><table class="out" id="out"></table></div>
-    <p class="note">Each encoding solves a different subset of instances, so the median over its own solves favours encodings that give up on the hard ones. The median over instances solved by every encoding compares them on the same work. “Beats it” counts speedups above 1 over the baseline, including one-sided timeouts at their bound. Median exact speedup uses only pairs both sides solved.</p>
+    <p class="note" id="out-note"></p>
   </section>
 
   <section id="router">
@@ -343,10 +357,15 @@ footer li { margin: 3px 0; }
     <div class="stats" id="rt-stats" style="margin: 0 0 26px"></div>
     <div class="rt-charts">
       <figure class="rt-fig"><figcaption>Speedup in total time<span class="cap-sub">Over always <span class="mono rt-base">simple</span>. Dominated by the slow instances and the timeouts.</span></figcaption><div class="rt-chart" id="rt-chart-total" role="img"></div></figure>
-      <figure class="rt-fig"><figcaption>Speedup on the typical instance<span class="cap-sub">Geometric mean over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-geo" role="img"></div></figure>
+      <figure class="rt-fig"><figcaption>Median speedup per instance<span class="cap-sub">Median over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-median" role="img"></div></figure>
+    </div>
+    <div class="rt-charts rt-row">
+      <figure class="rt-fig" id="rt-fig-picks"><figcaption>Encodings the router picks<span class="cap-sub" id="rt-picks-cap"></span></figcaption><div class="rt-legend" id="rt-picks-legend"></div><div class="rt-chart rt-chart-picks" id="rt-chart-picks" role="img"></div></figure>
+      <figure class="rt-fig"><figcaption>Solve rate<span class="cap-sub" id="rt-solve-cap"></span></figcaption><div class="scroll"><table class="out rt rt-solve" id="rt-solve"></table></div></figure>
     </div>
     <details class="rt-details" id="rt-details"><summary>Show the numbers as a table</summary>
       <div class="scroll"><table class="out rt" id="rt-table"></table></div>
+      <div class="scroll"><table class="out rt rt-picks" id="rt-picks-table"></table></div>
     </details>
     <div class="aside heat-notes" id="rt-notes"></div>
   </section>
@@ -357,14 +376,33 @@ footer li { margin: 3px 0; }
     <div class="scroll"><div id="corr"></div></div>
   </section>
 
+  <section id="reduction">
+    <h2>Feature reduction</h2>
+    <p class="sec-lede">Many features in the matrix above move together. Here every family of strongly correlated features is cut to a single feature, constant features are dropped, and the router is cross-validated again on only the features that are left, with the same setting and the same folds, to see what the dropped features were worth.</p>
+    <div id="fr-body">
+      <div class="stats" id="fr-stats" style="margin: 0 0 26px"></div>
+      <h3 class="fr-sub">The router with every feature and with the selected ones</h3>
+      <p class="fr-cap" id="fr-table-cap"></p>
+      <div class="scroll"><table class="out fr" id="fr-table"></table></div>
+      <h3 class="fr-sub">What each kept feature stands in for</h3>
+      <p class="fr-cap" id="fr-fam-cap"></p>
+      <ul class="fr-fam" id="fr-fam"></ul>
+      <h3 class="fr-sub">Correlation left among the selected features</h3>
+      <p class="fr-cap" id="fr-corr-cap"></p>
+      <div class="scroll"><div id="corr-sel"></div></div>
+    </div>
+    <div class="aside heat-notes" id="fr-notes"></div>
+  </section>
+
   <footer>
     <div>Built by <span class="mono">analysis/report/build_report.py</span> from the pipeline outputs:</div>
     <ol>
       <li><span class="mono">datesat_parser.py</span>: parse and fold the DSL</li>
       <li><span class="mono">extract_features.py</span> → <span class="mono">features.csv</span>: <span class="n-feat">37</span> features per instance (definitions in <span class="mono">features.md</span>)</li>
       <li><span class="mono">join_results.py</span> → <span class="mono">joined.csv</span>: one row per instance × encoding × run, with speedup</li>
-      <li><span class="mono">cluster.py</span>, <span class="mono">solver_outcomes.py</span>, <span class="mono">plot_speedup_heatmap.py</span>, <span class="mono">plot_feature_correlation.py</span>: clusters, outcome tables and PNG plots</li>
-      <li><span class="mono">crossval_router.py</span> → <span class="mono">model_cross_validation/</span> and <span class="mono">train_router.py</span> → <span class="mono">model/</span>: the specialized router, cross-validated and trained on every instance</li>
+      <li><span class="mono">cluster.py</span>, <span class="mono">solver_outcomes.py</span>, <span class="mono">plot_speedup_heatmap.py</span>, <span class="mono">plot_feature_correlation.py</span>: 2D and 3D projections, outcome tables and PNG plots</li>
+      <li><span class="mono">select_features.py</span> → <span class="mono">selected_features.json</span>: one feature per family of correlated features</li>
+      <li><span class="mono">crossval_router.py</span> → <span class="mono">model_cross_validation/</span> and <span class="mono">train_router.py</span> → <span class="mono">model/</span>: the specialized router, cross-validated and trained on every instance; <span class="mono">crossval_router.py --selected</span> → <span class="mono">model_cross_validation_selected/</span>: cross-validated on the selected features only</li>
       <li><span class="mono">build_report.py</span> → this page</li>
     </ol>
   </footer>
@@ -430,7 +468,7 @@ function showTip(e, html) {
 function hideTip() { tip.hidden = true; }
 
 /* ---------- segmented controls ---------- */
-const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", col: "c", sel: { k: 0, h: 0 } };
+const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3" };
 function wireSeg(id, key, cb) {
   const seg = $(id);
   seg.addEventListener("click", (e) => {
@@ -480,16 +518,16 @@ function renderHeat() {
   ).join("");
   const s = divStops();
   $("#legend-bar").style.background = `linear-gradient(90deg, ${s.join(", ")})`;
-  // Pairs the two modes disagree on: one side timed out, the other finished.
+  // (instance, encoding) pairs the two modes disagree on: the encoding or the baseline timed out.
   const n = (mode) => Object.values(DATA.heat[mode][scopes[0]].n).reduce((a, b) => a + b, 0);
   const extra = n("bound") - n("drop");
   const where = scopes.length > 1 ? " across all corpora" : "";
   $("#to-hint").innerHTML = state.to === "bound"
-    ? `A side is the encoding or <span class="mono">${esc(M.baseline)}</span>. The timed-out side counts at the time limit, so its speedup is only a bound. Keeps ${extra} such pairs${where}.`
-    : `A side is the encoding or <span class="mono">${esc(M.baseline)}</span>. Only pairs where both finished, so every speedup is exact. Drops ${extra} pairs${where}.`;
+    ? `As in the rest of the report: a timed-out side counts at the ${M.timeout_s} s limit. ${extra} instance and encoding pairs${where} have one.`
+    : `A check, not the report's measurement: only instances both the encoding and <span class="mono">${esc(M.baseline)}</span> solved. Leaves out ${extra} instance and encoding pairs${where}.`;
   $("#to-note").innerHTML = state.to === "bound"
-    ? "<h3>One side timed out: kept as a bound</h3><p>If only one side timed out, that side counts at the timeout, so the speedup is a lower bound (baseline timed out) or an upper bound (encoding timed out). Ranking at the bound understates the effect. Pairs where both timed out are left out.</p>"
-    : "<h3>One side timed out: left out</h3><p>Only instances both sides finished. This drops the cases where one encoding solves what the other cannot, which are often the most informative.</p>";
+    ? `<h3>Timeouts count at the time limit</h3><p>Every instance counts once, measured as everywhere in this report. Where only one side timed out, its speedup is a bound: the true one is at least as far from 1, so ranking at the bound understates the effect. Where both timed out, the speedup is 1.</p>`
+    : `<h3>Timed-out instances left out</h3><p>Only instances both sides solved, to check that a correlation does not rest on the timeouts alone. This drops the cases where one encoding solves what the other cannot, which are often the most informative.</p>`;
 }
 $("#heat").addEventListener("mouseover", (e) => {
   const td = e.target.closest("td[data-f]"); if (!td) return;
@@ -498,7 +536,7 @@ $("#heat").addEventListener("mouseover", (e) => {
   const r = H.rho[f]?.[enc], q = H.q[f]?.[enc];
   const body = r == null
     ? "Constant in this subset, so no correlation."
-    : `ρ = <span class="m">${fmtR(r)}</span> · q = <span class="m">${q < 0.001 ? q.toExponential(1) : q.toFixed(3)}</span><br>n = ${H.n[enc]} rows · ${r > 0 ? `${esc(enc)} gains on ${esc(M.baseline)} as this grows` : `${esc(enc)} loses ground to ${esc(M.baseline)} as this grows`}`;
+    : `ρ = <span class="m">${fmtR(r)}</span> · q = <span class="m">${q < 0.001 ? q.toExponential(1) : q.toFixed(3)}</span><br>n = ${H.n[enc]} instances · ${r > 0 ? `${esc(enc)} gains on ${esc(M.baseline)} as this grows` : `${esc(enc)} loses ground to ${esc(M.baseline)} as this grows`}`;
   showTip(e, `<b class="m">${esc(f)}</b><br>${esc(enc)} · ${CNAME[s]}<br>${body}`);
 });
 $("#heat").addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
@@ -511,8 +549,7 @@ function fmtTime(t) {
   return t.toFixed(2) + " s";
 }
 const OUT_ENCS = [M.baseline, ...ENC];
-const OSTATUS = [["sat", "sat"], ["unsat", "unsat"], ["timeout", "timed out"], ["error", "error"]];
-const UNIT = M.runs > 1 ? "instance runs" : "instances";
+const OSTATUS = [["sat", "sat"], ["unsat", "unsat"], ["timeout", "timed out"]];
 $("#seg-oenc").innerHTML = ["all", ...OUT_ENCS].map((e) =>
   `<button id="oenc-${esc(e)}" data-v="${esc(e)}" aria-pressed="${e === state.oenc}">${e === "all" ? "All" : esc(e)}</button>`).join("");
 const zero = (n) => (n ? n : '<span class="dim">0</span>');
@@ -521,49 +558,48 @@ const tipAttr = (html) => ` data-tip="${esc(html)}"`;
 function renderOutcomes() {
   const scopes = state.oscope === "compare" ? ["all", ...CORPORA] : [state.oscope];
   const encs = state.oenc === "all" ? OUT_ENCS : [state.oenc];
-  const B = esc(M.baseline);
-  const hasErr = scopes.some((c) => encs.some((e) => DATA.outcomes[c][e].error));
-  $("#olegend").innerHTML = OSTATUS.filter(([k]) => k !== "error" || hasErr)
-    .map(([k, label]) => `<span><i class="sw o-${k}"></i>${label}</span>`).join("");
+  const B = esc(M.baseline), T = M.timeout_s;
+  $("#olegend").innerHTML = OSTATUS.map(([k, label]) => `<span><i class="sw o-${k}"></i>${label}</span>`).join("");
 
   let h = `<thead><tr><th class="l" rowspan="2">Corpus</th><th class="l" rowspan="2">Encoding</th><th class="l" rowspan="2">Solved</th>
     <th rowspan="2">Sat</th><th rowspan="2">Unsat</th><th rowspan="2">Timed out</th>
-    <th class="grp" colspan="2">Median solve time</th><th class="grp" colspan="2">Versus ${B}</th></tr>
-    <tr><th class="sub">own solves</th><th class="sub">solved by all</th><th class="sub">beats it</th><th class="sub w">median exact speedup</th></tr></thead><tbody>`;
+    <th class="grp" colspan="2">Time</th><th class="grp" colspan="2">Versus ${B}</th></tr>
+    <tr><th class="sub">total (computed using medians per instance)</th><th class="sub">median instance</th><th class="sub">beats it</th><th class="sub w">median speedup</th></tr></thead><tbody>`;
   for (const c of scopes) {
     encs.forEach((e, i) => {
-      const o = DATA.outcomes[c][e];
+      const o = DATA.outcomes[c][e], N = o.instances;
       const head = `<b class="m">${esc(e)}</b> · ${CNAME[c]}<br>`;
       const dot = c === "all" ? "" : `<span class="dot" style="background:var(--c-${c})"></span>`;
-      const corp = i ? "" : `${dot}${CNAME[c]}<span class="sub">${o.n_common} of ${o.rows} solved by all</span>`;
+      const out = o.unsolvable + o.incomplete;                 // the note under the table says why
+      const corp = i ? "" : `${dot}${CNAME[c]}<span class="sub">${N} instances${out ? `<br>${out} left out` : ""}</span>`;
 
       const segs = OSTATUS.filter(([k]) => o[k] > 0);
       const bar = `<span class="obar" aria-hidden="true">${segs.map(([k]) => `<i class="o-${k}" style="flex-grow:${o[k]}"></i>`).join("")}</span>`;
-      const pctSolved = o.rows ? Math.round((100 * o.solved) / o.rows) : 0;
-      const solvedTip = head + segs.map(([k, label]) => `${label} ${o[k]}`).join(" · ") + `<br>${o.solved} of ${o.rows} ${UNIT} solved (${pctSolved}%)`;
+      const pct = (100 * o.solve_rate).toFixed(1);
+      const solvedTip = head + segs.map(([k, label]) => `${label} ${o[k]}`).join(" · ") + `<br>${o.solved} of ${N} instances solved within ${T} s (${pct}%)`;
 
       let beats = '<span class="dim">baseline</span>', beatsTip = "";
       let ms = '<span class="dim">1.00×</span>', msTip = "";
       if (e !== M.baseline) {
-        if (o.compared) {
-          const pct = (100 * o.wins) / o.compared;
-          beats = `<span class="bar-cell">${o.wins} / ${o.compared}<span class="minibar"><i style="width:${pct.toFixed(0)}%"></i></span>${pct.toFixed(0)}%</span>`;
-          beatsTip = tipAttr(head + `Faster than ${B} on ${o.wins} of ${o.compared} ${UNIT}. That includes ${o.lower} solved where ${B} timed out (wins) and ${o.upper} timed out where ${B} solved (losses). ${o.no_speedup} where both timed out are left out.`);
-        } else beats = '<span class="dim">—</span>';
+        const w = (100 * o.wins) / N;
+        beats = `<span class="bar-cell">${o.wins} / ${N}<span class="minibar"><i style="width:${w.toFixed(0)}%"></i></span>${w.toFixed(0)}%</span>`;
+        beatsTip = tipAttr(head + `Faster than ${B} on ${o.wins} of the ${N} instances, timeouts counted at ${T} s.`);
         ms = o.median_speedup == null ? '<span class="dim">—</span>' : o.median_speedup.toFixed(2) + "×";
-        msTip = tipAttr(head + `Median over the ${o.exact} ${UNIT} that both ${esc(e)} and ${B} solved.`);
+        msTip = tipAttr(head + `Median over the ${N} instances of ${B}'s time divided by ${esc(e)}'s, timeouts at ${T} s.`);
       }
-      const ownTip = tipAttr(head + `Median over the ${o.solved} ${UNIT} ${esc(e)} solved. Not comparable across encodings: each solves a different subset.`);
-      const comTip = tipAttr(head + `Median over the ${o.n_common} ${UNIT} that every encoding solved, so every row of this corpus times the same work.`);
+      const totTip = tipAttr(head + `Sum over the ${N} instances; a timeout counts as ${T} s.`);
+      const medTip = tipAttr(head + `Median over the ${N} instances, timeouts at ${T} s. Every encoding of a corpus is timed on the same instances.`);
 
       h += `<tr class="${i === 0 ? "first" : ""}"><td class="corp l">${corp}</td><td class="enc l">${esc(e)}</td>
-        <td class="l"${tipAttr(solvedTip)}><span class="bar-cell">${bar}${o.solved} / ${o.rows}</span></td>
+        <td class="l"${tipAttr(solvedTip)}><span class="bar-cell">${bar}${o.solved} / ${N} <span class="dim">${pct}%</span></span></td>
         <td>${zero(o.sat)}</td><td>${zero(o.unsat)}</td><td>${zero(o.timeout)}</td>
-        <td${ownTip}>${fmtTime(o.median_time)}</td><td${comTip}>${fmtTime(o.median_time_common)}</td>
+        <td${totTip}>${o.total_time.toFixed(1)} s</td><td${medTip}>${fmtTime(o.median_time)}</td>
         <td${beatsTip}>${beats}</td><td${msTip}>${ms}</td></tr>`;
     });
   }
   $("#out").innerHTML = h + "</tbody>";
+  const all = DATA.outcomes.all[M.baseline];
+  $("#out-note").innerHTML = `Every section of this report measures time the same way. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Only instances that some encoding solves count: the ${all.unsolvable} on which every encoding timed out are left out everywhere, and shown under each corpus. Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`;
 }
 $("#out").addEventListener("mouseover", (e) => {
   const td = e.target.closest("td[data-tip]");
@@ -636,6 +672,97 @@ function rtChart(id, T, key, what) {
     singles.slice().reverse().map((n) => `${n} ${xf(T[n][key])}`).join(", "));
   Plotly.react(el, [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
+/* Which encoding the router picks in a scope: one bar per encoding, in a fixed order so that
+   switching the corpus does not reorder them. The accent bar is the router's vote and the
+   hatched part the fallback; the ink tick is how often that encoding is the fastest, which
+   is what the oracle picks. */
+function rtEncodings(T) {
+  return Object.keys(T).filter((n) => n.startsWith("always ")).map((n) => n.slice(7)).sort();
+}
+function rtPicks(S) {
+  const fb = RT.cv.fallbacks.length === 1 ? RT.cv.fallbacks[0] : null;
+  return rtEncodings(S.table).map((e) => {
+    const picks = S.picks[e] || 0, fell = e === fb ? S.fell_back : 0;
+    return { e, picks, fell, vote: picks - fell, fastest: S.fastest ? S.fastest[e] || 0 : null };
+  });
+}
+function rtPicksChart(id, S) {
+  const rows = rtPicks(S).reverse();                    // Plotly puts the first category at the bottom
+  const n = S.instances, y = rows.map((r) => r.e), fb = RT.cv.fallbacks.length === 1 ? RT.cv.fallbacks[0] : null;
+  const share = (v) => (100 * v / n).toFixed(1) + "%";
+  const surf = css("--surface"), acc = css("--accent");
+  const tick = { family: css("--mono"), size: 12, color: css("--ink-2") };
+  const barHover = rows.map((r) => `<b>${esc(r.e)}</b><br>the router picks it on ${numf(r.picks)} of ${n} instances (${share(r.picks)})`
+    + (r.fell ? `<br>${numf(r.vote)} by the vote, ${numf(r.fell)} by falling back` : "")
+    + (r.fastest == null ? "" : `<br>it is the fastest on ${r.fastest} (${share(r.fastest)})`));
+  const traces = [
+    { type: "bar", orientation: "h", name: "router's vote", y, x: rows.map((r) => r.vote),
+      marker: { color: acc, line: { color: surf, width: 2 } }, customdata: barHover, hovertemplate: "%{customdata}<extra></extra>" },
+    { type: "bar", orientation: "h", name: fb ? `fallback (${fb})` : "fallback", y, x: rows.map((r) => r.fell || null),   // no empty segment, whose outline would show
+      marker: { color: surf, pattern: { shape: "/", fgcolor: acc, bgcolor: surf, size: 6, solidity: 0.35 }, line: { color: acc, width: 1 } },
+      customdata: barHover, hovertemplate: "%{customdata}<extra></extra>", showlegend: rows.some((r) => r.fell > 0) },
+  ];
+  if (S.fastest) {
+    traces.push({ type: "scatter", mode: "markers", name: "fastest (oracle)", y, x: rows.map((r) => r.fastest),
+      marker: { symbol: "line-ns", size: 30, line: { color: css("--ink"), width: 2 } },
+      customdata: barHover, hovertemplate: "%{customdata}<extra></extra>" });
+  }
+  $("#rt-picks-legend").innerHTML = [["sw-vote", "router's vote"],
+    ...(rows.some((r) => r.fell > 0) ? [["sw-fall", `fallback (${esc(fb || "")})`]] : []),
+    ...(S.fastest ? [["sw-fast", "fastest (oracle)"]] : [])]
+    .map(([c, t]) => `<span><i class="${c}"></i>${t}</span>`).join("");
+  const top = Math.max(...rows.map((r) => Math.max(r.picks, r.fastest || 0)), 1), range = top * 1.18;
+  const el = document.getElementById(id);
+  const plotW = Math.max(el.clientWidth - 28 - 110, 100);                // less the margins and the y labels
+  const labelX = (r) => {
+    const span = ((numf(r.picks).length * 7.4 + 16) / plotW) * range;   // the label's width, in instances
+    return r.fastest != null && r.fastest > r.picks && r.fastest < r.picks + span ? r.fastest : r.picks;
+  };
+  const layout = {
+    ...plotTheme(), height: 312, margin: { l: 10, r: 18, t: 10, b: 34 }, showlegend: false,
+    barmode: "stack", bargap: 0.5,
+    xaxis: { range: [0, range], gridcolor: css("--rule"), zeroline: true, zerolinecolor: css("--ink-3"),
+             tickfont: { ...tick, size: 11, color: css("--ink-3") }, fixedrange: true },
+    yaxis: { tickfont: tick, automargin: true, fixedrange: true, ticks: "outside", ticklen: 8, tickcolor: "rgba(0,0,0,0)" },
+    // each bar's count at its end, or just past the tick when the tick would sit under it
+    annotations: rows.map((r) => ({ x: labelX(r), xref: "x", xshift: 10, y: r.e, yref: "y",
+      xanchor: "left", showarrow: false, text: numf(r.picks), font: { family: css("--mono"), size: 12, color: css("--ink-2") } })),
+    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
+  };
+  el.setAttribute("aria-label", `Bar chart of how often the router picks each encoding, out of ${n} instances: ` +
+    rows.slice().reverse().map((r) => `${r.e} ${numf(r.picks)}` + (r.fastest == null ? "" : `, fastest on ${r.fastest}`)).join("; "));
+  Plotly.react(el, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+}
+/* Every strategy's solve rate in the selected corpus, with a bar coloured as in the charts:
+   the router in the accent, the single encodings in grey, the oracle dashed. */
+function rtSolveTable(S) {
+  const cv = RT.cv;
+  let h = `<thead><tr><th class="l">Strategy</th><th class="l">Solved within ${cv.timeout_cost_s} s</th></tr></thead><tbody>`;
+  for (const [name, v] of Object.entries(S.solve)) {
+    const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
+    const avg = name === "router" ? `, averaged over ${cv.repeats} repeats` : "";
+    const pct = (100 * v.rate).toFixed(1);
+    h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>`
+      + `<td class="l"${tipAttr(`${rtLabel(name)}, ${CNAME[state.rscope]}<br>Solves ${numf(v.solved)} of ${S.instances} instances within the ${cv.timeout_cost_s} s timeout${avg}; ${numf(S.table[name].timeouts)} time out.`)}>`
+      + `<span class="solve-cell"><span class="minibar"><i style="width:${pct}%"></i></span><span class="rate">${pct}%</span><span class="dim">${numf(v.solved)} / ${S.instances}</span></span></td></tr>`;
+  }
+  $("#rt-solve").innerHTML = h + "</tbody>";
+  $("#rt-solve-cap").innerHTML = `Out of the ${rtOutOf(S)}. `
+    + (state.rscope === "all" ? `The ${cv.dropped.all_timeout} instances no encoding solves are left out.`
+                              : `Instances no encoding solves (${cv.dropped.all_timeout} in all corpora) are left out.`);
+}
+function rtOutOf(S) {
+  return `${S.instances}${state.rscope === "all" ? "" : ` ${CNAME[state.rscope]}`} instances`;
+}
+function rtPicksTable(S) {
+  const rows = rtPicks(S), n = S.instances;
+  let h = `<thead><tr><th class="l">Encoding</th><th>Router picks it</th><th>of which by falling back</th><th>Fastest on (oracle)</th></tr></thead><tbody>`;
+  for (const r of rows) {
+    h += `<tr><td class="l"><span class="mono">${esc(r.e)}</span></td><td>${numf(r.picks)} <span class="dim">(${(100 * r.picks / n).toFixed(1)}%)</span></td>
+      <td>${r.fell ? numf(r.fell) : zero(0)}</td><td>${r.fastest == null ? "—" : `${r.fastest} <span class="dim">(${(100 * r.fastest / n).toFixed(1)}%)</span>`}</td></tr>`;
+  }
+  $("#rt-picks-table").innerHTML = h + "</tbody>";
+}
 function renderRouter() {
   if (!RT) {
     $("#rt-controls").hidden = true;
@@ -647,8 +774,8 @@ function renderRouter() {
   const r = T.router, o = T.oracle, b = T[`always ${best}`];
   const vs = b.total_s / r.total_s;
   $("#rt-stats").innerHTML = [
-    ["Router", xf(r.speedup_total), `faster than always <span class="mono">${base}</span> in total time; ${xf(r.speedup_geomean)} on the typical instance`],
-    ["Ideal router (oracle)", xf(o.speedup_total), `the most any router could reach; ${xf(o.speedup_geomean)} on the typical instance`],
+    ["Router", xf(r.speedup_total), `faster than always <span class="mono">${base}</span> in total time; ${xf(r.speedup_median)} on the median instance`],
+    ["Ideal router (oracle)", xf(o.speedup_total), `the most any router could reach; ${xf(o.speedup_median)} on the median instance`],
     [`Versus always ${B}`, xf(vs), `${vs >= 1 ? "faster" : "slower"} in total: ${r.total_s.toFixed(1)} s against ${b.total_s.toFixed(1)} s, ${numf(r.timeouts)} timeouts against ${numf(b.timeouts)}`],
     ["Gap closed", pctf(S.gap_closed), `of the way from always <span class="mono">${B}</span> to the oracle, in total time`],
     ["Picks the fastest", pctf(S.picks_fastest), `of the ${S.instances} instances`],
@@ -657,7 +784,7 @@ function renderRouter() {
   const names = Object.keys(T);
   let h = `<thead><tr><th class="l" rowspan="2">Strategy</th><th rowspan="2">Total time</th><th rowspan="2">Timeouts</th>
     <th class="grp" colspan="2">Speedup over ${base}</th></tr>
-    <tr><th class="sub l">total time, as a share of the ideal</th><th class="sub">typical instance (geomean)</th></tr></thead><tbody>`;
+    <tr><th class="sub l">total time, as a share of the ideal</th><th class="sub">median per instance</th></tr></thead><tbody>`;
   for (const name of names) {
     const t = T[name], share = t.speedup_total / o.speedup_total;
     const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
@@ -666,22 +793,28 @@ function renderRouter() {
       <td${tipAttr(`${rtLabel(name)}<br>Sum over the ${S.instances} instances${avg}; a timeout counts as ${cv.timeout_cost_s} s.`)}>${t.total_s.toFixed(1)} s</td>
       <td>${t.timeouts ? numf(t.timeouts) : zero(0)}</td>
       <td class="l"${tipAttr(`${rtLabel(name)}<br>${xf(t.speedup_total)} over ${base} in total time: ${(100 * share).toFixed(0)}% of the oracle's ${xf(o.speedup_total)}.`)}><span class="bar-cell"><span class="minibar"><i style="width:${Math.min(100, 100 * share).toFixed(1)}%"></i></span>${xf(t.speedup_total)}</span></td>
-      <td${tipAttr(`${rtLabel(name)}<br>Geometric mean over instances of ${base}'s time divided by this strategy's time.`)}>${xf(t.speedup_geomean)}</td></tr>`;
+      <td${tipAttr(`${rtLabel(name)}<br>Median over instances of ${base}'s time divided by this strategy's time.`)}>${xf(t.speedup_median)}</td></tr>`;
   }
   $("#rt-table").innerHTML = h + "</tbody>";
   document.querySelectorAll(".rt-base").forEach((el) => { el.textContent = cv.baseline; });
+  $("#rt-picks-cap").innerHTML = `Out of the ${rtOutOf(S)}, averaged over ${cv.repeats} repeats`
+    + (S.fastest ? "; the tick is how many each is fastest on." : ".");
+  rtSolveTable(S);
+  rtPicksTable(S);
   if (window.Plotly) {
     rtChart("rt-chart-total", T, "speedup_total", "in total time");
-    rtChart("rt-chart-geo", T, "speedup_geomean", "on the typical instance");
+    rtChart("rt-chart-median", T, "speedup_median", "on the median instance");
+    rtPicksChart("rt-chart-picks", S);
   } else {
     document.querySelector(".rt-charts").hidden = true;
-    $("#rt-details").open = true;                       // no Plotly: the table is the only view
+    $("#rt-fig-picks").hidden = true;
+    $("#rt-details").open = true;                       // no Plotly: the tables are the only view
   }
 
   const md = RT.model;
   const modelBlk = md
     ? `<h3>The model</h3><p>The router is made of ${md.pairs.length} random forests, one per pair of the ${md.encodings.length} encodings. Each has ${md.trees} trees of depth at most ${md.max_depth}, and no leaf rests on fewer than ${md.min_samples_leaf} training instances. A forest predicts from the ${md.n_features} features which of its two encodings is faster. Every training instance is weighted by the two encodings' time difference, so avoiding a timeout counts far more than winning a near-tie.</p>
-       <p>The encoding that wins the most pairs is picked. On a tie, or when the pick does not beat <span class="mono">${esc(md.fallback)}</span> in their own forest${md.margin > 0 ? ` by more than ${md.margin}` : ""}, the router uses <span class="mono">${esc(md.fallback)}</span>, the best single encoding. The model DateSat uses, <span class="mono">outputs/model/router.json</span>, is trained on all ${md.trained_on} instances with these settings.</p>`
+       <p>The encoding that wins the most pairs is picked. On a tie, or when the pick does not beat <span class="mono">${esc(md.fallback)}</span> in their own forest${md.margin > 0 ? ` by more than ${md.margin}` : ""}, the router uses <span class="mono">${esc(md.fallback)}</span>${md.fallback === cv.best_performing_encoding ? ", the best single encoding" : ""}. The model DateSat uses, <span class="mono">outputs/model/router.json</span>, is trained on all ${md.trained_on} instances with these settings.</p>`
       + (md.matches_cv ? "" : `<p class="rt-warn">The cross-validation measured a different setting (leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth}, margin ${cv.setting.margin}, ${cv.trees} trees) from the one this model was trained with, so its figures do not describe this model. Rerun <span class="mono">crossval_router.py</span> with the model's setting.</p>`)
     : `<h3>The model</h3><p>No trained model was found in <span class="mono">outputs/model/</span>.</p>`;
   const pairsBlk = md
@@ -690,29 +823,22 @@ function renderRouter() {
   $("#rt-notes").innerHTML = [
     modelBlk,
     `<h3>How it is measured</h3><p>${cv.folds}-fold cross-validation over the ${cv.instances} instances, leaving out the ${cv.dropped.all_timeout} on which every encoding timed out. Every fold holds the same share of every corpus. Each instance is routed by a router trained on the other folds, so no router routes an instance it was trained on. The whole procedure runs ${cv.repeats} times with different folds and the results are averaged, which is why the router's timeouts can be fractional. A timeout counts as ${cv.timeout_cost_s} s, and the router's own run time is not included.</p>`,
-    `<h3>The ideal maximum</h3><p>The oracle picks, for every instance, the encoding that turned out fastest. That is only known after running all ${md ? md.encodings.length : "the"} encodings, so no router that picks once, before solving, can do better. Its speedup is the ceiling, the dashed line in both charts.</p>`,
+    `<h3>The ideal maximum</h3><p>The oracle picks, for every instance, the encoding that turned out fastest. That is only known after running all ${md ? md.encodings.length : "the"} encodings, so no router that picks once, before solving, can do better. Its speedup is the ceiling, the dashed line in both speedup charts.</p>`,
     `<h3>A caveat</h3><p>The cross-validation measures one fixed setting: leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth} and margin ${cv.setting.margin}. No router routes an instance it was trained on, but if that setting was picked by comparing settings on these same instances, the figures are slightly optimistic. Testing on new constraints gives an unbiased figure.</p>`,
     pairsBlk,
   ].filter(Boolean).map((x) => `<div class="blk">${x}</div>`).join("");
 }
-$("#rt-table").addEventListener("mouseover", (e) => {
-  const td = e.target.closest("td[data-tip]");
-  if (td) showTip(e, td.dataset.tip); else hideTip();
-});
-$("#rt-table").addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
-$("#rt-table").addEventListener("mouseleave", hideTip);
-
-/* ---------- clusters ---------- */
-const CL = DATA.clusters;
-function clusterIds(key) { return [...new Set(CL.points.map((p) => p[key]))].sort((a, b) => a - b); }
-/* One palette slot and one marker shape per cluster, in cluster order; HDBSCAN noise is grey.
-   Past five groups some colour pairs are hard to tell apart, so the shape carries identity too. */
-const SYMBOLS = ["circle", "square", "diamond", "cross", "circle-open", "square-open", "diamond-open", "x"];
-function clusterStyle(key, id) {
-  if (id < 0) return { color: css("--muted-pt"), symbol: "circle" };
-  const i = clusterIds(key).filter((c) => c >= 0).indexOf(id);
-  return { color: i < 8 ? css(`--k${i + 1}`) : css("--ink-3"), symbol: SYMBOLS[i % SYMBOLS.length] };
+for (const id of ["#rt-table", "#rt-solve"]) {
+  $(id).addEventListener("mouseover", (e) => {
+    const td = e.target.closest("td[data-tip]");
+    if (td) showTip(e, td.dataset.tip); else hideTip();
+  });
+  $(id).addEventListener("mousemove", (e) => { if (!tip.hidden) showTip(e, tip.innerHTML); });
+  $(id).addEventListener("mouseleave", hideTip);
 }
+
+/* ---------- feature-space projection ---------- */
+const CL = DATA.clusters;
 function plotTheme() {
   return {
     paper_bgcolor: css("--surface"), plot_bgcolor: css("--surface"),
@@ -723,114 +849,85 @@ function axis3(title) {
   return { title: { text: title, font: { size: 11, color: css("--ink-3") } }, showticklabels: false,
     gridcolor: css("--rule"), zerolinecolor: css("--rule"), showbackground: false, showspikes: false };
 }
+function axis2(title) {
+  return { title: { text: title, font: { size: 11, color: css("--ink-3") } }, showticklabels: false,
+    ticks: "", gridcolor: css("--rule"), zeroline: false, showline: false };
+}
+/* PCA has one 3-component fit (its 2D view is the first two axes); t-SNE has one fit per dimension. */
+function coords(p) { return state.proj === "p" ? p.p : state.dim === "3" ? p.t3 : p.t2; }
 function renderScatter() {
-  const P = CL.points, pj = state.proj;
-  const hover = (p) => `${p.i}<br>${CNAME[p.c]} · K-means ${p.k} · HDBSCAN ${p.h < 0 ? "noise" : p.h}`;
-  const trace = (pts, name, color, size, opacity, symbol = "circle") => ({
-    type: "scatter3d", mode: "markers", name,
-    x: pts.map((p) => p[pj][0]), y: pts.map((p) => p[pj][1]), z: pts.map((p) => p[pj][2]),
-    text: pts.map(hover), hovertemplate: "%{text}<extra></extra>",
-    marker: { size, color, opacity, symbol, line: { width: 0 } },
-  });
-  let traces;
-  if (state.col === "c") {
-    traces = CORPORA.map((c) => trace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`), 3.6, 0.9));
+  const P = CL.points, n = Number(state.dim), d3 = n === 3;
+  const trace = (pts, name, color) => {
+    const xyz = pts.map(coords);
+    return {
+      type: d3 ? "scatter3d" : "scatter", mode: "markers", name,
+      x: xyz.map((v) => v[0]), y: xyz.map((v) => v[1]), ...(d3 ? { z: xyz.map((v) => v[2]) } : {}),
+      text: pts.map((p) => `${p.i}<br>${CNAME[p.c]}`), hovertemplate: "%{text}<extra></extra>",
+      marker: { size: d3 ? 3.6 : 6, color, opacity: d3 ? 0.9 : 0.75, line: { width: 0 } },
+    };
+  };
+  const traces = CORPORA.map((c) => trace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`)));
+  const ax = (state.proj === "p"
+    ? CL.pca_explained_variance.map((v, i) => `PC${i + 1} (${(v * 100).toFixed(0)}%)`)
+    : ["t-SNE 1", "t-SNE 2", "t-SNE 3"]).slice(0, n);
+  const layout = {
+    ...plotTheme(),
+    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
+  };
+  if (d3) {
+    Object.assign(layout, {
+      margin: { l: 0, r: 0, t: 0, b: 0 },
+      legend: { x: 0.01, y: 0.99, bgcolor: "rgba(0,0,0,0)", font: { size: 12, color: css("--ink-2") } },
+      scene: { xaxis: axis3(ax[0]), yaxis: axis3(ax[1]), zaxis: axis3(ax[2]), bgcolor: css("--surface") },
+      uirevision: "3d",                                  // the camera survives a change of projection
+    });
   } else {
-    const key = state.col, sel = state.sel[key];
-    traces = clusterIds(key).map((id) => {
-      const pts = P.filter((p) => p[key] === id), st = clusterStyle(key, id);
-      const name = `${id < 0 ? "Noise" : `Cluster ${id}`} (${pts.length})`;
-      return trace(pts, name, st.color, id === sel ? 5.5 : 4, id < 0 ? 0.6 : 0.9, st.symbol);
+    /* One unit is as long on both axes, so the picture is not stretched. */
+    Object.assign(layout, {
+      margin: { l: 36, r: 12, t: 40, b: 36 },
+      legend: { orientation: "h", x: 0, y: 1.01, yanchor: "bottom", bgcolor: "rgba(0,0,0,0)", font: { size: 12, color: css("--ink-2") } },
+      xaxis: axis2(ax[0]), yaxis: { ...axis2(ax[1]), scaleanchor: "x" },
+      uirevision: `2d-${state.proj}`,                    // zoom resets when the axes change meaning
     });
   }
-  const ax = pj === "p"
-    ? CL.pca_explained_variance.map((v, i) => `PC${i + 1} (${(v * 100).toFixed(0)}%)`)
-    : ["t-SNE 1", "t-SNE 2", "t-SNE 3"];
-  const layout = {
-    ...plotTheme(), margin: { l: 0, r: 0, t: 0, b: 0 },
-    legend: { x: 0.01, y: 0.99, bgcolor: "rgba(0,0,0,0)", font: { size: 12, color: css("--ink-2") } },
-    scene: { xaxis: axis3(ax[0]), yaxis: axis3(ax[1]), zaxis: axis3(ax[2]), bgcolor: css("--surface") },
-    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
-    uirevision: "keep",
-  };
-  Plotly.react("scatter", traces, layout, { displaylogo: false, responsive: true, modeBarButtonsToRemove: ["toImage", "resetCameraLastSave3d"] });
-  renderClusterSide();
+  Plotly.react("scatter", traces, layout, { displaylogo: false, responsive: true,
+    modeBarButtonsToRemove: ["toImage", "resetCameraLastSave3d", "select2d", "lasso2d"] });
+  $("#scatter").setAttribute("aria-label", `${n}D ${state.proj === "p" ? "PCA" : "t-SNE"} scatter of benchmark instances, coloured by corpus`);
+  renderProjectionSide();
 }
-function mixOf(pts) {
-  const n = pts.length || 1;
-  return CORPORA.map((c) => ({ c, k: pts.filter((p) => p.c === c).length })).map((o) => ({ ...o, f: o.k / n }));
-}
-function renderClusterSide() {
-  const side = $("#cl-side");
-  if (state.col === "c") {
-    side.innerHTML = `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. Switch to K-means or HDBSCAN to see the clusters found without that label.</p>
+function renderProjectionSide() {
+  const n = Number(state.dim), pct = (v) => `${(v * 100).toFixed(0)}%`;
+  const pv = CL.pca_explained_variance.slice(0, n);
+  const method = state.proj === "p"
+    ? `<h3>PCA, ${n} axes</h3><p>The ${n} directions along which the standardised features vary most. Together they keep <b class="mono">${pct(pv.reduce((a, b) => a + b, 0))}</b> of the variance: ${pv.map((v, i) => `PC${i + 1} ${pct(v)}`).join(" + ")}.</p>`
+    : `<h3>t-SNE, ${n} axes</h3><p>Places instances with similar features next to each other. Which instances are neighbours is meaningful; the axes, the size of a group and the gaps between groups are not. The 2D and 3D layouts are fitted separately, so they differ.</p>`;
+  $("#cl-side").innerHTML = `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. The projection never sees it, so corpora that land apart are ones the features tell apart.</p>
       <div class="mix-legend">${CORPORA.map((c) => `<span><span class="dot" style="background:var(--c-${c})"></span>${CNAME[c]} ${M.corpora[c]}</span>`).join("")}</div></div>
-      <div class="blk"><h3>Agreement with corpus</h3><p>Adjusted Rand index, 0 = unrelated, 1 = identical grouping.<br>K-means <b class="mono">${CL.ari_kmeans_vs_corpus.toFixed(2)}</b> · HDBSCAN <b class="mono">${CL.ari_hdbscan_vs_corpus.toFixed(2)}</b></p></div>`;
-    return;
-  }
-  const key = state.col, ids = clusterIds(key), sel = state.sel[key];
-  const pts = CL.points.filter((p) => p[key] === sel);
-  const mix = mixOf(pts);
-  const prof = (key === "k" ? CL.cluster_profiles : CL.hdbscan_profiles || {})[String(sel)];
-  let drivers = "";
-  if (prof && sel >= 0) {
-    const zmax = Math.max(...prof.drivers.map((d) => Math.abs(d.z)), 1);
-    drivers = `<div class="blk"><h3>What sets it apart</h3><p>Features whose cluster mean is furthest from the overall mean, in standard deviations.</p><ul class="drivers">${prof.drivers.map((d) => {
-      const w = (Math.abs(d.z) / zmax) * 50;
-      const left = d.z >= 0 ? 50 : 50 - w;
-      return `<li><span>${esc(d.feature)}</span><span class="z">${d.z > 0 ? "+" : "−"}${Math.abs(d.z).toFixed(1)}</span><span class="zb"><i style="left:${left}%;width:${w}%"></i></span></li>`;
-    }).join("")}</ul></div>`;
-  } else if (sel < 0) {
-    drivers = `<div class="blk"><p>HDBSCAN leaves points in sparse regions unassigned. These ${pts.length} instances belong to no dense cluster.</p></div>`;
-  }
-  side.innerHTML = `<div class="blk"><h3>${key === "k" ? `K-means, k = ${CL.kmeans_k}` : `HDBSCAN, ${CL.hdbscan_clusters} clusters + noise`}</h3>
-      <p>Each cluster has its own colour and marker shape. Pick one to enlarge it and see what sets it apart.</p>
-      <div class="chips" role="group" aria-label="Choose cluster">${ids.map((i) => {
-        const n = CL.points.filter((p) => p[key] === i).length;
-        return `<button id="chip-${key}-${i < 0 ? "noise" : i}" data-id="${i}" aria-pressed="${i === sel}"><span class="dot" style="background:${clusterStyle(key, i).color}"></span>${i < 0 ? "noise" : i} · ${n}</button>`;
-      }).join("")}</div></div>
-    <div class="blk"><h3><span class="dot" style="background:${clusterStyle(key, sel).color}"></span>${sel < 0 ? "Noise" : `Cluster ${sel}`}: ${pts.length} instances</h3>
-      <div class="mix">${mix.filter((m) => m.k).map((m) => `<i style="width:${(m.f * 100).toFixed(1)}%;background:var(--c-${m.c})" title="${CNAME[m.c]} ${m.k}"></i>`).join("")}</div>
-      <div class="mix-legend">${mix.map((m) => `<span><span class="dot" style="background:var(--c-${m.c})"></span>${CNAME[m.c]} ${m.k}</span>`).join("")}</div></div>
-    ${drivers}`;
-  side.querySelectorAll(".chips button").forEach((b) => b.addEventListener("click", () => {
-    state.sel[key] = Number(b.dataset.id); renderScatter();
-  }));
-}
-function renderClusterStats() {
-  const sil = CL.silhouette_by_k;
-  const best = sil[String(CL.kmeans_k)];
-  const close = Object.entries(sil).filter(([, v]) => best - v <= 0.02).map(([k]) => k);
-  const pv = CL.pca_explained_variance;
-  $("#cl-stats").innerHTML = [
-    ["K-means k", CL.kmeans_k, `silhouette ${best.toFixed(2)}; k = ${close.join(", ")} all within 0.02, so k is fragile`],
-    ["HDBSCAN", `${CL.hdbscan_clusters} + noise`, `${CL.hdbscan_noise} instances left unassigned`],
-    ["Corpus agreement", CL.ari_kmeans_vs_corpus.toFixed(2), `adjusted Rand, K-means (HDBSCAN ${CL.ari_hdbscan_vs_corpus.toFixed(2)})`],
-    ["PCA, 3 axes", `${(pv.reduce((a, b) => a + b, 0) * 100).toFixed(0)}%`, `of variance: ${pv.map((v) => (v * 100).toFixed(0) + "%").join(" + ")}`],
-  ].map(([k, v, s]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join("");
+    <div class="blk">${method}</div>
+    <p>${n === 3 ? "Drag to rotate, scroll to zoom." : "Drag to zoom, double-click to zoom back out."} Click a corpus in the legend to hide it.</p>`;
 }
 
 /* ---------- feature correlation ---------- */
 /* Cells are sized from the available width (16-26 px) and the plot area is exactly
    n x n cells, so the matrix stays square and legible instead of being squeezed. */
 const CORR_M = { l: 170, r: 90, t: 12, b: 155 };
-let corrCell = 0;
-function corrSize(n) {
-  const avail = $("#corr").parentElement.clientWidth || 1120;
+const corrCell = {};
+function corrSize(id, n) {
+  const avail = document.getElementById(id).parentElement.clientWidth || 1120;
   const cell = Math.max(16, Math.min(26, Math.floor((avail - CORR_M.l - CORR_M.r) / n)));
   return { cell, w: n * cell + CORR_M.l + CORR_M.r, h: n * cell + CORR_M.t + CORR_M.b };
 }
-function renderCorr() {
-  const C = DATA.corr, n = C.order.length;
+function renderCorr(id = "corr", C = DATA.corr) {
+  const n = C.order.length;
   const s = divStops();
-  const size = corrSize(n);
-  corrCell = size.cell;
-  const el = $("#corr");
+  const size = corrSize(id, n);
+  corrCell[id] = size.cell;
+  const el = document.getElementById(id);
   el.style.width = size.w + "px";
   el.style.height = size.h + "px";
   const tick = { tickfont: { family: css("--mono"), size: size.cell >= 20 ? 11 : 10, color: css("--ink-2") },
                  showgrid: false, zeroline: false, ticks: "", automargin: false };
-  Plotly.react("corr", [{
+  Plotly.react(id, [{
     type: "heatmap", x: C.order, y: C.order, zmin: -1, zmax: 1,
     z: C.z.map((row, i) => row.map((v, j) => (i === j ? null : v))),   // diagonal is always +1: leave it blank
     colorscale: s.map((c, i) => [i / 4, c]), xgap: 2, ygap: 2, hoverongaps: false,
@@ -848,8 +945,76 @@ function renderCorr() {
   }, { displaylogo: false, responsive: false, modeBarButtonsToRemove: ["toImage", "lasso2d", "select2d"] });
 }
 addEventListener("resize", () => {
-  if (window.Plotly && corrSize(DATA.corr.order.length).cell !== corrCell) renderCorr();
+  if (!window.Plotly) return;
+  if (corrSize("corr", DATA.corr.order.length).cell !== corrCell.corr) renderCorr();
+  const FR = DATA.reduction;
+  if (FR && corrSize("corr-sel", FR.corr.order.length).cell !== corrCell["corr-sel"]) renderCorr("corr-sel", FR.corr);
 });
+
+/* ---------- feature reduction ---------- */
+function renderReduction() {
+  const FR = DATA.reduction;
+  if (!FR) {
+    $("#fr-body").hidden = true;
+    $("#fr-notes").innerHTML = '<p class="note">No feature selection. Run <span class="mono">python -m analysis.stats.select_features</span> and rebuild the report.</p>';
+    return;
+  }
+  const t = FR.threshold, nSel = FR.selected.length, nFam = FR.families.length;
+  const nMerged = FR.families.reduce((a, f) => a + f.dropped.length + 1, 0);
+  const left = FR.most_correlated_left, R = FR.router;
+  const sf = (v) => v.toFixed(1) + " s";
+  const tiles = [
+    ["Features kept", `${nSel} of ${FR.n_features}`, `${FR.constant.length} constant, dropped; ${nFam} families of ${nMerged} features, one kept from each`],
+    ["Largest |ρ| left", Math.abs(left.rho).toFixed(2), `<span class="mono">${esc(left.a)}</span> and <span class="mono">${esc(left.b)}</span>; every pair of kept features is below ${t}`],
+  ];
+  if (R) {
+    const A = R.scopes.all.all, S = R.scopes.all.selected;
+    const d = S.router.total_s / A.router.total_s - 1;
+    tiles.push(
+      [`Router, ${R.n_features.all} features`, sf(A.router.total_s), `${xf(A.router.speedup_total)} over always <span class="mono">${esc(R.baseline)}</span>; picks the fastest on ${pctf(A.picks_fastest)}`],
+      [`Router, ${R.n_features.selected} features`, sf(S.router.total_s), `${xf(S.router.speedup_total)} over always <span class="mono">${esc(R.baseline)}</span>; picks the fastest on ${pctf(S.picks_fastest)}`],
+      ["Change in total time", (d >= 0 ? "+" : "−") + Math.abs(100 * d).toFixed(1) + "%", `${d > 0 ? "slower" : d < 0 ? "faster" : "no change"} with ${R.n_features.selected} features than with ${R.n_features.all}, over all ${A.instances} instances`],
+    );
+  }
+  $("#fr-stats").innerHTML = tiles.map(([k, v, sub]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`).join("");
+
+  if (R) {
+    const B = esc(R.best), na = R.n_features.all, ns = R.n_features.selected;
+    $("#fr-table-cap").innerHTML = `Out of fold, ${R.folds}-fold cross-validation repeated ${R.repeats} times, as in the router section; ± is the standard deviation of the router's total over the repeats. Always <span class="mono">${B}</span>, the best single encoding, and the oracle do not depend on the features and are shown for scale.`
+      + (R.same_setting ? "" : ' <span class="rt-warn">The two cross-validations did not measure the same setting on the same instances, so they are not comparable. Rerun both.</span>')
+      + (R.matches_selection ? "" : ' <span class="rt-warn">The cross-validation on the selected features used a different selection from the one below. Rerun <span class="mono">crossval_router.py --selected</span>.</span>');
+    let h = `<thead><tr><th class="l" rowspan="2">Corpus</th>
+      <th class="grp" colspan="3">Router, all ${na} features</th><th class="grp" colspan="3">Router, ${ns} selected features</th>
+      <th rowspan="2" class="w">Change in total time</th><th class="grp" colspan="2">For scale</th></tr>
+      <tr><th class="sub">total time</th><th class="sub">timeouts</th><th class="sub">picks fastest</th>
+      <th class="sub">total time</th><th class="sub">timeouts</th><th class="sub">picks fastest</th>
+      <th class="sub">always ${B}</th><th class="sub">oracle</th></tr></thead><tbody>`;
+    for (const [c, sc] of Object.entries(R.scopes)) {
+      const A = sc.all, S = sc.selected, d = S.router.total_s - A.router.total_s;
+      const run = (X) => `<td${tipAttr(`${CNAME[c]}, ${X === A ? na : ns} features<br>Router's total over the ${X.instances} instances, averaged over ${R.repeats} repeats (± one standard deviation).`)}>${sf(X.router.total_s)} <span class="dim">± ${X.router_total_sd.toFixed(1)}</span></td>
+        <td>${X.router.timeouts ? numf(X.router.timeouts) : zero(0)}</td><td>${pctf(X.picks_fastest)}</td>`;
+      h += `<tr${c === "all" ? ' class="rt-router"' : ""}><td class="l">${CNAME[c]} <span class="dim">(${A.instances})</span></td>${run(A)}${run(S)}
+        <td${tipAttr(`${CNAME[c]}<br>${Math.abs(d).toFixed(1)} s ${d > 0 ? "slower" : "faster"} in total with ${ns} features (${(d >= 0 ? "+" : "−") + Math.abs(100 * d / A.router.total_s).toFixed(1)}%).`)}>${(d >= 0 ? "+" : "−") + Math.abs(d).toFixed(1)} s</td>
+        <td class="dim">${sf(A.best.total_s)}</td><td class="dim">${sf(A.oracle.total_s)}</td></tr>`;
+    }
+    $("#fr-table").innerHTML = h + "</tbody>";
+  } else {
+    $("#fr-table-cap").innerHTML = 'No cross-validated results for both feature sets. Run <span class="mono">python -m analysis.router.crossval_router</span> with and without <span class="mono">--selected</span>, and rebuild the report.';
+    $("#fr-table").hidden = true;
+  }
+
+  $("#fr-fam-cap").innerHTML = `Each family is a group of features in which every pair has |ρ| ≥ ${t}. The kept feature is on the left; the number after each dropped feature is its ρ with the kept one.`;
+  $("#fr-fam").innerHTML = FR.families.map((f) => `<li><b>${esc(f.kept)}</b><span>${f.dropped.map((x) => `${esc(x.feature)} <span class="r">${fmtR(x.rho)}</span>`).join(", ")}</span></li>`).join("")
+    + (FR.constant.length ? `<li><b class="dim">constant, dropped</b><span>${FR.constant.map(esc).join(", ")}</span></li>` : "");
+  $("#fr-corr-cap").innerHTML = `The ${nSel} kept features, ordered so that related features sit together, as in the full matrix. Hover a cell for its exact ρ.`;
+
+  $("#fr-notes").innerHTML = [
+    `<h3>How the families are formed</h3><p>Features are clustered by complete linkage on 1 − |ρ| over all ${M.n_instances} instances, the same clustering that orders the matrices, and the tree is cut so that every pair inside a family has |ρ| of at least ${t}. Complete linkage bounds only the pairs inside a family, so two kept features can still reach ${t}; the clustering is then repeated on the kept features until no pair of them does.</p>`,
+    `<h3>Which feature is kept</h3><p>The family's medoid: the member with the highest mean |ρ| to the rest of the family, the one that best stands in for the others. On a tie, as in every family of two, the one that comes first in <span class="mono">features.csv</span> is kept.</p>`,
+    `<h3>Why the comparison is fair</h3><p>The choice looks only at the features, never at the solver times, so the cross-validation on the selected features is not biased by it. Both cross-validations cut the instances into the same folds.</p>`,
+    `<h3>What correlation does not say</h3><p>ρ measures whether two features rank the instances the same way. Below |ρ| = 1 they disagree on some instances, and a tree that splits on one can separate instances the other cannot. Whether the router needed that is what the table above measures, not the correlation.</p>`,
+  ].map((x) => `<div class="blk">${x}</div>`).join("");
+}
 
 /* ---------- wiring ---------- */
 wireSeg("#seg-scope", "scope", renderHeat);
@@ -858,14 +1023,17 @@ wireSeg("#seg-oscope", "oscope", renderOutcomes);
 wireSeg("#seg-oenc", "oenc", renderOutcomes);
 wireSeg("#seg-rscope", "rscope", renderRouter);
 wireSeg("#seg-proj", "proj", renderScatter);
-wireSeg("#seg-col", "col", renderScatter);
+wireSeg("#seg-dim", "dim", renderScatter);
 
 function renderAll() {
-  renderHeat(); renderOutcomes(); renderRouter(); renderClusterStats();
-  if (window.Plotly) { renderScatter(); renderCorr(); }
+  renderHeat(); renderOutcomes(); renderRouter(); renderReduction();
+  if (window.Plotly) {
+    renderScatter(); renderCorr();
+    if (DATA.reduction) renderCorr("corr-sel", DATA.reduction.corr);
+  }
   else {
-    $("#scatter").innerHTML = '<p class="note" style="padding:16px">The 3D view needs Plotly, which could not be loaded from the CDN.</p>';
-    renderClusterSide();
+    $("#scatter").innerHTML = '<p class="note" style="padding:16px">The projection needs Plotly, which could not be loaded from the CDN.</p>';
+    renderProjectionSide();
   }
 }
 renderAll();

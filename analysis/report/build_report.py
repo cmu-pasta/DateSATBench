@@ -3,13 +3,19 @@ Stage 5: build the standalone analysis report from the outputs of stages 2-4.
 
     python -m analysis.report.build_report --timeout 60000     # or set DATESAT_TIMEOUT_MS
 
-Reads features.csv (+ features_meta.json), joined.csv and clusters.json, computes the
-solver outcomes and speedup heatmaps for every corpus (and timeout mode) and the
+Reads features.csv (+ features_meta.json), joined.csv and clusters.json (the PCA and
+t-SNE projections), computes the
+solver outcomes and speedup heatmaps for every corpus (and timeout mode), all from the one
+measurement of instance_costs.py that the router uses too, and the
 feature-feature correlation (same functions as solver_outcomes.py and the PNG scripts,
 so the numbers match), and inlines everything into
 report_template.html. The specialized-router section comes from the outputs of stages 6
-and 7: crossval_router.py's router_eval.json and train_router.py's router_meta.json; it
-is left out when crossval_router.py has not been run. Writes a single self-contained analysis/outputs/report.html. Only Plotly
+and 7: crossval_router.py's router_eval.json (and, for how often each encoding is the
+fastest, the router_eval.csv beside it) and train_router.py's router_meta.json; it is
+left out when crossval_router.py has not been run. The feature-reduction section comes
+from select_features.py's selected_features.json and, for the router with those features,
+from crossval_router.py --selected; it is left out when select_features.py has not been
+run. Writes a single self-contained analysis/outputs/report.html. Only Plotly
 and the IBM Plex webfonts are fetched from a CDN when the page opens.
 """
 
@@ -19,12 +25,11 @@ import math
 from datetime import date
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from analysis.features.extract_features import FEATURE_GROUPS
-from analysis.paths import CROSS_VALIDATION, MODEL, OUTPUTS, REPO
-from analysis.stats.cluster import build_matrix, profile_clusters
+from analysis.paths import (CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, MODEL, OUTPUTS, REPO,
+                            SELECTED_FEATURES)
 from analysis.stats.join_results import add_timeout_arg, check_run_config, timeout_seconds
 from analysis.stats.plot_feature_correlation import constant_features, feature_correlation
 from analysis.stats.plot_speedup_heatmap import speedup_correlations
@@ -54,22 +59,51 @@ def rel(path):
         return str(path)
 
 
+def fastest_counts(csv_path, encodings):
+    """How many instances each encoding is the fastest on, for "all" and for every corpus,
+    from crossval_router.py's router_eval.csv (its `best` column is the same in every
+    repeat), or None when there is no such file."""
+    csv_path = Path(csv_path)
+    if not csv_path.exists():
+        return None
+    log = pd.read_csv(csv_path)
+    log = log[log["repeat"] == log["repeat"].min()]
+    scopes = {"all": log, **{c: g for c, g in log.groupby("corpus")}}
+    return {c: {e: int((g["best"] == e).sum()) for e in encodings} for c, g in scopes.items()}
+
+
+def solve_rates(summary):
+    """Instances each strategy of a crossval_router.py summary solves within the timeout,
+    and their share: the instances less its timeouts, which for the router are averaged
+    over the repeats."""
+    n = summary["instances"]
+    return {name: {"solved": clean(float(n - t["timeouts"])),
+                   "rate": clean(float((n - t["timeouts"]) / n))}
+            for name, t in summary["table"].items()}
+
+
 def router_section(cv_path, meta_path):
     """The router's cross-validated results (crossval_router.py) and the settings of the
     model trained on every instance (train_router.py), or None when there are no
     cross-validated results. `matches_cv` says whether the model was trained with the
-    setting the cross-validation measured."""
+    setting the cross-validation measured. Each scope also gets every strategy's solve
+    rate and, from router_eval.csv beside the results, how many instances each encoding
+    is the fastest on (None without that file)."""
     cv_path, meta_path = Path(cv_path), Path(meta_path)
     if not cv_path.exists():
         return None
     cv = json.loads(cv_path.read_text())
     scopes = {"all": cv["overall"], **cv["by_corpus"]}
+    encodings = sorted(n[len("always "):] for n in cv["overall"]["table"] if n.startswith("always "))
+    fastest = fastest_counts(cv_path.with_name("router_eval.csv"), encodings)
     out = {
         "cv": {k: cv[k] for k in ("instances", "dropped", "folds", "repeats", "trees", "setting",
                                   "fallbacks", "baseline", "best_performing_encoding",
                                   "timeout_cost_s")},
         "scopes": {c: {"instances": s["instances"], "table": s["table"],
+                       "solve": solve_rates(s),
                        "picks": s["router_picks"], "fell_back": s["router_fell_back"],
+                       "fastest": fastest.get(c) if fastest else None,
                        "picks_fastest": s["router_picks_fastest"],
                        "gap_closed": s["gap_closed_to_oracle"]["router"].get(
                            f"always {cv['best_performing_encoding']}")}
@@ -90,6 +124,56 @@ def router_section(cv_path, meta_path):
     return out
 
 
+def reduction_section(selection_path, feats, cv_all_path, cv_selected_path):
+    """The features select_features.py kept, the correlation left among them (ordered as
+    in the full matrix), and the router cross-validated with every feature and with the
+    selected ones, or None when there is no selection.
+
+    `router` is None unless both cross-validations exist. `same_setting` says whether
+    they measured the same setting on the same instances, and `matches_selection`
+    whether the one with the selected features used exactly this selection.
+    """
+    selection_path = Path(selection_path)
+    if not selection_path.exists():
+        return None
+    sel = json.loads(selection_path.read_text())
+    rho, order, _ = feature_correlation(feats[sel["selected"]])
+    out = {k: sel[k] for k in ("threshold", "n_features", "constant", "families", "selected",
+                               "most_correlated_left")}
+    out["corr"] = {"order": order, "z": [[clean(float(v), 3) for v in row] for row in rho.values]}
+    out["router"] = None
+    cv_all_path, cv_selected_path = Path(cv_all_path), Path(cv_selected_path)
+    if not (cv_all_path.exists() and cv_selected_path.exists()):
+        return out
+    runs = {"all": json.loads(cv_all_path.read_text()),
+            "selected": json.loads(cv_selected_path.read_text())}
+    a, s = runs["all"], runs["selected"]
+    best = a["best_performing_encoding"]
+
+    def scope(summary):
+        t = summary["table"]
+        return {"instances": summary["instances"], "router": t["router"],
+                "best": t[f"always {best}"], "oracle": t["oracle"],
+                "router_total_sd": summary["router_total_sd_s"],
+                "picks_fastest": summary["router_picks_fastest"],
+                "gap_closed": summary["gap_closed_to_oracle"]["router"].get(f"always {best}")}
+
+    out["router"] = {
+        "best": best,
+        "baseline": a["baseline"],
+        "folds": a["folds"],
+        "repeats": a["repeats"],
+        "n_features": {k: len(r.get("feature_columns", [])) or None for k, r in runs.items()},
+        "same_setting": all(a[k] == s[k] for k in ("instances", "folds", "repeats", "trees",
+                                                   "setting", "timeout_cost_s")),
+        "matches_selection": sorted(s.get("feature_columns", [])) == sorted(sel["selected"]),
+        "scopes": {c: {k: scope(r["overall"] if c == "all" else r["by_corpus"][c])
+                       for k, r in runs.items()}
+                   for c in ["all", *a["by_corpus"]]},
+    }
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
@@ -102,6 +186,10 @@ def main():
                     help="crossval_router.py's results")
     ap.add_argument("--router-model", default=str(MODEL / "router_meta.json"),
                     help="train_router.py's model settings")
+    ap.add_argument("--selected-features", default=str(SELECTED_FEATURES),
+                    help="select_features.py's selection")
+    ap.add_argument("--router-cv-selected", default=str(CROSS_VALIDATION_SELECTED / "router_eval.json"),
+                    help="crossval_router.py --selected's results")
     ap.add_argument("--template", default=str(HERE / "report_template.html"))
     ap.add_argument("--output", default=str(OUTPUTS / "report.html"))
     args = ap.parse_args()
@@ -120,7 +208,7 @@ def main():
     # ---- outcomes per scope x encoding (same function as the CLI) --------
     outcomes = {}
     for c in ["all"] + CORPORA:
-        t = solver_outcomes(joined, args.baseline, c)
+        t = solver_outcomes(joined, timeout_s, args.baseline, c)
         outcomes[c] = {
             e: {k: None if pd.isna(v) else int(v) if k in OUTCOME_COUNTS else clean(float(v), 6)
                 for k, v in row.items()}
@@ -132,7 +220,7 @@ def main():
     for mode in ("bound", "drop"):
         heat[mode] = {}
         for c in [None] + CORPORA:
-            rho, q, n = speedup_correlations(joined, args.baseline, c, mode)
+            rho, q, n = speedup_correlations(joined, timeout_s, args.baseline, c, mode)
             heat[mode][c or "all"] = {"rho": frame(rho), "q": frame(q, 6), "n": n}
 
     # ---- feature-feature correlation ------------------------------------
@@ -143,23 +231,14 @@ def main():
         "constant": constant_features(feats),     # left out of the matrix
     }
 
-    # ---- clusters --------------------------------------------------------
+    # ---- 2D and 3D projections -------------------------------------------
     cl = {
-        k: clusters[k] for k in (
-            "kmeans_k", "silhouette_by_k", "hdbscan_clusters", "hdbscan_noise",
-            "ari_kmeans_vs_corpus", "ari_hdbscan_vs_corpus", "pca_explained_variance",
-            "pca_loadings", "cluster_profiles",
-        )
+        "pca_explained_variance": clusters["pca_explained_variance"],
+        "points": [
+            {"i": p["id"], "c": p["corpus"], "p": p["pca"], "t2": p["tsne_2d"], "t3": p["tsne_3d"]}
+            for p in clusters["points"]
+        ],
     }
-    # Same drivers cluster.py computes for K-means, for the HDBSCAN labels too.
-    Z, names, *_ = build_matrix(feats)
-    by_id = {p["id"]: p["hdbscan"] for p in clusters["points"]}
-    cl["hdbscan_profiles"] = profile_clusters(Z, np.array([by_id[i] for i in feats["id"]]), names)
-    cl["points"] = [
-        {"i": p["id"], "c": p["corpus"], "k": p["kmeans"], "h": p["hdbscan"],
-         "p": p["pca"], "t": p["tsne"]}
-        for p in clusters["points"]
-    ]
 
     data = {
         "meta": {
@@ -181,6 +260,8 @@ def main():
         "corr": corr,
         "clusters": cl,
         "router": router_section(args.router_cv, args.router_model),
+        "reduction": reduction_section(args.selected_features, feats, args.router_cv,
+                                       args.router_cv_selected),
     }
 
     template = Path(args.template).read_text()
