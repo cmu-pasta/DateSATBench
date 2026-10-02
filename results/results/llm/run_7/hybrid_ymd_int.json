@@ -1,0 +1,3599 @@
+[
+  {
+    "id": "llm-logical_operators-1",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(4, 0, 0)",
+      "(x.year == 2000 && x.month == 2) && (x.day == 29 || x.day == 28)",
+      "(y.year == 2004 || y.year == 2000) && y.month == 2",
+      "y.day == 29",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.00953984260559082,
+    "build_time": 0.008321523666381836,
+    "solve_time": 0.0012183189392089844,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2004, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-2",
+    "constraints": [
+      "start >= Date(1950, 6, 15)",
+      "end <= Date(2050, 12, 31)",
+      "(start.month >= 6 && start.month <= 12) -> (start.year >= 1950)",
+      "mid == start + Period(0, 6, 0)",
+      "(mid > start) -> !(mid == start)",
+      "end == mid + Period(1, 0, 0)",
+      "(end.year > mid.year) -> (end.month >= 1 && end.month <= 12)",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "mid: date",
+      "end: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.028350830078125,
+    "build_time": 0.013421297073364258,
+    "solve_time": 0.014929533004760742,
+    "error_message": null,
+    "solution": {
+      "end": "Date(2006, 8, 1)",
+      "mid": "Date(2005, 8, 1)",
+      "start": "Date(2005, 2, 1)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-3",
+    "constraints": [
+      "x == Date(2023, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "(y.month == 2 && y.day == 28) || (y.month == 2 && y.day == 31)",
+      "!(y.day < 30)",
+      "y.day == 31 && y.month == 2",
+      "(x.month == 1 && x.day == 31) -> (y.month == 2 && y.day >= 28)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.008736848831176758,
+    "build_time": 0.008169174194335938,
+    "solve_time": 0.0005676746368408203,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-4",
+    "constraints": [
+      "a == Date(1920, 3, 1)",
+      "b == a + Period(0, 0, 365)",
+      "(a.year == 1920 && b.year == 1921) || (a.year == 1920 && b.year == 1920)",
+      "c == Date(1920, 12, 31)",
+      "(a < c) -> (b >= a && b <= c + Period(0, 3, 0))",
+      "d == b + Period(0, 6, 0)",
+      "e == d + Period(0, 0, 31)",
+      "(d.month >= 6 && d.month <= 8) -> (e.month >= 7 && e.month <= 9)",
+      "!(a == b) && !(b == c)",
+      "(e > d && d > c) || (e.year == 1921 && e.month >= 8)",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)",
+      "e >= Date(1, 1, 1)",
+      "e <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date",
+      "e: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.3904697895050049,
+    "build_time": 0.022187471389770508,
+    "solve_time": 0.3682823181152344,
+    "error_message": null,
+    "solution": {
+      "a": "Date(1920, 3, 1)",
+      "b": "Date(1921, 3, 1)",
+      "c": "Date(1920, 12, 31)",
+      "d": "Date(1921, 9, 1)",
+      "e": "Date(1921, 10, 2)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-5",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "(y.year == 2001 && y.month == 2) -> (y.day == 29)",
+      "z == x + Period(0, 12, 0)",
+      "(z.year == 2001 && z.month == 2) && (z.day == 29 || z.day == 30)",
+      "!(y.day == 28)",
+      "(x.year == 2000 && x.day == 29) -> (y.year == 2001 && y.day == 29)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.013246297836303711,
+    "build_time": 0.012612581253051758,
+    "solve_time": 0.0006337165832519531,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-6",
+    "constraints": [
+      "leap_date == Date(2000, 2, 29)",
+      "next_year == leap_date + Period(1, 0, 0)",
+      "(leap_date.year == 2000 && leap_date.month == 2) -> (leap_date.day == 29)",
+      "(next_year.year == 2001 && next_year.month == 2) -> (next_year.day == 28)",
+      "(leap_date.day == 29 && leap_date.month == 2) || (leap_date.year != 2000)",
+      "leap_date >= Date(1, 1, 1)",
+      "leap_date <= Date(9999, 12, 31)",
+      "next_year >= Date(1, 1, 1)",
+      "next_year <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap_date: date",
+      "next_year: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.008718490600585938,
+    "build_time": 0.0078277587890625,
+    "solve_time": 0.0008907318115234375,
+    "error_message": null,
+    "solution": {
+      "leap_date": "Date(2000, 2, 29)",
+      "next_year": "Date(2001, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-7",
+    "constraints": [
+      "x >= Date(2020, 1, 28) && x <= Date(2020, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 0, 31)",
+      "(x.day >= 28) -> (y.month == x.month + 1 || y.month == 1)",
+      "!(y == z)",
+      "(y > z) -> (y.month > 2)",
+      "(x.month == 1 && y.month == 2) || (x.month == 12 && y.month == 1)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.1645956039428711,
+    "build_time": 0.012788057327270508,
+    "solve_time": 0.15180754661560059,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2020, 1, 31)",
+      "y": "Date(2020, 2, 29)",
+      "z": "Date(2020, 3, 2)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-8",
+    "constraints": [
+      "a == Date(2010, 6, 15)",
+      "b == a + Period(0, 3, 0)",
+      "c == a + Period(0, 0, 90)",
+      "(a.month == 6 && b.month == 9) -> (b.day == 15)",
+      "!(c.month == b.month) && (c.day == b.day)",
+      "d == Date(2010, 9, 15)",
+      "(b == d) || (c == d)",
+      "(b.year == c.year && b.month == c.month) -> (b == c)",
+      "b != c && b.month == c.month",
+      "(a.day == 15) -> (b.day == 15 && c.day != 15 && d.day == 15)",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.01551055908203125,
+    "build_time": 0.01472020149230957,
+    "solve_time": 0.0007903575897216797,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-9",
+    "constraints": [
+      "date1 >= Date(1950, 3, 1) && date1 <= Date(1950, 12, 31)",
+      "date2 == date1 + Period(0, 6, 0)",
+      "(date1.month <= 6) || (date2.month <= 6)",
+      "(date1.month == 3 && date1.day == 31) || (date1.month == 4 && date1.day == 30)",
+      "!(date1.year == date2.year) || (date1.month + 6 <= 12)",
+      "(date2.year == 1950 || date2.year == 1951) && date2.month >= 1",
+      "date1 >= Date(1, 1, 1)",
+      "date1 <= Date(9999, 12, 31)",
+      "date2 >= Date(1, 1, 1)",
+      "date2 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "date1: date",
+      "date2: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01630997657775879,
+    "build_time": 0.008552312850952148,
+    "solve_time": 0.007757663726806641,
+    "error_message": null,
+    "solution": {
+      "date1": "Date(1950, 4, 30)",
+      "date2": "Date(1950, 10, 30)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-10",
+    "constraints": [
+      "start == Date(2015, 11, 15)",
+      "mid == start + Period(0, 2, 0)",
+      "end == mid + Period(0, 2, 0)",
+      "(start.month == 11 && mid.month == 1) -> (mid.year == start.year + 1)",
+      "(mid.year > start.year) && (end.year >= mid.year)",
+      "(end.month == 3 && end.day == 15) || (end.month == 2 && end.day == 28)",
+      "!(start.year == end.year) -> (end > start + Period(0, 3, 0))",
+      "(start.month + 4 > 12) || (end.month <= start.month + 4)",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "mid: date",
+      "end: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.016716957092285156,
+    "build_time": 0.015410184860229492,
+    "solve_time": 0.001306772232055664,
+    "error_message": null,
+    "solution": {
+      "end": "Date(2016, 3, 15)",
+      "mid": "Date(2016, 1, 15)",
+      "start": "Date(2015, 11, 15)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-11",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "(x.day == 29 && x.month == 2) -> ((Date(x.year, 2, 28) + Period(0, 0, 1)).month == 2)",
+      "y == x + Period(4, 0, 0)",
+      "((Date(x.year, 2, 28) + Period(0, 0, 1)).month == 2) -> (y == Date(2004, 2, 29))",
+      "!(x.year == y.year) && (x.month == y.month) && (x.day == y.day)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.016138076782226562,
+    "build_time": 0.01460123062133789,
+    "solve_time": 0.0015368461608886719,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2004, 2, 29)",
+      "_aux_date_0": "Date(2000, 2, 28)",
+      "_aux_date_1": "Date(2000, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-12",
+    "constraints": [
+      "start >= Date(2020, 1, 28)",
+      "start <= Date(2020, 1, 31)",
+      "mid == start + Period(0, 1, 0)",
+      "(start.day == 31 || start.day == 30) -> (mid.day < start.day)",
+      "(mid.month == 2 && mid.day == 29) || (mid.month == 2 && mid.day == 28)",
+      "end == mid + Period(0, 1, 0)",
+      "(mid.month == 2 && end.month == 3) && (end.day == mid.day || end.day == 28)",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "mid: date",
+      "end: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01759648323059082,
+    "build_time": 0.013050079345703125,
+    "solve_time": 0.004546403884887695,
+    "error_message": null,
+    "solution": {
+      "end": "Date(2020, 3, 28)",
+      "mid": "Date(2020, 2, 28)",
+      "start": "Date(2020, 1, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-13",
+    "constraints": [
+      "a == Date(2015, 6, 15)",
+      "b == a + Period(0, 6, 0)",
+      "c == b + Period(0, 0, 45)",
+      "(a.month < 7 && b.month > 11) -> (b.year == a.year)",
+      "(b.year == a.year || b.year == a.year + 1) && !(b == a)",
+      "d == Date(2016, 2, 1)",
+      "(c >= d && c < d + Period(0, 1, 0)) || (c < d && c > d - Period(0, 1, 0))",
+      "!(a.month == b.month) && !(b.month == c.month)",
+      "(c.day > 15) -> (c >= b + Period(0, 0, 30))",
+      "(d.month == 2 && (Date(d.year, 2, 28) + Period(0, 0, 1)).month == 2) -> (d + Period(0, 0, 29) == Date(2016, 3, 1))",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.033005475997924805,
+    "build_time": 0.024977922439575195,
+    "solve_time": 0.00802755355834961,
+    "error_message": null,
+    "solution": {
+      "a": "Date(2015, 6, 15)",
+      "b": "Date(2015, 12, 15)",
+      "c": "Date(2016, 1, 29)",
+      "d": "Date(2016, 2, 1)",
+      "_aux_date_0": "Date(2016, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-14",
+    "constraints": [
+      "x >= Date(1950, 3, 1)",
+      "x <= Date(1950, 12, 31)",
+      "!(x.month == 2 && x.day == 30)",
+      "y == x + Period(1, 0, 0)",
+      "!(y.year == x.year) && !(y < x)",
+      "(!(x.month == 12) || (y.month == 1)) && (z == Date(1951, 1, 1))",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.017204761505126953,
+    "build_time": 0.010433197021484375,
+    "solve_time": 0.006771564483642578,
+    "error_message": null,
+    "solution": {
+      "x": "Date(1950, 6, 29)",
+      "y": "Date(1951, 6, 29)",
+      "z": "Date(1951, 1, 1)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-15",
+    "constraints": [
+      "p == Date(2080, 11, 30)",
+      "q == p + Period(0, 3, 0)",
+      "(p.month == 11 && q.month == 2) -> (q.year == p.year + 1)",
+      "r == q + Period(0, 0, 27)",
+      "(q.day == 28 || q.day == 29) && (r.day <= 28)",
+      "!(p.year == q.year) || (p.month == q.month)",
+      "(r.month == 2 && r.day == 27) -> (r == Date(2081, 2, 27))",
+      "((p < q) && (q < r)) || !(r.month == 2)",
+      "p >= Date(1, 1, 1)",
+      "p <= Date(9999, 12, 31)",
+      "q >= Date(1, 1, 1)",
+      "q <= Date(9999, 12, 31)",
+      "r >= Date(1, 1, 1)",
+      "r <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "p: date",
+      "q: date",
+      "r: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01890850067138672,
+    "build_time": 0.012682199478149414,
+    "solve_time": 0.006226301193237305,
+    "error_message": null,
+    "solution": {
+      "p": "Date(2080, 11, 30)",
+      "q": "Date(2081, 2, 28)",
+      "r": "Date(2081, 3, 27)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-16",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(4, 0, 0)",
+      "(x.year == 2000 && x.month == 2) -> y.day == 29",
+      "(y.year == 2004 && y.month == 2) || y.month != 2",
+      "z == Date(2001, 2, 28) && (z > x || z.month > x.month)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.011457681655883789,
+    "build_time": 0.010319948196411133,
+    "solve_time": 0.0011377334594726562,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2004, 2, 29)",
+      "z": "Date(2001, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-17",
+    "constraints": [
+      "a == Date(2020, 3, 15)",
+      "(a.month == 3 && a.day == 15) -> b == a + Period(0, 1, 0)",
+      "b.year == 2020 && b.month == 4",
+      "c == Date(2020, 3, 1) || c == Date(2020, 4, 1)",
+      "(a < b && b < c) || (c < a && a < b)",
+      "d == Date(2020, 5, 15)",
+      "!(d.month == 5) || d.day != 15",
+      "(a.day == 15 && b.day == 15) -> (c.day == 1 && d.day == 15)",
+      "(c.day == 1 && d.day == 15) -> (c == Date(2020, 3, 1) || c == Date(2020, 4, 1))",
+      "d.month == 5 && d.day == 15",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014651298522949219,
+    "build_time": 0.01393747329711914,
+    "solve_time": 0.0007138252258300781,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-18",
+    "constraints": [
+      "start == Date(2010, 6, 15)",
+      "(start.month == 6) -> mid == start + Period(0, 3, 0)",
+      "(mid.month == 9) -> end == mid + Period(0, 3, 0)",
+      "(end.month == 12 && end.year == 2010) || end.year > 2010",
+      "!(start.year != 2010) && (mid.year == 2010 || mid.year == 2011)",
+      "(start.day == mid.day && mid.day == end.day) -> end == Date(2010, 12, 15)",
+      "end.month == 12 && end.day == 15",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "mid: date",
+      "end: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.013971805572509766,
+    "build_time": 0.01265263557434082,
+    "solve_time": 0.0013191699981689453,
+    "error_message": null,
+    "solution": {
+      "end": "Date(2010, 12, 15)",
+      "mid": "Date(2010, 9, 15)",
+      "start": "Date(2010, 6, 15)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-19",
+    "constraints": [
+      "x == Date(1950, 7, 20)",
+      "y == x + Period(0, 0, 10)",
+      "!(y.day == 30) && !(y.day == 31) && !(y.day < 30)",
+      "(x.month == 7 || x.month == 8) && y.month == 7",
+      "y.day > 28 || y.day < 20",
+      "(x.day == 20 && y.day == 30) || (x.day != 20 && y.day != 30)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.008371114730834961,
+    "build_time": 0.007831096649169922,
+    "solve_time": 0.0005400180816650391,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-logical_operators-20",
+    "constraints": [
+      "d1 == Date(2015, 1, 31)",
+      "(d1.day == 31 && d1.month == 1) -> d2 == d1 + Period(0, 1, 0)",
+      "d2.month == 2 && (d2.day == 28 || d2.day == 29)",
+      "((Date(d2.year, 2, 28) + Period(0, 0, 1)).month == 3) || d2.day == 28",
+      "d3 == Date(2015, 3, 31) && (d3.month == 3 || d3.month == 4)",
+      "(d2 < d3 && d1 < d2) -> d4 == d3 + Period(1, 0, 0)",
+      "d4.year == 2016 || d4.year == 2015",
+      "(d4.year == 2016 && d4.month == 3) -> d4.day == 31",
+      "d1 >= Date(1, 1, 1)",
+      "d1 <= Date(9999, 12, 31)",
+      "d2 >= Date(1, 1, 1)",
+      "d2 <= Date(9999, 12, 31)",
+      "d3 >= Date(1, 1, 1)",
+      "d3 <= Date(9999, 12, 31)",
+      "d4 >= Date(1, 1, 1)",
+      "d4 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "d1: date",
+      "d2: date",
+      "d3: date",
+      "d4: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.020519733428955078,
+    "build_time": 0.01871800422668457,
+    "solve_time": 0.0018017292022705078,
+    "error_message": null,
+    "solution": {
+      "d1": "Date(2015, 1, 31)",
+      "d2": "Date(2015, 2, 28)",
+      "d3": "Date(2015, 3, 31)",
+      "d4": "Date(2016, 3, 31)",
+      "_aux_date_0": "Date(2015, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-21",
+    "constraints": [
+      "x == Date(2023, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 0, 28)",
+      "y != z",
+      "y == Date(2023, 2, 28)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.017495393753051758,
+    "build_time": 0.011780261993408203,
+    "solve_time": 0.005715131759643555,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-22",
+    "constraints": [
+      "leap_start == Date(2000, 1, 31)",
+      "month_later == leap_start + Period(0, 1, 0)",
+      "days_later == leap_start + Period(0, 0, 29)",
+      "month_later == Date(2000, 2, 29)",
+      "days_later == Date(2000, 2, 29)",
+      "month_later == days_later",
+      "(leap_start + Period(0, 1, 0)) != (leap_start + Period(0, 0, 28))",
+      "leap_start >= Date(1, 1, 1)",
+      "leap_start <= Date(9999, 12, 31)",
+      "month_later >= Date(1, 1, 1)",
+      "month_later <= Date(9999, 12, 31)",
+      "days_later >= Date(1, 1, 1)",
+      "days_later <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap_start: date",
+      "month_later: date",
+      "days_later: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01805257797241211,
+    "build_time": 0.01650381088256836,
+    "solve_time": 0.00154876708984375,
+    "error_message": null,
+    "solution": {
+      "days_later": "Date(2000, 2, 29)",
+      "leap_start": "Date(2000, 1, 31)",
+      "month_later": "Date(2000, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-23",
+    "constraints": [
+      "jan_date == Date(2023, 1, 31)",
+      "feb_date == jan_date + Period(0, 1, 0)",
+      "mar_date == feb_date + Period(0, 1, 0)",
+      "apr_date == mar_date + Period(0, 1, 0)",
+      "may_date == apr_date + Period(0, 1, 0)",
+      "feb_date == Date(2023, 2, 28)",
+      "mar_date == Date(2023, 3, 28)",
+      "apr_date == Date(2023, 4, 28)",
+      "(jan_date + Period(0, 0, 31)) != feb_date",
+      "(feb_date + Period(0, 0, 28)) != mar_date",
+      "jan_date >= Date(1, 1, 1)",
+      "jan_date <= Date(9999, 12, 31)",
+      "feb_date >= Date(1, 1, 1)",
+      "feb_date <= Date(9999, 12, 31)",
+      "mar_date >= Date(1, 1, 1)",
+      "mar_date <= Date(9999, 12, 31)",
+      "apr_date >= Date(1, 1, 1)",
+      "apr_date <= Date(9999, 12, 31)",
+      "may_date >= Date(1, 1, 1)",
+      "may_date <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "jan_date: date",
+      "feb_date: date",
+      "mar_date: date",
+      "apr_date: date",
+      "may_date: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.027060985565185547,
+    "build_time": 0.02544379234313965,
+    "solve_time": 0.0016171932220458984,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-24",
+    "constraints": [
+      "dec_start == Date(2022, 12, 15)",
+      "jan_month == dec_start + Period(0, 1, 0)",
+      "jan_days == dec_start + Period(0, 0, 31)",
+      "jan_month == jan_days",
+      "dec_start >= Date(1, 1, 1)",
+      "dec_start <= Date(9999, 12, 31)",
+      "jan_month >= Date(1, 1, 1)",
+      "jan_month <= Date(9999, 12, 31)",
+      "jan_days >= Date(1, 1, 1)",
+      "jan_days <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "dec_start: date",
+      "jan_month: date",
+      "jan_days: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.012777090072631836,
+    "build_time": 0.011561393737792969,
+    "solve_time": 0.0012156963348388672,
+    "error_message": null,
+    "solution": {
+      "dec_start": "Date(2022, 12, 15)",
+      "jan_days": "Date(2023, 1, 15)",
+      "jan_month": "Date(2023, 1, 15)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-25",
+    "constraints": [
+      "x == Date(2023, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 0, 31)",
+      "y == z",
+      "y.month == 2",
+      "z.month == 3",
+      "y.day == 28",
+      "z.day == 3",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014459371566772461,
+    "build_time": 0.013714075088500977,
+    "solve_time": 0.0007452964782714844,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-26",
+    "constraints": [
+      "x == Date(2020, 1, 15)",
+      "month_later == x + Period(0, 1, 0)",
+      "days_later == x + Period(0, 0, 30)",
+      "month_later != days_later",
+      "month_later > days_later",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "month_later >= Date(1, 1, 1)",
+      "month_later <= Date(9999, 12, 31)",
+      "days_later >= Date(1, 1, 1)",
+      "days_later <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "month_later: date",
+      "days_later: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.0181119441986084,
+    "build_time": 0.012810230255126953,
+    "solve_time": 0.005301713943481445,
+    "error_message": null,
+    "solution": {
+      "days_later": "Date(2020, 2, 14)",
+      "month_later": "Date(2020, 2, 15)",
+      "x": "Date(2020, 1, 15)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-27",
+    "constraints": [
+      "start == Date(2023, 1, 31)",
+      "plus_month == start + Period(0, 1, 0)",
+      "plus_28 == start + Period(0, 0, 28)",
+      "plus_month == Date(2023, 2, 28)",
+      "plus_28 == Date(2023, 2, 28)",
+      "plus_month == plus_28",
+      "(plus_month + Period(0, 1, 0)) != (plus_28 + Period(0, 0, 31))",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "plus_month >= Date(1, 1, 1)",
+      "plus_month <= Date(9999, 12, 31)",
+      "plus_28 >= Date(1, 1, 1)",
+      "plus_28 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "plus_month: date",
+      "plus_28: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01783585548400879,
+    "build_time": 0.01623082160949707,
+    "solve_time": 0.0016050338745117188,
+    "error_message": null,
+    "solution": {
+      "plus_28": "Date(2023, 2, 28)",
+      "plus_month": "Date(2023, 2, 28)",
+      "start": "Date(2023, 1, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-28",
+    "constraints": [
+      "w == Date(2020, 1, 31)",
+      "x == w + Period(0, 1, 0)",
+      "y == w + Period(0, 0, 31)",
+      "x == Date(2020, 2, 29)",
+      "y == Date(2020, 3, 2)",
+      "z == x + Period(0, 1, 0)",
+      "(x + Period(0, 0, 30)) != z",
+      "z == Date(2020, 3, 29)",
+      "y < z",
+      "(w + Period(0, 2, 0)) != (w + Period(0, 0, 60))",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "w: date",
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.024811506271362305,
+    "build_time": 0.02330780029296875,
+    "solve_time": 0.0015037059783935547,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-29",
+    "constraints": [
+      "leap == Date(2020, 1, 31)",
+      "month_add == leap + Period(0, 1, 0)",
+      "day_add == leap + Period(0, 0, 31)",
+      "month_add == Date(2020, 2, 29)",
+      "day_add == Date(2020, 3, 2)",
+      "month_add == day_add",
+      "leap >= Date(1, 1, 1)",
+      "leap <= Date(9999, 12, 31)",
+      "month_add >= Date(1, 1, 1)",
+      "month_add <= Date(9999, 12, 31)",
+      "day_add >= Date(1, 1, 1)",
+      "day_add <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap: date",
+      "month_add: date",
+      "day_add: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.012809514999389648,
+    "build_time": 0.012115240097045898,
+    "solve_time": 0.00069427490234375,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-30",
+    "constraints": [
+      "dec == Date(2021, 12, 5)",
+      "jan_month == dec + Period(0, 1, 0)",
+      "jan_days == dec + Period(0, 0, 31)",
+      "jan_month == Date(2022, 1, 5)",
+      "jan_days == Date(2022, 1, 5)",
+      "feb == dec + Period(0, 2, 0)",
+      "(feb + Period(0, 1, 0)) != (feb + Period(0, 0, 31))",
+      "(dec + Period(0, 0, 30)) < jan_month",
+      "dec >= Date(1, 1, 1)",
+      "dec <= Date(9999, 12, 31)",
+      "jan_month >= Date(1, 1, 1)",
+      "jan_month <= Date(9999, 12, 31)",
+      "jan_days >= Date(1, 1, 1)",
+      "jan_days <= Date(9999, 12, 31)",
+      "feb >= Date(1, 1, 1)",
+      "feb <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "dec: date",
+      "jan_month: date",
+      "jan_days: date",
+      "feb: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.024030447006225586,
+    "build_time": 0.02218461036682129,
+    "solve_time": 0.0018458366394042969,
+    "error_message": null,
+    "solution": {
+      "dec": "Date(2021, 12, 5)",
+      "feb": "Date(2022, 2, 5)",
+      "jan_days": "Date(2022, 1, 5)",
+      "jan_month": "Date(2022, 1, 5)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-31",
+    "constraints": [
+      "x == Date(2023, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 0, 28)",
+      "y != z",
+      "y == Date(2023, 2, 28)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.017946481704711914,
+    "build_time": 0.012126445770263672,
+    "solve_time": 0.005820035934448242,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-32",
+    "constraints": [
+      "a == Date(2020, 4, 15)",
+      "b == a + Period(0, 1, 0)",
+      "c == a + Period(0, 0, 30)",
+      "b != c",
+      "b == Date(2020, 5, 15)",
+      "c == Date(2020, 5, 15)",
+      "d == a + Period(0, 0, 31)",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.016751766204833984,
+    "build_time": 0.0157468318939209,
+    "solve_time": 0.001004934310913086,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-33",
+    "constraints": [
+      "x >= Date(2019, 1, 28)",
+      "x <= Date(2019, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 0, 28)",
+      "y > z",
+      "w == x + Period(0, 2, 0)",
+      "v == x + Period(0, 0, 59)",
+      "w != v",
+      "(y.month == 2) && (z.month == 2)",
+      "w.month == 3",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)",
+      "v >= Date(1, 1, 1)",
+      "v <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date",
+      "v: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.4679083824157715,
+    "build_time": 0.020700693130493164,
+    "solve_time": 0.4472076892852783,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-34",
+    "constraints": [
+      "x == Date(2024, 1, 29)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 0, 31)",
+      "y == Date(2024, 2, 29)",
+      "z == Date(2024, 2, 29)",
+      "y != z",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.012779474258422852,
+    "build_time": 0.012004852294921875,
+    "solve_time": 0.0007746219635009766,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-35",
+    "constraints": [
+      "start == Date(2021, 11, 30)",
+      "month_add == start + Period(0, 1, 0)",
+      "days_add == start + Period(0, 0, 30)",
+      "month_add == Date(2021, 12, 30)",
+      "days_add == Date(2021, 12, 30)",
+      "check == start + Period(0, 2, 0)",
+      "(check.year == 2022) && (check.month == 1)",
+      "check != (start + Period(0, 0, 61))",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "month_add >= Date(1, 1, 1)",
+      "month_add <= Date(9999, 12, 31)",
+      "days_add >= Date(1, 1, 1)",
+      "days_add <= Date(9999, 12, 31)",
+      "check >= Date(1, 1, 1)",
+      "check <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "month_add: date",
+      "days_add: date",
+      "check: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.019659996032714844,
+    "build_time": 0.018456459045410156,
+    "solve_time": 0.0012035369873046875,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-36",
+    "constraints": [
+      "jan_end == Date(2023, 1, 31)",
+      "feb_month == jan_end + Period(0, 1, 0)",
+      "feb_days == jan_end + Period(0, 0, 28)",
+      "feb_month != feb_days",
+      "feb_month > feb_days",
+      "feb_month == Date(2023, 2, 28)",
+      "feb_days == Date(2023, 2, 28)",
+      "jan_end >= Date(1, 1, 1)",
+      "jan_end <= Date(9999, 12, 31)",
+      "feb_month >= Date(1, 1, 1)",
+      "feb_month <= Date(9999, 12, 31)",
+      "feb_days >= Date(1, 1, 1)",
+      "feb_days <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "jan_end: date",
+      "feb_month: date",
+      "feb_days: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.012929439544677734,
+    "build_time": 0.012108802795410156,
+    "solve_time": 0.0008206367492675781,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-37",
+    "constraints": [
+      "march_start == Date(2022, 3, 15)",
+      "april_month == march_start + Period(0, 1, 0)",
+      "april_days == march_start + Period(0, 0, 31)",
+      "april_month == Date(2022, 4, 15)",
+      "april_days > april_month",
+      "check == march_start + Period(0, 0, 30)",
+      "march_start >= Date(1, 1, 1)",
+      "march_start <= Date(9999, 12, 31)",
+      "april_month >= Date(1, 1, 1)",
+      "april_month <= Date(9999, 12, 31)",
+      "april_days >= Date(1, 1, 1)",
+      "april_days <= Date(9999, 12, 31)",
+      "check >= Date(1, 1, 1)",
+      "check <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "march_start: date",
+      "april_month: date",
+      "april_days: date",
+      "check: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.031701087951660156,
+    "build_time": 0.01564812660217285,
+    "solve_time": 0.016052961349487305,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-38",
+    "constraints": [
+      "start == Date(2020, 1, 31)",
+      "three_months == start + Period(0, 3, 0)",
+      "ninety_days == start + Period(0, 0, 90)",
+      "three_months == Date(2020, 4, 30)",
+      "ninety_days != three_months",
+      "(start + Period(0, 1, 0)) == Date(2020, 2, 29)",
+      "(start + Period(0, 2, 0)) == Date(2020, 3, 31)",
+      "ninety_days < three_months",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "three_months >= Date(1, 1, 1)",
+      "three_months <= Date(9999, 12, 31)",
+      "ninety_days >= Date(1, 1, 1)",
+      "ninety_days <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "three_months: date",
+      "ninety_days: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.020563840866088867,
+    "build_time": 0.017410993576049805,
+    "solve_time": 0.0031528472900390625,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-39",
+    "constraints": [
+      "leap_day == Date(2000, 2, 29)",
+      "next_month == leap_day + Period(0, 1, 0)",
+      "next_month == Date(2000, 3, 29)",
+      "(leap_day + Period(0, 0, 29)) != next_month",
+      "(leap_day + Period(0, 0, 29)) < next_month",
+      "leap_day >= Date(1, 1, 1)",
+      "leap_day <= Date(9999, 12, 31)",
+      "next_month >= Date(1, 1, 1)",
+      "next_month <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap_day: date",
+      "next_month: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.010608911514282227,
+    "build_time": 0.009847879409790039,
+    "solve_time": 0.0007610321044921875,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-month_vs_days-40",
+    "constraints": [
+      "dec_start == Date(2021, 12, 15)",
+      "jan_month == dec_start + Period(0, 1, 0)",
+      "jan_days == dec_start + Period(0, 0, 31)",
+      "jan_month == Date(2022, 1, 15)",
+      "jan_days == Date(2022, 1, 15)",
+      "mid_check == dec_start + Period(0, 0, 15)",
+      "mid_check == Date(2021, 12, 30)",
+      "end_check == dec_start + Period(0, 0, 20)",
+      "(jan_month + Period(0, 1, 0)) != (jan_days + Period(0, 0, 28))",
+      "(dec_start + Period(0, 2, 0)) > (dec_start + Period(0, 0, 59))",
+      "dec_start >= Date(1, 1, 1)",
+      "dec_start <= Date(9999, 12, 31)",
+      "jan_month >= Date(1, 1, 1)",
+      "jan_month <= Date(9999, 12, 31)",
+      "jan_days >= Date(1, 1, 1)",
+      "jan_days <= Date(9999, 12, 31)",
+      "mid_check >= Date(1, 1, 1)",
+      "mid_check <= Date(9999, 12, 31)",
+      "end_check >= Date(1, 1, 1)",
+      "end_check <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "dec_start: date",
+      "jan_month: date",
+      "jan_days: date",
+      "mid_check: date",
+      "end_check: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.035468339920043945,
+    "build_time": 0.027128219604492188,
+    "solve_time": 0.008340120315551758,
+    "error_message": null,
+    "solution": {
+      "dec_start": "Date(2021, 12, 15)",
+      "end_check": "Date(2022, 1, 4)",
+      "jan_days": "Date(2022, 1, 15)",
+      "jan_month": "Date(2022, 1, 15)",
+      "mid_check": "Date(2021, 12, 30)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-41",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "y.year == 2001",
+      "y.day == 28",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.008402347564697266,
+    "build_time": 0.00748753547668457,
+    "solve_time": 0.0009148120880126953,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2001, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-42",
+    "constraints": [
+      "x.year == 2000",
+      "x.month == 2",
+      "x.day == 30",
+      "y == x + Period(0, 1, 0)",
+      "z.year == 1999",
+      "z.month == 12",
+      "z.day == 31",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.010305166244506836,
+    "build_time": 0.009644746780395508,
+    "solve_time": 0.0006604194641113281,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-43",
+    "constraints": [
+      "a == Date(2020, 3, 15)",
+      "b == a + Period(0, 3, 0)",
+      "c == b + Period(0, 3, 0)",
+      "d == c + Period(0, 3, 0)",
+      "a.month == 3",
+      "b.month == 6",
+      "c.month == 9",
+      "d.month == 12",
+      "a.year == b.year",
+      "d.day == 15",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.0180356502532959,
+    "build_time": 0.016615629196166992,
+    "solve_time": 0.0014200210571289062,
+    "error_message": null,
+    "solution": {
+      "a": "Date(2020, 3, 15)",
+      "b": "Date(2020, 6, 15)",
+      "c": "Date(2020, 9, 15)",
+      "d": "Date(2020, 12, 15)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-44",
+    "constraints": [
+      "x == Date(2004, 2, 29)",
+      "y == x + Period(4, 0, 0)",
+      "x.year == 2004",
+      "y.year == 2008",
+      "y.month == 2",
+      "y.day == 30",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.008118391036987305,
+    "build_time": 0.007554292678833008,
+    "solve_time": 0.0005640983581542969,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-45",
+    "constraints": [
+      "start == Date(1999, 12, 31)",
+      "mid == start + Period(0, 0, 1)",
+      "end == mid + Period(1, 0, 0)",
+      "check == end + Period(0, 0, 365)",
+      "start.year == 1999",
+      "mid.year == 2000",
+      "end.year == 2001",
+      "check.year >= 2002",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)",
+      "check >= Date(1, 1, 1)",
+      "check <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "mid: date",
+      "end: date",
+      "check: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.17772293090820312,
+    "build_time": 0.016101598739624023,
+    "solve_time": 0.1616213321685791,
+    "error_message": null,
+    "solution": {
+      "check": "Date(2002, 1, 1)",
+      "end": "Date(2001, 1, 1)",
+      "mid": "Date(2000, 1, 1)",
+      "start": "Date(1999, 12, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-46",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "x.year == 2000",
+      "y.year == 2001",
+      "y.day == 28",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.008157014846801758,
+    "build_time": 0.00729680061340332,
+    "solve_time": 0.0008602142333984375,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2001, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-47",
+    "constraints": [
+      "start == Date(2020, 1, 31)",
+      "end == start + Period(0, 1, 0)",
+      "mid == start + Period(0, 0, 15)",
+      "start.month == 1",
+      "end.month == 2",
+      "end.day == 29",
+      "mid.month == 2",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "end: date",
+      "mid: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.017143964767456055,
+    "build_time": 0.01166534423828125,
+    "solve_time": 0.005478620529174805,
+    "error_message": null,
+    "solution": {
+      "end": "Date(2020, 2, 29)",
+      "mid": "Date(2020, 2, 15)",
+      "start": "Date(2020, 1, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-48",
+    "constraints": [
+      "a == Date(1950, 6, 15)",
+      "b == a + Period(0, 6, 0)",
+      "c == b + Period(1, 0, 0)",
+      "d == a + Period(1, 6, 0)",
+      "a.year == 1950",
+      "b.month == 12",
+      "c.year == b.year + 1",
+      "d.month == a.month",
+      "c.month == b.month",
+      "d.year == c.year",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.017374277114868164,
+    "build_time": 0.01652050018310547,
+    "solve_time": 0.0008537769317626953,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-49",
+    "constraints": [
+      "x == Date(2001, 2, 28)",
+      "y == x + Period(0, 0, 1)",
+      "x.month == 2",
+      "y.month == 2",
+      "y.day == 29",
+      "y.year == 2001",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.007687568664550781,
+    "build_time": 0.007112026214599609,
+    "solve_time": 0.0005755424499511719,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-50",
+    "constraints": [
+      "base == Date(1975, 3, 31)",
+      "next == base + Period(0, 1, 0)",
+      "future == base + Period(5, 0, 0)",
+      "base.year == 1975",
+      "next.month == 4",
+      "next.day == 30",
+      "future.year == 1980",
+      "future.month == base.month",
+      "base >= Date(1, 1, 1)",
+      "base <= Date(9999, 12, 31)",
+      "next >= Date(1, 1, 1)",
+      "next <= Date(9999, 12, 31)",
+      "future >= Date(1, 1, 1)",
+      "future <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "base: date",
+      "next: date",
+      "future: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.013164281845092773,
+    "build_time": 0.012005329132080078,
+    "solve_time": 0.0011589527130126953,
+    "error_message": null,
+    "solution": {
+      "base": "Date(1975, 3, 31)",
+      "future": "Date(1980, 3, 31)",
+      "next": "Date(1975, 4, 30)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-51",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "x.year == 2000",
+      "x.month == 2",
+      "x.day > 29",
+      "x.day <= 29",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.0030710697174072266,
+    "build_time": 0.0029060840606689453,
+    "solve_time": 0.00016498565673828125,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-52",
+    "constraints": [
+      "x == Date(2020, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "y.year == 2020",
+      "y.month == 2",
+      "y.day == 29",
+      "x.day == 31",
+      "y.day < x.day",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.00827789306640625,
+    "build_time": 0.0073909759521484375,
+    "solve_time": 0.0008869171142578125,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2020, 1, 31)",
+      "y": "Date(2020, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-53",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(4, 0, 0)",
+      "z == x + Period(1, 0, 0)",
+      "x.year == 2000",
+      "y.year == 2004",
+      "z.year == 2001",
+      "x.month == y.month",
+      "z.month == 2",
+      "y.day == 30",
+      "z.day == 28",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.012775182723999023,
+    "build_time": 0.012096405029296875,
+    "solve_time": 0.0006787776947021484,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-54",
+    "constraints": [
+      "a == Date(1950, 6, 15)",
+      "b == a + Period(50, 0, 0)",
+      "b.year == 2000",
+      "b.month == 6",
+      "b.day == 15",
+      "a.year < b.year",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.008419513702392578,
+    "build_time": 0.00750422477722168,
+    "solve_time": 0.0009152889251708984,
+    "error_message": null,
+    "solution": {
+      "a": "Date(1950, 6, 15)",
+      "b": "Date(2000, 6, 15)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-55",
+    "constraints": [
+      "x == Date(2001, 2, 28)",
+      "y == x + Period(0, 0, 1)",
+      "x.year == 2001",
+      "x.month == 2",
+      "y.month == 2",
+      "y.year == 2001",
+      "x.day == 28",
+      "y.day > 28",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.007869482040405273,
+    "build_time": 0.0072307586669921875,
+    "solve_time": 0.0006387233734130859,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-56",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "y.year == x.year + 1",
+      "y.month == x.month",
+      "y.day == 28",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.008362054824829102,
+    "build_time": 0.007509946823120117,
+    "solve_time": 0.0008521080017089844,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2001, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-57",
+    "constraints": [
+      "x == Date(2020, 1, 31)",
+      "y == x + Period(0, 1, 0)",
+      "z == x + Period(0, 2, 0)",
+      "y.month == 2",
+      "y.day == 29",
+      "z.month == 3",
+      "z.day == 31",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.013243913650512695,
+    "build_time": 0.012071609497070312,
+    "solve_time": 0.0011723041534423828,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2020, 1, 31)",
+      "y": "Date(2020, 2, 29)",
+      "z": "Date(2020, 3, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-58",
+    "constraints": [
+      "w == Date(2020, 2, 29)",
+      "w.year == 2020",
+      "w.day == 29",
+      "x == w + Period(1, 0, 0)",
+      "x.month == 2",
+      "x.day == 29",
+      "y == Date(2024, 3, 15)",
+      "y.month == 2",
+      "z == x + Period(0, 1, 0)",
+      "z.day == 29",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "w: date",
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014872550964355469,
+    "build_time": 0.014129400253295898,
+    "solve_time": 0.0007431507110595703,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-59",
+    "constraints": [
+      "x >= Date(1950, 6, 15)",
+      "x <= Date(1960, 6, 15)",
+      "y == x + Period(50, 0, 0)",
+      "y.year == x.year + 50",
+      "z == y + Period(25, 0, 0)",
+      "z.year >= 2025 && z.year <= 2035",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.021814346313476562,
+    "build_time": 0.012746572494506836,
+    "solve_time": 0.009067773818969727,
+    "error_message": null,
+    "solution": {
+      "x": "Date(1953, 2, 28)",
+      "y": "Date(2003, 2, 28)",
+      "z": "Date(2028, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-property_access-60",
+    "constraints": [
+      "a == Date(2019, 1, 31)",
+      "b == a + Period(0, 1, 0)",
+      "b.day == 28",
+      "b.month == 2",
+      "c == b + Period(0, 1, 0)",
+      "c.month == 3",
+      "c.day == 28",
+      "d == c + Period(0, 0, 3)",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.02622509002685547,
+    "build_time": 0.016265392303466797,
+    "solve_time": 0.009959697723388672,
+    "error_message": null,
+    "solution": {
+      "a": "Date(2019, 1, 31)",
+      "b": "Date(2019, 2, 28)",
+      "c": "Date(2019, 3, 28)",
+      "d": "Date(2019, 3, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-61",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == Date(x.year + 4, 2, 29)",
+      "y == Date(2004, 2, 29)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.007379055023193359,
+    "build_time": 0.00647425651550293,
+    "solve_time": 0.0009047985076904297,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2004, 2, 29)",
+      "_aux_date_0": "Date(2004, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-62",
+    "constraints": [
+      "x == Date(2020, 3, 15)",
+      "y == Date(x.year + 1, x.month, x.day)",
+      "z == Date(x.year + 2, x.month, x.day)",
+      "y == Date(2021, 3, 15)",
+      "z == Date(2023, 3, 15)",
+      "z == Date(2022, 3, 15)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.010925769805908203,
+    "build_time": 0.010336637496948242,
+    "solve_time": 0.0005891323089599609,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-63",
+    "constraints": [
+      "w == Date(2000, 2, 29)",
+      "x == Date(w.year + 1, w.month, 28)",
+      "y == Date(l, w.month, w.day)",
+      "z == Date(w.year + 100, w.month, 28)",
+      "x.year == 2001",
+      "l >= 2004",
+      "z.year == 2100",
+      "x.month == 2",
+      "y == Date(2004, 2, 29)",
+      "z == Date(2100, 2, 28)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "w: date",
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01606273651123047,
+    "build_time": 0.014385223388671875,
+    "solve_time": 0.0016775131225585938,
+    "error_message": null,
+    "solution": {
+      "w": "Date(2000, 2, 29)",
+      "x": "Date(2001, 2, 28)",
+      "y": "Date(2004, 2, 29)",
+      "z": "Date(2100, 2, 28)",
+      "_aux_date_0": "Date(2001, 2, 28)",
+      "_aux_date_1": "Date(2004, 2, 29)",
+      "_aux_date_2": "Date(2100, 2, 28)",
+      "l": 2004
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-64",
+    "constraints": [
+      "x == Date(2020, 1, 30)",
+      "y == Date(x.year, 2, x.day)",
+      "x.day == 30",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.007000923156738281,
+    "build_time": 0.006484270095825195,
+    "solve_time": 0.0005166530609130859,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-65",
+    "constraints": [
+      "a == Date(1950, 6, 15)",
+      "b == Date(a.year + 10, a.month, a.day)",
+      "c == Date(a.year + 20, a.month + 1, a.day - 5)",
+      "d == a + Period(50, 0, 0)",
+      "b == Date(1960, 6, 15)",
+      "c == Date(1970, 7, 10)",
+      "d == Date(2000, 6, 15)",
+      "c.day == 10",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.016580820083618164,
+    "build_time": 0.015007495880126953,
+    "solve_time": 0.001573324203491211,
+    "error_message": null,
+    "solution": {
+      "a": "Date(1950, 6, 15)",
+      "b": "Date(1960, 6, 15)",
+      "c": "Date(1970, 7, 10)",
+      "d": "Date(2000, 6, 15)",
+      "_aux_date_0": "Date(1960, 6, 15)",
+      "_aux_date_1": "Date(1970, 7, 10)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-66",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == Date(x.year + 4, x.month, x.day)",
+      "z == Date(l, 2, 29)",
+      "y.year == 2004",
+      "z > y",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.012932538986206055,
+    "build_time": 0.010550498962402344,
+    "solve_time": 0.002382040023803711,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2004, 2, 29)",
+      "z": "Date(2008, 2, 29)",
+      "_aux_date_0": "Date(2004, 2, 29)",
+      "_aux_date_1": "Date(2008, 2, 29)",
+      "l": 2008
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-67",
+    "constraints": [
+      "base == Date(2020, 3, 15)",
+      "next_year == Date(base.year + 1, base.month, base.day)",
+      "offset == Date(base.year + 2, base.month + 1, 10)",
+      "next_year.year == 2021",
+      "offset.year == 2022",
+      "offset.month == 4",
+      "(base + Period(1, 0, 0)) == next_year",
+      "base >= Date(1, 1, 1)",
+      "base <= Date(9999, 12, 31)",
+      "next_year >= Date(1, 1, 1)",
+      "next_year <= Date(9999, 12, 31)",
+      "offset >= Date(1, 1, 1)",
+      "offset <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "base: date",
+      "next_year: date",
+      "offset: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.014198064804077148,
+    "build_time": 0.01284337043762207,
+    "solve_time": 0.0013546943664550781,
+    "error_message": null,
+    "solution": {
+      "base": "Date(2020, 3, 15)",
+      "next_year": "Date(2021, 3, 15)",
+      "offset": "Date(2022, 4, 10)",
+      "_aux_date_0": "Date(2021, 3, 15)",
+      "_aux_date_1": "Date(2022, 4, 10)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-68",
+    "constraints": [
+      "anchor == Date(1950, 6, 15)",
+      "derived1 == Date(anchor.year + 50, anchor.month, anchor.day)",
+      "derived2 == Date(anchor.year + 100, anchor.month + 6, anchor.day - 10)",
+      "derived3 == Date(derived1.year + 10, derived1.month - 3, derived1.day + 5)",
+      "derived1.year == 2000",
+      "derived2.year == 2050",
+      "derived2.month == 12",
+      "derived3.year == 2010",
+      "derived3.month == 3",
+      "derived3.day == 20",
+      "anchor >= Date(1, 1, 1)",
+      "anchor <= Date(9999, 12, 31)",
+      "derived1 >= Date(1, 1, 1)",
+      "derived1 <= Date(9999, 12, 31)",
+      "derived2 >= Date(1, 1, 1)",
+      "derived2 <= Date(9999, 12, 31)",
+      "derived3 >= Date(1, 1, 1)",
+      "derived3 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "anchor: date",
+      "derived1: date",
+      "derived2: date",
+      "derived3: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01566910743713379,
+    "build_time": 0.014126300811767578,
+    "solve_time": 0.001542806625366211,
+    "error_message": null,
+    "solution": {
+      "anchor": "Date(1950, 6, 15)",
+      "derived1": "Date(2000, 6, 15)",
+      "derived2": "Date(2050, 12, 5)",
+      "derived3": "Date(2010, 3, 20)",
+      "_aux_date_0": "Date(2000, 6, 15)",
+      "_aux_date_1": "Date(2050, 12, 5)",
+      "_aux_date_2": "Date(2010, 3, 20)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-69",
+    "constraints": [
+      "start == Date(1999, 2, 28)",
+      "leap_cross == Date(start.year + 1, start.month, start.day + 1)",
+      "adjusted == Date(leap_cross.year + 4, 2, 29)",
+      "leap_cross.year == 2000",
+      "adjusted.year == 2004",
+      "adjusted.day == 29",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "leap_cross >= Date(1, 1, 1)",
+      "leap_cross <= Date(9999, 12, 31)",
+      "adjusted >= Date(1, 1, 1)",
+      "adjusted <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "leap_cross: date",
+      "adjusted: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.012424945831298828,
+    "build_time": 0.011069059371948242,
+    "solve_time": 0.001355886459350586,
+    "error_message": null,
+    "solution": {
+      "adjusted": "Date(2004, 2, 29)",
+      "leap_cross": "Date(2000, 2, 29)",
+      "start": "Date(1999, 2, 28)",
+      "_aux_date_0": "Date(2000, 2, 29)",
+      "_aux_date_1": "Date(2004, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-70",
+    "constraints": [
+      "origin == Date(2010, 5, 20)",
+      "computed1 == Date(origin.year + 10, origin.month - 2, origin.day + 5)",
+      "computed2 == Date(origin.year * 2 - 2010, origin.month + 7, origin.day - 15)",
+      "computed3 == Date(computed1.year - 5, computed1.month + 3, computed1.day)",
+      "computed1.year == 2020",
+      "computed1.month == 3",
+      "computed2.year == 2010",
+      "computed3.year == 2015",
+      "origin >= Date(1, 1, 1)",
+      "origin <= Date(9999, 12, 31)",
+      "computed1 >= Date(1, 1, 1)",
+      "computed1 <= Date(9999, 12, 31)",
+      "computed2 >= Date(1, 1, 1)",
+      "computed2 <= Date(9999, 12, 31)",
+      "computed3 >= Date(1, 1, 1)",
+      "computed3 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "origin: date",
+      "computed1: date",
+      "computed2: date",
+      "computed3: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.015722990036010742,
+    "build_time": 0.014091253280639648,
+    "solve_time": 0.0016317367553710938,
+    "error_message": null,
+    "solution": {
+      "computed1": "Date(2020, 3, 25)",
+      "computed2": "Date(2010, 12, 5)",
+      "computed3": "Date(2015, 6, 25)",
+      "origin": "Date(2010, 5, 20)",
+      "_aux_date_0": "Date(2020, 3, 25)",
+      "_aux_date_1": "Date(2010, 12, 5)",
+      "_aux_date_2": "Date(2015, 6, 25)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-71",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == Date(x.year + 1, 2, 28)",
+      "z == Date(x.year + 4, x.month, x.day)",
+      "y.year == 2001",
+      "z == Date(2004, 2, 29)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.011346578598022461,
+    "build_time": 0.01011514663696289,
+    "solve_time": 0.0012314319610595703,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2001, 2, 28)",
+      "z": "Date(2004, 2, 29)",
+      "_aux_date_0": "Date(2001, 2, 28)",
+      "_aux_date_1": "Date(2004, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-72",
+    "constraints": [
+      "x == Date(1995, 6, 15)",
+      "y == Date(x.year + 10, x.month + 3, 1)",
+      "z == Date(x.year * 2 - x.year, x.month, x.day)",
+      "w == Date(y.year - 5, 12, 31)",
+      "y.month == 9",
+      "z.year == 1995",
+      "w >= Date(1999, 12, 1)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.015830039978027344,
+    "build_time": 0.014104366302490234,
+    "solve_time": 0.0017256736755371094,
+    "error_message": null,
+    "solution": {
+      "w": "Date(2000, 12, 31)",
+      "x": "Date(1995, 6, 15)",
+      "y": "Date(2005, 9, 1)",
+      "z": "Date(1995, 6, 15)",
+      "_aux_date_0": "Date(2005, 9, 1)",
+      "_aux_date_1": "Date(1995, 6, 15)",
+      "_aux_date_2": "Date(2000, 12, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-73",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == Date(x.year + 100, x.month, x.day - 1)",
+      "4 * z.year <= x.year",
+      "x.year <= 4 * z.year + 3",
+      "z.month == x.month * 6",
+      "z.day == x.day",
+      "w == Date(2050, 1, 1)",
+      "v == Date(w.year - x.year, w.month + x.month, 15)",
+      "y.day == 28",
+      "z.year == 500",
+      "v.year == 50",
+      "x.year == 2000",
+      "(x + Period(100, 0, 0)) != Date(2100, 2, 28)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)",
+      "v >= Date(1, 1, 1)",
+      "v <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date",
+      "v: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.01816701889038086,
+    "build_time": 0.017255306243896484,
+    "solve_time": 0.000911712646484375,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-74",
+    "constraints": [
+      "x == Date(2020, 2, 15)",
+      "y == Date(x.year, x.month, x.day + 14)",
+      "z == Date(x.year + 1, 2, x.day + 13)",
+      "y == Date(2020, 2, 29)",
+      "z.day == 28",
+      "x.day * 2 - 1 == 29",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.011854410171508789,
+    "build_time": 0.010501861572265625,
+    "solve_time": 0.001352548599243164,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2020, 2, 15)",
+      "y": "Date(2020, 2, 29)",
+      "z": "Date(2021, 2, 28)",
+      "_aux_date_0": "Date(2020, 2, 29)",
+      "_aux_date_1": "Date(2021, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-75",
+    "constraints": [
+      "x == Date(1950, 6, 30)",
+      "y == Date(x.year + 50, x.month, x.day)",
+      "z == Date(y.year - x.year, y.month + 6, 1)",
+      "w == Date(z.year * 40, 1, 15)",
+      "y.year == 2000",
+      "z == Date(2000, 12, 1)",
+      "w.year == 2000",
+      "w == Date(2000, 1, 15)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014878988265991211,
+    "build_time": 0.01411294937133789,
+    "solve_time": 0.0007660388946533203,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-76",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == Date(x.year + 4, x.month, x.day)",
+      "z == Date(y.year + 4, x.month, x.day)",
+      "y.year == 2004",
+      "z.year == 2008",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.011561393737792969,
+    "build_time": 0.010228633880615234,
+    "solve_time": 0.0013327598571777344,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 2, 29)",
+      "y": "Date(2004, 2, 29)",
+      "z": "Date(2008, 2, 29)",
+      "_aux_date_0": "Date(2004, 2, 29)",
+      "_aux_date_1": "Date(2008, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-77",
+    "constraints": [
+      "base == Date(2020, 6, 15)",
+      "next == Date(base.year + 1, base.month - 1, base.day + 10)",
+      "shifted == Date(base.year, base.month + 3, base.day - 5)",
+      "next.year == 2021",
+      "next.month == 5",
+      "shifted.month == 9",
+      "shifted.day == 10",
+      "base >= Date(1, 1, 1)",
+      "base <= Date(9999, 12, 31)",
+      "next >= Date(1, 1, 1)",
+      "next <= Date(9999, 12, 31)",
+      "shifted >= Date(1, 1, 1)",
+      "shifted <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "base: date",
+      "next: date",
+      "shifted: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.011526107788085938,
+    "build_time": 0.010231494903564453,
+    "solve_time": 0.0012946128845214844,
+    "error_message": null,
+    "solution": {
+      "base": "Date(2020, 6, 15)",
+      "next": "Date(2021, 5, 25)",
+      "shifted": "Date(2020, 9, 10)",
+      "_aux_date_0": "Date(2021, 5, 25)",
+      "_aux_date_1": "Date(2020, 9, 10)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-78",
+    "constraints": [
+      "a == Date(1950, 3, 15)",
+      "b == Date(a.year + 50, a.month, a.day)",
+      "c == Date(b.year - 25, b.month + 6, a.day + 10)",
+      "d == Date(c.year + 10, c.month - 3, c.day - 5)",
+      "b.year == 2000",
+      "c.year == 1975",
+      "c.month == 9",
+      "d.year == 1985",
+      "d.month == 6",
+      "d.day == 20",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01601099967956543,
+    "build_time": 0.014342069625854492,
+    "solve_time": 0.0016689300537109375,
+    "error_message": null,
+    "solution": {
+      "a": "Date(1950, 3, 15)",
+      "b": "Date(2000, 3, 15)",
+      "c": "Date(1975, 9, 25)",
+      "d": "Date(1985, 6, 20)",
+      "_aux_date_0": "Date(2000, 3, 15)",
+      "_aux_date_1": "Date(1975, 9, 25)",
+      "_aux_date_2": "Date(1985, 6, 20)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-79",
+    "constraints": [
+      "leap1 == Date(2000, 2, 29)",
+      "leap2 == Date(leap1.year + 4, leap1.month, leap1.day)",
+      "nonleap == Date(leap1.year + 1, leap1.month, leap1.day - 1)",
+      "leap2.day == 29",
+      "nonleap.year == 2001",
+      "nonleap.day == 28",
+      "leap1 >= Date(1, 1, 1)",
+      "leap1 <= Date(9999, 12, 31)",
+      "leap2 >= Date(1, 1, 1)",
+      "leap2 <= Date(9999, 12, 31)",
+      "nonleap >= Date(1, 1, 1)",
+      "nonleap <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap1: date",
+      "leap2: date",
+      "nonleap: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.011703014373779297,
+    "build_time": 0.010316848754882812,
+    "solve_time": 0.0013861656188964844,
+    "error_message": null,
+    "solution": {
+      "leap1": "Date(2000, 2, 29)",
+      "leap2": "Date(2004, 2, 29)",
+      "nonleap": "Date(2001, 2, 28)",
+      "_aux_date_0": "Date(2004, 2, 29)",
+      "_aux_date_1": "Date(2001, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-symbolic_date_vars-80",
+    "constraints": [
+      "start == Date(2010, 12, 25)",
+      "mid == Date(start.year + 5, start.month - 6, start.day + 5)",
+      "end == Date(mid.year + 10, mid.month + 8, mid.day - 15)",
+      "wrap == Date(start.year + 1, start.month - 11, start.day + 6)",
+      "mid.year == 2015",
+      "mid.month == 6",
+      "end.year == 2025",
+      "wrap.month == 1",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "mid >= Date(1, 1, 1)",
+      "mid <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)",
+      "wrap >= Date(1, 1, 1)",
+      "wrap <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "mid: date",
+      "end: date",
+      "wrap: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014883279800415039,
+    "build_time": 0.014085531234741211,
+    "solve_time": 0.0007977485656738281,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-81",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "y != z",
+      "y < z",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.015836715698242188,
+    "build_time": 0.011890411376953125,
+    "solve_time": 0.0039463043212890625,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-82",
+    "constraints": [
+      "a == Date(2001, 3, 1)",
+      "b == a + Period(1, 0, 0)",
+      "c == a + Period(0, 0, 365)",
+      "b == c",
+      "d == a + Period(0, 0, 366)",
+      "d > b",
+      "d == Date(2002, 3, 2)",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.017327308654785156,
+    "build_time": 0.015721797943115234,
+    "solve_time": 0.0016055107116699219,
+    "error_message": null,
+    "solution": {
+      "a": "Date(2001, 3, 1)",
+      "b": "Date(2002, 3, 1)",
+      "c": "Date(2002, 3, 1)",
+      "d": "Date(2002, 3, 2)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-83",
+    "constraints": [
+      "x == Date(2004, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "w == x + Period(0, 0, 366)",
+      "y == Date(2005, 2, 28)",
+      "z == y",
+      "w == Date(2005, 3, 1)",
+      "z == w",
+      "y.year == 2005",
+      "z.day == 28",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.01694774627685547,
+    "build_time": 0.01584339141845703,
+    "solve_time": 0.0011043548583984375,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-84",
+    "constraints": [
+      "x == Date(2000, 1, 1)",
+      "y == x + Period(2, 0, 0)",
+      "z == x + Period(0, 0, 730)",
+      "y == Date(2002, 1, 1)",
+      "z == Date(2001, 12, 31)",
+      "y > z",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.013267278671264648,
+    "build_time": 0.011923551559448242,
+    "solve_time": 0.0013437271118164062,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2000, 1, 1)",
+      "y": "Date(2002, 1, 1)",
+      "z": "Date(2001, 12, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-85",
+    "constraints": [
+      "a == Date(2000, 2, 29)",
+      "b == a + Period(1, 0, 0)",
+      "c == a + Period(0, 0, 366)",
+      "b == Date(2001, 2, 28)",
+      "c == Date(2001, 3, 1)",
+      "b < c",
+      "d == Date(2000, 3, 1)",
+      "e == d + Period(0, 0, 365)",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)",
+      "e >= Date(1, 1, 1)",
+      "e <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date",
+      "e: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.027985811233520508,
+    "build_time": 0.018291711807250977,
+    "solve_time": 0.009694099426269531,
+    "error_message": null,
+    "solution": {
+      "a": "Date(2000, 2, 29)",
+      "b": "Date(2001, 2, 28)",
+      "c": "Date(2001, 3, 1)",
+      "d": "Date(2000, 3, 1)",
+      "e": "Date(2001, 3, 1)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-86",
+    "constraints": [
+      "x == Date(2020, 6, 15)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "y != z",
+      "y < z",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.01640939712524414,
+    "build_time": 0.011761188507080078,
+    "solve_time": 0.0046482086181640625,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-87",
+    "constraints": [
+      "leap_start == Date(2020, 2, 29)",
+      "one_year_later == leap_start + Period(1, 0, 0)",
+      "one_year_later == Date(2021, 2, 28)",
+      "days_366_later == leap_start + Period(0, 0, 366)",
+      "days_366_later != one_year_later",
+      "days_366_later > one_year_later",
+      "days_366_later.year == 2021",
+      "leap_start >= Date(1, 1, 1)",
+      "leap_start <= Date(9999, 12, 31)",
+      "one_year_later >= Date(1, 1, 1)",
+      "one_year_later <= Date(9999, 12, 31)",
+      "days_366_later >= Date(1, 1, 1)",
+      "days_366_later <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap_start: date",
+      "one_year_later: date",
+      "days_366_later: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.01452183723449707,
+    "build_time": 0.012051820755004883,
+    "solve_time": 0.0024700164794921875,
+    "error_message": null,
+    "solution": {
+      "days_366_later": "Date(2021, 3, 1)",
+      "leap_start": "Date(2020, 2, 29)",
+      "one_year_later": "Date(2021, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-88",
+    "constraints": [
+      "a == Date(2015, 3, 1)",
+      "b == a + Period(1, 0, 0)",
+      "c == a + Period(0, 0, 365)",
+      "d == a + Period(2, 0, 0)",
+      "b == c",
+      "d == a + Period(0, 0, 730)",
+      "b.year == 2016",
+      "c.year == 2016",
+      "d.year == 2017",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.01938915252685547,
+    "build_time": 0.018236398696899414,
+    "solve_time": 0.0011527538299560547,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-89",
+    "constraints": [
+      "start == Date(2019, 7, 4)",
+      "year_plus == start + Period(1, 0, 0)",
+      "days_plus == start + Period(0, 0, 365)",
+      "year_plus == Date(2020, 7, 4)",
+      "days_plus > year_plus",
+      "days_plus.year == 2020",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "year_plus >= Date(1, 1, 1)",
+      "year_plus <= Date(9999, 12, 31)",
+      "days_plus >= Date(1, 1, 1)",
+      "days_plus <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "year_plus: date",
+      "days_plus: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014083623886108398,
+    "build_time": 0.011941671371459961,
+    "solve_time": 0.0021419525146484375,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-90",
+    "constraints": [
+      "w == Date(2016, 1, 1)",
+      "x == w + Period(1, 0, 0)",
+      "y == w + Period(0, 0, 366)",
+      "z == w + Period(4, 0, 0)",
+      "v == w + Period(0, 0, 1461)",
+      "x == y",
+      "z == v",
+      "x.year == 2017",
+      "z.year == 2020",
+      "v.year == 2020",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "v >= Date(1, 1, 1)",
+      "v <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "w: date",
+      "x: date",
+      "y: date",
+      "z: date",
+      "v: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.022267580032348633,
+    "build_time": 0.020270347595214844,
+    "solve_time": 0.001997232437133789,
+    "error_message": null,
+    "solution": {
+      "v": "Date(2020, 1, 1)",
+      "w": "Date(2016, 1, 1)",
+      "x": "Date(2017, 1, 1)",
+      "y": "Date(2017, 1, 1)",
+      "z": "Date(2020, 1, 1)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-91",
+    "constraints": [
+      "leap_start == Date(2000, 2, 29)",
+      "year_later == leap_start + Period(1, 0, 0)",
+      "days_later == leap_start + Period(0, 0, 365)",
+      "year_later != days_later",
+      "year_later < days_later",
+      "leap_start >= Date(1, 1, 1)",
+      "leap_start <= Date(9999, 12, 31)",
+      "year_later >= Date(1, 1, 1)",
+      "year_later <= Date(9999, 12, 31)",
+      "days_later >= Date(1, 1, 1)",
+      "days_later <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "leap_start: date",
+      "year_later: date",
+      "days_later: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.01711559295654297,
+    "build_time": 0.011793136596679688,
+    "solve_time": 0.005322456359863281,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-92",
+    "constraints": [
+      "x == Date(2019, 3, 1)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "w == y + Period(0, 0, 366)",
+      "y == z",
+      "(x + Period(2, 0, 0)) != (x + Period(0, 0, 730))",
+      "w.year >= 2021",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.02185201644897461,
+    "build_time": 0.020471572875976562,
+    "solve_time": 0.0013804435729980469,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-93",
+    "constraints": [
+      "a == Date(2000, 1, 1)",
+      "b == a + Period(4, 0, 0)",
+      "c == a + Period(0, 0, 1461)",
+      "d == a + Period(0, 0, 1460)",
+      "b == c",
+      "b != d",
+      "b.year == 2004",
+      "(a + Period(2, 0, 0)) > (a + Period(0, 0, 730))",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.027069807052612305,
+    "build_time": 0.0186464786529541,
+    "solve_time": 0.008423328399658203,
+    "error_message": null,
+    "solution": {
+      "a": "Date(2000, 1, 1)",
+      "b": "Date(2004, 1, 1)",
+      "c": "Date(2004, 1, 1)",
+      "d": "Date(2003, 12, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-94",
+    "constraints": [
+      "start >= Date(1999, 12, 15)",
+      "start <= Date(1999, 12, 31)",
+      "end == start + Period(1, 0, 0)",
+      "middle == start + Period(0, 0, 365)",
+      "end != middle",
+      "(start + Period(3, 0, 0)) != (start + Period(0, 0, 1095))",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "end >= Date(1, 1, 1)",
+      "end <= Date(9999, 12, 31)",
+      "middle >= Date(1, 1, 1)",
+      "middle <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "end: date",
+      "middle: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.6279728412628174,
+    "build_time": 0.0164182186126709,
+    "solve_time": 0.6115546226501465,
+    "error_message": null,
+    "solution": {
+      "end": "Date(2000, 12, 31)",
+      "middle": "Date(2000, 12, 30)",
+      "start": "Date(1999, 12, 31)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-95",
+    "constraints": [
+      "v1 == Date(2000, 2, 29)",
+      "v2 == v1 + Period(1, 0, 0)",
+      "v3 == v1 + Period(0, 0, 366)",
+      "v4 == v1 + Period(4, 0, 0)",
+      "v5 == v1 + Period(0, 0, 1461)",
+      "v2 != v3",
+      "v3.year >= 2001",
+      "v4 == v5",
+      "(v1 + Period(2, 0, 0)) < (v1 + Period(0, 0, 731))",
+      "v2.day == 28",
+      "v1 >= Date(1, 1, 1)",
+      "v1 <= Date(9999, 12, 31)",
+      "v2 >= Date(1, 1, 1)",
+      "v2 <= Date(9999, 12, 31)",
+      "v3 >= Date(1, 1, 1)",
+      "v3 <= Date(9999, 12, 31)",
+      "v4 >= Date(1, 1, 1)",
+      "v4 <= Date(9999, 12, 31)",
+      "v5 >= Date(1, 1, 1)",
+      "v5 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "v1: date",
+      "v2: date",
+      "v3: date",
+      "v4: date",
+      "v5: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.028852462768554688,
+    "build_time": 0.023461580276489258,
+    "solve_time": 0.00539088249206543,
+    "error_message": null,
+    "solution": {
+      "v1": "Date(2000, 2, 29)",
+      "v2": "Date(2001, 2, 28)",
+      "v3": "Date(2001, 3, 1)",
+      "v4": "Date(2004, 2, 29)",
+      "v5": "Date(2004, 2, 29)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-96",
+    "constraints": [
+      "x == Date(2000, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "y != z",
+      "z < y",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.014893054962158203,
+    "build_time": 0.01200723648071289,
+    "solve_time": 0.0028858184814453125,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-97",
+    "constraints": [
+      "x == Date(2001, 3, 1)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "w == x + Period(0, 0, 366)",
+      "y == z",
+      "y != w",
+      "y > x",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)",
+      "w >= Date(1, 1, 1)",
+      "w <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date",
+      "w: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.020832061767578125,
+    "build_time": 0.015924453735351562,
+    "solve_time": 0.0049076080322265625,
+    "error_message": null,
+    "solution": {
+      "w": "Date(2002, 3, 2)",
+      "x": "Date(2001, 3, 1)",
+      "y": "Date(2002, 3, 1)",
+      "z": "Date(2002, 3, 1)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-98",
+    "constraints": [
+      "a == Date(1999, 12, 31)",
+      "b == a + Period(1, 0, 0)",
+      "c == a + Period(0, 0, 365)",
+      "d == a + Period(0, 0, 366)",
+      "b == d",
+      "b != c",
+      "e == Date(2000, 12, 30)",
+      "b.year == 2000",
+      "c.year == 2000",
+      "c < e",
+      "a >= Date(1, 1, 1)",
+      "a <= Date(9999, 12, 31)",
+      "b >= Date(1, 1, 1)",
+      "b <= Date(9999, 12, 31)",
+      "c >= Date(1, 1, 1)",
+      "c <= Date(9999, 12, 31)",
+      "d >= Date(1, 1, 1)",
+      "d <= Date(9999, 12, 31)",
+      "e >= Date(1, 1, 1)",
+      "e <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "a: date",
+      "b: date",
+      "c: date",
+      "d: date",
+      "e: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "unsat",
+    "execution_time": 0.02143073081970215,
+    "build_time": 0.018224239349365234,
+    "solve_time": 0.003206491470336914,
+    "error_message": null,
+    "solution": null,
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-99",
+    "constraints": [
+      "x == Date(2020, 2, 29)",
+      "y == x + Period(1, 0, 0)",
+      "z == x + Period(0, 0, 365)",
+      "y == z",
+      "y.year == 2021",
+      "z.year == 2021",
+      "x >= Date(1, 1, 1)",
+      "x <= Date(9999, 12, 31)",
+      "y >= Date(1, 1, 1)",
+      "y <= Date(9999, 12, 31)",
+      "z >= Date(1, 1, 1)",
+      "z <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "x: date",
+      "y: date",
+      "z: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.013049125671386719,
+    "build_time": 0.011744260787963867,
+    "solve_time": 0.0013048648834228516,
+    "error_message": null,
+    "solution": {
+      "x": "Date(2020, 2, 29)",
+      "y": "Date(2021, 2, 28)",
+      "z": "Date(2021, 2, 28)"
+    },
+    "hard_timeout": false
+  },
+  {
+    "id": "llm-year_vs_days-100",
+    "constraints": [
+      "start == Date(2000, 1, 1)",
+      "year2 == start + Period(2, 0, 0)",
+      "year4 == start + Period(4, 0, 0)",
+      "days730 == start + Period(0, 0, 730)",
+      "days1460 == start + Period(0, 0, 1460)",
+      "year2 != days730",
+      "year4 != days1460",
+      "year4.year == 2004",
+      "start >= Date(1, 1, 1)",
+      "start <= Date(9999, 12, 31)",
+      "year2 >= Date(1, 1, 1)",
+      "year2 <= Date(9999, 12, 31)",
+      "year4 >= Date(1, 1, 1)",
+      "year4 <= Date(9999, 12, 31)",
+      "days730 >= Date(1, 1, 1)",
+      "days730 <= Date(9999, 12, 31)",
+      "days1460 >= Date(1, 1, 1)",
+      "days1460 <= Date(9999, 12, 31)"
+    ],
+    "declarations": [
+      "start: date",
+      "year2: date",
+      "year4: date",
+      "days730: date",
+      "days1460: date"
+    ],
+    "approach": "hybrid_ymd",
+    "implementation": "int",
+    "status": "sat",
+    "execution_time": 0.03755593299865723,
+    "build_time": 0.020646095275878906,
+    "solve_time": 0.01690983772277832,
+    "error_message": null,
+    "solution": {
+      "days1460": "Date(2003, 12, 31)",
+      "days730": "Date(2001, 12, 31)",
+      "start": "Date(2000, 1, 1)",
+      "year2": "Date(2002, 1, 1)",
+      "year4": "Date(2004, 1, 1)"
+    },
+    "hard_timeout": false
+  }
+]

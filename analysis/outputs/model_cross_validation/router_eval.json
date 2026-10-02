@@ -15,6 +15,114 @@
   "max_depth": 16,
   "margin": 0.0
  },
+ "feature_columns": [
+  "n_free_date_vars",
+  "n_free_int_vars",
+  "n_free_bool_vars",
+  "pinned_var_frac",
+  "pinned_date_frac",
+  "pinned_int_frac",
+  "pinned_bool_frac",
+  "n_date_subexprs",
+  "n_atoms",
+  "n_date_comparisons",
+  "n_int_comparisons",
+  "ordering_cmp_frac",
+  "n_case_splits",
+  "max_disjunction_width",
+  "bool_alternation_depth",
+  "implication_atom_frac",
+  "neg_ordering_frac",
+  "n_unit_constraints",
+  "n_date_period_ops",
+  "ground_arith_frac",
+  "max_abs_years",
+  "max_abs_months",
+  "max_abs_days",
+  "mixed_frac",
+  "max_date_chain_len",
+  "n_dot_year",
+  "n_dot_month",
+  "n_dot_day",
+  "property_access_frac",
+  "n_symbolic_date_ctors",
+  "uses_feb29",
+  "uses_leap_year",
+  "near_month_end_frac",
+  "n_components",
+  "largest_component_frac",
+  "graph_density",
+  "mixed_sort_coupling",
+  "n_self_ops",
+  "n_cross_ops",
+  "n_const_ops",
+  "self_op_frac",
+  "n_year_ops",
+  "n_month_ops",
+  "n_day_ops",
+  "n_mixed_ops",
+  "n_day_steps_ge28",
+  "sum_abs_days",
+  "sum_abs_months",
+  "max_abs_days_nonself",
+  "max_abs_months_nonself",
+  "sum_abs_days_all",
+  "n_arith_unit",
+  "n_arith_in_disj",
+  "n_arith_neq",
+  "n_date_eq",
+  "n_date_neq",
+  "arith_graph_diameter",
+  "n_arith_vars",
+  "lit_year_span",
+  "n_ym_bases",
+  "n_day_bases",
+  "n_field_bases",
+  "n_vars_both_arith",
+  "n_arith_kind_switches",
+  "n_chained_ops",
+  "max_chain_abs_days",
+  "n_lit_date_cmps",
+  "n_var_var_cmps",
+  "n_date_ordering_cmps",
+  "max_lit_year_dist",
+  "emu_simple_divmod",
+  "emu_simple_ite",
+  "emu_epoch_days_divmod",
+  "emu_epoch_days_ite",
+  "emu_epoch_days_conversions",
+  "emu_hybrid_ymd_divmod",
+  "emu_hybrid_ymd_ite",
+  "emu_hybrid_ymd_conversions",
+  "emu_hybrid_ymd_lex_cmps",
+  "emu_hybrid_epoch_divmod",
+  "emu_hybrid_epoch_ite",
+  "emu_hybrid_epoch_conversions",
+  "emu_hybrid_epoch_lex_cmps",
+  "emu_alpha_beta_divmod",
+  "emu_alpha_beta_ite",
+  "emu_alpha_beta_conversions",
+  "log2_divmod_alpha_beta_vs_epoch_days",
+  "log2_divmod_alpha_beta_vs_hybrid_epoch",
+  "log2_divmod_alpha_beta_vs_hybrid_ymd",
+  "log2_divmod_alpha_beta_vs_simple",
+  "log2_divmod_epoch_days_vs_hybrid_epoch",
+  "log2_divmod_epoch_days_vs_hybrid_ymd",
+  "log2_divmod_epoch_days_vs_simple",
+  "log2_divmod_hybrid_epoch_vs_hybrid_ymd",
+  "log2_divmod_hybrid_epoch_vs_simple",
+  "log2_divmod_hybrid_ymd_vs_simple",
+  "log2_ite_alpha_beta_vs_epoch_days",
+  "log2_ite_alpha_beta_vs_hybrid_epoch",
+  "log2_ite_alpha_beta_vs_hybrid_ymd",
+  "log2_ite_alpha_beta_vs_simple",
+  "log2_ite_epoch_days_vs_hybrid_epoch",
+  "log2_ite_epoch_days_vs_hybrid_ymd",
+  "log2_ite_epoch_days_vs_simple",
+  "log2_ite_hybrid_epoch_vs_hybrid_ymd",
+  "log2_ite_hybrid_epoch_vs_simple",
+  "log2_ite_hybrid_ymd_vs_simple"
+ ],
  "fallbacks": [
   "hybrid_ymd"
  ],
@@ -24,254 +132,282 @@
   "instances": 769,
   "table": {
    "always alpha_beta": {
-    "total_s": 2118.763,
+    "total_s": 2117.338,
     "timeouts": 83,
     "speedup_total": 1.2642,
-    "speedup_geomean": 2.0991
+    "speedup_median": 1.1467,
+    "speedup_geomean": 2.0983
    },
    "always epoch_days": {
-    "total_s": 2163.128,
+    "total_s": 2161.831,
     "timeouts": 84,
-    "speedup_total": 1.2383,
-    "speedup_geomean": 3.1126
+    "speedup_total": 1.2382,
+    "speedup_median": 2.5862,
+    "speedup_geomean": 3.1188
    },
    "always hybrid_epoch": {
-    "total_s": 1802.373,
+    "total_s": 1801.441,
     "timeouts": 56,
-    "speedup_total": 1.4861,
-    "speedup_geomean": 3.095
+    "speedup_total": 1.4859,
+    "speedup_median": 2.7483,
+    "speedup_geomean": 3.1094
    },
    "always hybrid_ymd": {
-    "total_s": 773.144,
+    "total_s": 772.148,
     "timeouts": 23,
-    "speedup_total": 3.4645,
-    "speedup_geomean": 3.5726
+    "speedup_total": 3.4667,
+    "speedup_median": 1.1016,
+    "speedup_geomean": 3.5787
    },
    "always simple": {
-    "total_s": 2678.525,
+    "total_s": 2676.789,
     "timeouts": 108,
     "speedup_total": 1.0,
+    "speedup_median": 1.0,
     "speedup_geomean": 1.0
    },
    "router": {
-    "total_s": 518.798,
-    "timeouts": 8,
-    "speedup_total": 5.1717,
-    "speedup_geomean": 6.4256
+    "total_s": 446.692,
+    "timeouts": 7,
+    "speedup_total": 6.0041,
+    "speedup_median": 3.3849,
+    "speedup_geomean": 6.8261
    },
    "oracle": {
-    "total_s": 249.284,
+    "total_s": 248.475,
     "timeouts": 0,
-    "speedup_total": 10.7449,
-    "speedup_geomean": 9.3003
+    "speedup_total": 10.7729,
+    "speedup_median": 4.1109,
+    "speedup_geomean": 9.3322
    }
   },
   "router_picks": {
-   "alpha_beta": 74.8,
-   "epoch_days": 228.2,
-   "hybrid_epoch": 158.4,
-   "hybrid_ymd": 170.4,
-   "simple": 137.2
+   "alpha_beta": 86.2,
+   "epoch_days": 235,
+   "hybrid_epoch": 142.2,
+   "hybrid_ymd": 153,
+   "simple": 152.6
   },
-  "router_fell_back": 43.4,
-  "router_picks_fastest": 0.4237,
+  "router_fell_back": 25.8,
+  "router_picks_fastest": 0.4466,
   "gap_closed_to_oracle": {
    "router": {
-    "always simple": 0.8891,
-    "always hybrid_ymd": 0.4855
+    "always simple": 0.9184,
+    "always hybrid_ymd": 0.6215
    }
   },
-  "router_total_sd_s": 23.964
+  "router_total_sd_s": 21.85
  },
  "by_corpus": {
   "grammar": {
    "instances": 469,
    "table": {
     "always alpha_beta": {
-     "total_s": 1418.908,
+     "total_s": 1417.973,
      "timeouts": 58,
-     "speedup_total": 1.7035,
-     "speedup_geomean": 3.3225
+     "speedup_total": 1.7042,
+     "speedup_median": 1.2138,
+     "speedup_geomean": 3.3284
     },
     "always epoch_days": {
-     "total_s": 1595.909,
+     "total_s": 1595.367,
      "timeouts": 69,
-     "speedup_total": 1.5145,
-     "speedup_geomean": 5.8323
+     "speedup_total": 1.5147,
+     "speedup_median": 3.9006,
+     "speedup_geomean": 5.8456
     },
     "always hybrid_epoch": {
-     "total_s": 801.983,
+     "total_s": 800.988,
      "timeouts": 26,
-     "speedup_total": 3.0138,
-     "speedup_geomean": 8.1676
+     "speedup_total": 3.0169,
+     "speedup_median": 4.1511,
+     "speedup_geomean": 8.2049
     },
     "always hybrid_ymd": {
-     "total_s": 507.35,
+     "total_s": 506.734,
      "timeouts": 15,
-     "speedup_total": 4.7641,
-     "speedup_geomean": 6.1337
+     "speedup_total": 4.7687,
+     "speedup_median": 2.0252,
+     "speedup_geomean": 6.16
     },
     "always simple": {
-     "total_s": 2417.057,
+     "total_s": 2416.463,
      "timeouts": 105,
      "speedup_total": 1.0,
+     "speedup_median": 1.0,
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 396.399,
-     "timeouts": 6.8,
-     "speedup_total": 6.1139,
-     "speedup_geomean": 10.4233
+     "total_s": 352.487,
+     "timeouts": 6.4,
+     "speedup_total": 6.8587,
+     "speedup_median": 4.6155,
+     "speedup_geomean": 10.9171
     },
     "oracle": {
-     "total_s": 216.097,
+     "total_s": 215.558,
      "timeouts": 0,
-     "speedup_total": 11.1851,
-     "speedup_geomean": 14.6318
+     "speedup_total": 11.2103,
+     "speedup_median": 5.3696,
+     "speedup_geomean": 14.6803
     }
    },
    "router_picks": {
-    "alpha_beta": 45.4,
-    "epoch_days": 143.2,
-    "hybrid_epoch": 145.6,
-    "hybrid_ymd": 124.4,
-    "simple": 10.4
+    "alpha_beta": 65,
+    "epoch_days": 138.4,
+    "hybrid_epoch": 128,
+    "hybrid_ymd": 118.6,
+    "simple": 19
    },
-   "router_fell_back": 24.6,
-   "router_picks_fastest": 0.3693,
+   "router_fell_back": 16.4,
+   "router_picks_fastest": 0.3804,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.9181,
-     "always hybrid_ymd": 0.3809
+     "always simple": 0.9378,
+     "always hybrid_ymd": 0.5297
     }
    },
-   "router_total_sd_s": 23.213
+   "router_total_sd_s": 8.572
   },
   "legal": {
    "instances": 200,
    "table": {
     "always alpha_beta": {
-     "total_s": 696.632,
+     "total_s": 696.206,
      "timeouts": 25,
-     "speedup_total": 0.2901,
-     "speedup_geomean": 0.4919
+     "speedup_total": 0.2892,
+     "speedup_median": 0.5652,
+     "speedup_geomean": 0.4899
     },
     "always epoch_days": {
-     "total_s": 551.079,
+     "total_s": 550.361,
      "timeouts": 15,
-     "speedup_total": 0.3668,
-     "speedup_geomean": 0.5779
+     "speedup_total": 0.3659,
+     "speedup_median": 0.3659,
+     "speedup_geomean": 0.5754
     },
     "always hybrid_epoch": {
-     "total_s": 972.121,
+     "total_s": 971.279,
      "timeouts": 29,
-     "speedup_total": 0.2079,
-     "speedup_geomean": 0.2795
+     "speedup_total": 0.2073,
+     "speedup_median": 0.1932,
+     "speedup_geomean": 0.2781
     },
     "always hybrid_ymd": {
-     "total_s": 262.328,
+     "total_s": 262.007,
      "timeouts": 8,
-     "speedup_total": 0.7705,
-     "speedup_geomean": 0.9682
+     "speedup_total": 0.7685,
+     "speedup_median": 0.8719,
+     "speedup_geomean": 0.9654
     },
     "always simple": {
-     "total_s": 202.114,
+     "total_s": 201.356,
      "timeouts": 2,
      "speedup_total": 1.0,
+     "speedup_median": 1.0,
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 118.306,
-     "timeouts": 1.2,
-     "speedup_total": 1.7092,
-     "speedup_geomean": 2.0436
+     "total_s": 91.568,
+     "timeouts": 0.6,
+     "speedup_total": 2.3044,
+     "speedup_median": 1.0,
+     "speedup_geomean": 2.2849
     },
     "oracle": {
-     "total_s": 31.112,
+     "total_s": 30.954,
      "timeouts": 0,
-     "speedup_total": 6.4964,
-     "speedup_geomean": 3.6361
+     "speedup_total": 6.5051,
+     "speedup_median": 1.6034,
+     "speedup_geomean": 3.6315
     }
    },
    "router_picks": {
-    "alpha_beta": 15.4,
-    "epoch_days": 44.4,
-    "hybrid_epoch": 4.4,
-    "hybrid_ymd": 40.2,
-    "simple": 95.6
+    "alpha_beta": 19.6,
+    "epoch_days": 54.8,
+    "hybrid_epoch": 11,
+    "hybrid_ymd": 29,
+    "simple": 85.6
    },
-   "router_fell_back": 13.4,
-   "router_picks_fastest": 0.449,
+   "router_fell_back": 6.4,
+   "router_picks_fastest": 0.461,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.4901,
-     "always hybrid_ymd": 0.6229
+     "always simple": 0.6443,
+     "always hybrid_ymd": 0.7377
     }
    },
-   "router_total_sd_s": 2.796
+   "router_total_sd_s": 20.59
   },
   "llm": {
    "instances": 100,
    "table": {
     "always alpha_beta": {
-     "total_s": 3.222,
+     "total_s": 3.159,
      "timeouts": 0,
-     "speedup_total": 18.4192,
-     "speedup_geomean": 4.4369
+     "speedup_total": 18.6678,
+     "speedup_median": 1.0199,
+     "speedup_geomean": 4.4231
     },
     "always epoch_days": {
-     "total_s": 16.139,
+     "total_s": 16.103,
      "timeouts": 0,
-     "speedup_total": 3.6777,
-     "speedup_geomean": 4.7489
+     "speedup_total": 3.6621,
+     "speedup_median": 1.3322,
+     "speedup_geomean": 4.8132
     },
     "always hybrid_epoch": {
-     "total_s": 28.269,
+     "total_s": 29.174,
      "timeouts": 1,
-     "speedup_total": 2.0996,
-     "speedup_geomean": 4.0042
+     "speedup_total": 2.0213,
+     "speedup_median": 1.242,
+     "speedup_geomean": 4.1035
     },
     "always hybrid_ymd": {
-     "total_s": 3.465,
+     "total_s": 3.407,
      "timeouts": 0,
-     "speedup_total": 17.1275,
-     "speedup_geomean": 3.8557
+     "speedup_total": 17.3079,
+     "speedup_median": 0.8751,
+     "speedup_geomean": 3.8516
     },
     "always simple": {
-     "total_s": 59.355,
+     "total_s": 58.97,
      "timeouts": 1,
      "speedup_total": 1.0,
+     "speedup_median": 1.0,
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 4.093,
+     "total_s": 2.637,
      "timeouts": 0,
-     "speedup_total": 14.718,
-     "speedup_geomean": 6.5751
+     "speedup_total": 22.5534,
+     "speedup_median": 1.0424,
+     "speedup_geomean": 6.7437
     },
     "oracle": {
-     "total_s": 2.075,
+     "total_s": 1.964,
      "timeouts": 0,
-     "speedup_total": 28.598,
-     "speedup_geomean": 7.2645
+     "speedup_total": 30.0327,
+     "speedup_median": 1.4853,
+     "speedup_geomean": 7.3624
     }
    },
    "router_picks": {
-    "alpha_beta": 14,
-    "epoch_days": 40.6,
-    "hybrid_epoch": 8.4,
-    "hybrid_ymd": 5.8,
-    "simple": 31.2
+    "alpha_beta": 1.6,
+    "epoch_days": 41.8,
+    "hybrid_epoch": 3.2,
+    "hybrid_ymd": 5.4,
+    "simple": 48
    },
-   "router_fell_back": 5.4,
-   "router_picks_fastest": 0.628,
+   "router_fell_back": 3,
+   "router_picks_fastest": 0.728,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.9648,
-     "always hybrid_ymd": -0.4516
+     "always simple": 0.9882,
+     "always hybrid_ymd": 0.5336
     }
    },
-   "router_total_sd_s": 0.509
+   "router_total_sd_s": 0.271
   }
  }
 }
