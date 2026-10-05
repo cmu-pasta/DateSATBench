@@ -33,6 +33,7 @@ from analysis.paths import (CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, MODEL, 
 from analysis.stats.join_results import add_timeout_arg, check_run_config, timeout_seconds
 from analysis.stats.plot_feature_correlation import constant_features, feature_correlation
 from analysis.stats.plot_speedup_heatmap import speedup_correlations
+from analysis.stats.instance_costs import all_timeout_ids, cost_table
 from analysis.stats.solver_outcomes import COUNTS as OUTCOME_COUNTS, solver_outcomes
 
 HERE = Path(__file__).parent
@@ -57,6 +58,16 @@ def rel(path):
         return str(Path(path).resolve().relative_to(REPO))
     except ValueError:
         return str(path)
+
+
+def fastest_encoding(joined, timeout_s):
+    """The encoding with the lowest cost on each instance (instance_costs.py's cost: the
+    median over runs, a timeout counting at the limit), or None for the instances on which
+    every encoding timed out in every run, or none ran without an error."""
+    costs = cost_table(joined, timeout_s)
+    timed_out = all_timeout_ids(joined)
+    return {i: None if i in timed_out or row.isna().all() else row.idxmin()
+            for i, row in costs.iterrows()}
 
 
 def fastest_counts(csv_path, encodings):
@@ -232,10 +243,15 @@ def main():
     }
 
     # ---- 2D and 3D projections -------------------------------------------
+    # Each point carries its corpus and the encoding that solved it fastest (None when
+    # every encoding timed out), the two things the projection can be coloured by.
+    fastest = fastest_encoding(joined, timeout_s)
     cl = {
         "pca_explained_variance": clusters["pca_explained_variance"],
+        "encodings": encodings,
         "points": [
-            {"i": p["id"], "c": p["corpus"], "p": p["pca"], "t2": p["tsne_2d"], "t3": p["tsne_3d"]}
+            {"i": p["id"], "c": p["corpus"], "b": fastest.get(p["id"]),
+             "p": p["pca"], "t2": p["tsne_2d"], "t3": p["tsne_3d"]}
             for p in clusters["points"]
         ],
     }

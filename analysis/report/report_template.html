@@ -18,6 +18,17 @@
   --c-llm: #2a78d6;
   --c-legal: #eb6834;
   --c-grammar: #1baf7a;
+  /* Fastest encoding in the feature-space projection. Six slots of the reference palette
+     chosen for a scatter, where every pair meets: worst pair Delta E 15.6 for normal vision,
+     6.9 under protan/deutan simulation, so each encoding also gets its own marker shape. */
+  --e-hybrid_ymd: #2a78d6;
+  --e-hybrid_epoch: #1baf7a;
+  --e-epoch_days: #008300;
+  --e-alpha_beta: #eda100;
+  --e-simple: #e34948;
+  --e-hybrid_both: #4a3aa7;
+  --e-other: #55544e;
+  --e-none: #95938b;   /* every encoding timed out: grey, >= 3:1 on the surface */
   --div-n2: #991b1b;   /* darkest red at rho = -1 */
   --div-n1: #e3807d;
   --div-0: #f0efec;
@@ -167,6 +178,7 @@ table.out td[data-tip]:hover { background: var(--chip); }
 #scatter { width: 100%; height: 640px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; }
 @media (max-width: 600px) { #scatter { height: 420px; } }
 .mix-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 400 12px/1.3 var(--mono); color: var(--ink-2); }
+.mix-legend .glyph { display: inline-block; width: 1.2em; text-align: center; margin-right: 4px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 20px; margin-top: 18px; }
 .stat .k { font: 500 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
 .stat .v { font: 600 20px/1.2 var(--cond); margin-top: 3px; font-variant-numeric: tabular-nums; }
@@ -259,7 +271,7 @@ footer li { margin: 3px 0; }
 
   <section id="projection">
     <h2>Instances in feature space</h2>
-    <p class="sec-lede">Every instance placed in 2D or 3D from its standardised features (skewed counts log-scaled first), by t-SNE or by PCA. Neither projection sees the corpus label; the colour adds it afterwards.</p>
+    <p class="sec-lede">Every instance placed in 2D or 3D from its standardised features (skewed counts log-scaled first), by t-SNE or by PCA. Neither projection sees the corpus or the solver results; the colour adds one of them afterwards: the corpus, or the encoding that solved the instance fastest.</p>
     <div class="controls">
       <div class="ctl"><span class="ctl-label" id="lbl-proj">Projection</span>
         <div class="seg" role="group" aria-labelledby="lbl-proj" id="seg-proj">
@@ -271,6 +283,12 @@ footer li { margin: 3px 0; }
         <div class="seg" role="group" aria-labelledby="lbl-dim" id="seg-dim">
           <button id="dim-2" data-v="2" aria-pressed="false">2D</button>
           <button id="dim-3" data-v="3" aria-pressed="true">3D</button>
+        </div>
+      </div>
+      <div class="ctl"><span class="ctl-label" id="lbl-pcol">Colour</span>
+        <div class="seg" role="group" aria-labelledby="lbl-pcol" id="seg-pcol">
+          <button id="pcol-c" data-v="corpus" aria-pressed="true">Corpus</button>
+          <button id="pcol-f" data-v="fastest" aria-pressed="false">Fastest encoding</button>
         </div>
       </div>
     </div>
@@ -468,7 +486,7 @@ function showTip(e, html) {
 function hideTip() { tip.hidden = true; }
 
 /* ---------- segmented controls ---------- */
-const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3" };
+const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3", pcol: "corpus" };
 function wireSeg(id, key, cb) {
   const seg = $(id);
   seg.addEventListener("click", (e) => {
@@ -855,18 +873,40 @@ function axis2(title) {
 }
 /* PCA has one 3-component fit (its 2D view is the first two axes); t-SNE has one fit per dimension. */
 function coords(p) { return state.proj === "p" ? p.p : state.dim === "3" ? p.t3 : p.t2; }
+/* Colour by fastest encoding: a fixed colour and marker shape per encoding (the shape is the
+   second cue the palette needs), grey for the instances on which every encoding timed out. */
+const ENC_ORDER = ["hybrid_ymd", "hybrid_epoch", "epoch_days", "alpha_beta", "simple", "hybrid_both"];
+const ENC_SYMBOL = { hybrid_ymd: "circle", hybrid_epoch: "square", epoch_days: "diamond",
+  alpha_beta: "cross", simple: "x", hybrid_both: "diamond-open" };
+const SYMBOL_GLYPH = { circle: "●", square: "■", diamond: "◆", cross: "✚", x: "✕", "diamond-open": "◇", "circle-open": "○", "square-open": "□" };
+function fastestGroups() {
+  const encs = [...ENC_ORDER.filter((e) => CL.encodings.includes(e)),
+                ...CL.encodings.filter((e) => !ENC_ORDER.includes(e))];
+  const groups = encs.map((e) => ({ key: e, label: e, color: css(ENC_ORDER.includes(e) ? `--e-${e}` : "--e-other"),
+    symbol: ENC_SYMBOL[e] || "square-open", pts: CL.points.filter((p) => p.b === e) }));
+  groups.push({ key: null, label: "all timed out", color: css("--e-none"), symbol: "circle-open",
+    pts: CL.points.filter((p) => p.b == null) });
+  return groups.filter((g) => g.pts.length);
+}
 function renderScatter() {
   const P = CL.points, n = Number(state.dim), d3 = n === 3;
-  const trace = (pts, name, color) => {
+  const trace = (pts, name, color, symbol = "circle") => {
     const xyz = pts.map(coords);
     return {
       type: d3 ? "scatter3d" : "scatter", mode: "markers", name,
       x: xyz.map((v) => v[0]), y: xyz.map((v) => v[1]), ...(d3 ? { z: xyz.map((v) => v[2]) } : {}),
-      text: pts.map((p) => `${p.i}<br>${CNAME[p.c]}`), hovertemplate: "%{text}<extra></extra>",
-      marker: { size: d3 ? 3.6 : 6, color, opacity: d3 ? 0.9 : 0.75, line: { width: 0 } },
+      text: pts.map((p) => `${p.i}<br>${CNAME[p.c]}<br>fastest: ${p.b ?? "none, all timed out"}`),
+      hovertemplate: "%{text}<extra></extra>",
+      /* Plotly draws a 3D "x" about twice the size of its other 3D symbols. */
+      marker: { size: d3 ? (symbol === "x" ? 1.8 : 3.6) : 6, color, symbol, opacity: d3 ? 0.9 : 0.75,
+        /* 2D draws open and line shapes with their outline; 3D markers have no usable
+           outline (a width inflates them), so there every shape is drawn filled. */
+        line: { width: !d3 && (symbol.endsWith("-open") || symbol === "x" || symbol === "cross") ? 1.5 : 0, color } },
     };
   };
-  const traces = CORPORA.map((c) => trace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`)));
+  const traces = state.pcol === "fastest"
+    ? fastestGroups().map((g) => trace(g.pts, `${g.label} (${g.pts.length})`, g.color, g.symbol))
+    : CORPORA.map((c) => trace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`)));
   const ax = (state.proj === "p"
     ? CL.pca_explained_variance.map((v, i) => `PC${i + 1} (${(v * 100).toFixed(0)}%)`)
     : ["t-SNE 1", "t-SNE 2", "t-SNE 3"]).slice(0, n);
@@ -892,7 +932,7 @@ function renderScatter() {
   }
   Plotly.react("scatter", traces, layout, { displaylogo: false, responsive: true,
     modeBarButtonsToRemove: ["toImage", "resetCameraLastSave3d", "select2d", "lasso2d"] });
-  $("#scatter").setAttribute("aria-label", `${n}D ${state.proj === "p" ? "PCA" : "t-SNE"} scatter of benchmark instances, coloured by corpus`);
+  $("#scatter").setAttribute("aria-label", `${n}D ${state.proj === "p" ? "PCA" : "t-SNE"} scatter of benchmark instances, coloured by ${state.pcol === "fastest" ? "the encoding that solved each fastest" : "corpus"}`);
   renderProjectionSide();
 }
 function renderProjectionSide() {
@@ -901,10 +941,14 @@ function renderProjectionSide() {
   const method = state.proj === "p"
     ? `<h3>PCA, ${n} axes</h3><p>The ${n} directions along which the standardised features vary most. Together they keep <b class="mono">${pct(pv.reduce((a, b) => a + b, 0))}</b> of the variance: ${pv.map((v, i) => `PC${i + 1} ${pct(v)}`).join(" + ")}.</p>`
     : `<h3>t-SNE, ${n} axes</h3><p>Places instances with similar features next to each other. Which instances are neighbours is meaningful; the axes, the size of a group and the gaps between groups are not. The 2D and 3D layouts are fitted separately, so they differ.</p>`;
-  $("#cl-side").innerHTML = `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. The projection never sees it, so corpora that land apart are ones the features tell apart.</p>
-      <div class="mix-legend">${CORPORA.map((c) => `<span><span class="dot" style="background:var(--c-${c})"></span>${CNAME[c]} ${M.corpora[c]}</span>`).join("")}</div></div>
+  const colour = state.pcol === "fastest"
+    ? `<div class="blk"><h3>Fastest encoding</h3><p>Colour and shape show which encoding solved each instance fastest: the lowest median time over the ${M.runs} run${M.runs > 1 ? "s" : ""}, a timeout counting at the ${M.timeout_s} s limit. Grey: every encoding timed out. The projection never sees the times, so a region of one colour is a kind of instance one encoding is best at.</p>
+      <div class="mix-legend">${fastestGroups().map((g) => `<span><span class="glyph" style="color:${g.color}" aria-hidden="true">${SYMBOL_GLYPH[g.symbol] || "●"}</span>${esc(g.label)} ${g.pts.length}</span>`).join("")}</div></div>`
+    : `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. The projection never sees it, so corpora that land apart are ones the features tell apart.</p>
+      <div class="mix-legend">${CORPORA.map((c) => `<span><span class="dot" style="background:var(--c-${c})"></span>${CNAME[c]} ${M.corpora[c]}</span>`).join("")}</div></div>`;
+  $("#cl-side").innerHTML = `${colour}
     <div class="blk">${method}</div>
-    <p>${n === 3 ? "Drag to rotate, scroll to zoom." : "Drag to zoom, double-click to zoom back out."} Click a corpus in the legend to hide it.</p>`;
+    <p>${n === 3 ? "Drag to rotate, scroll to zoom." : "Drag to zoom, double-click to zoom back out."} Click ${state.pcol === "fastest" ? "an encoding" : "a corpus"} in the legend to hide it.</p>`;
 }
 
 /* ---------- feature correlation ---------- */
@@ -1024,6 +1068,7 @@ wireSeg("#seg-oenc", "oenc", renderOutcomes);
 wireSeg("#seg-rscope", "rscope", renderRouter);
 wireSeg("#seg-proj", "proj", renderScatter);
 wireSeg("#seg-dim", "dim", renderScatter);
+wireSeg("#seg-pcol", "pcol", renderScatter);
 
 function renderAll() {
   renderHeat(); renderOutcomes(); renderRouter(); renderReduction();
