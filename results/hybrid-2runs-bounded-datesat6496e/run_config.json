@@ -1,0 +1,18 @@
+{
+  "timeout_ms": 20000,
+  "hard_timeout_ms": 20000,
+  "approaches": [
+    "hybrid_both",
+    "hybrid_epoch",
+    "hybrid_ymd"
+  ],
+  "datasets": [
+    "grammar",
+    "legal",
+    "llm"
+  ],
+  "maxsat": false,
+  "timestamp": "20261005_031336",
+  "tag": "hybrid-2runs-bounded-datesat6496e",
+  "datesatbench_root": "/home/angelc2/DateSATBench/datesatbench"
+}

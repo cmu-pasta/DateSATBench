@@ -1,0 +1,4512 @@
+{
+  "results_dir": "/home/angelc2/DateSATBench/results/hybrid-2runs-bounded-datesat6496e/llm/run_2",
+  "constraints_checked": 100,
+  "counts_by_approach": {
+    "hybrid_both_int": {
+      "correct": 100,
+      "wrong": 0,
+      "error": 0,
+      "timeout": 0,
+      "not_applicable": 0
+    },
+    "hybrid_epoch_int": {
+      "correct": 100,
+      "wrong": 0,
+      "error": 0,
+      "timeout": 0,
+      "not_applicable": 0
+    },
+    "hybrid_ymd_int": {
+      "correct": 100,
+      "wrong": 0,
+      "error": 0,
+      "timeout": 0,
+      "not_applicable": 0
+    }
+  },
+  "by_constraint": [
+    {
+      "constraint_id": "llm-logical_operators-1",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-10",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2016, 3, 15)",
+            "mid": "Date(2016, 1, 15)",
+            "start": "Date(2015, 11, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2016, 3, 15)",
+            "mid": "Date(2016, 1, 15)",
+            "start": "Date(2015, 11, 15)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2016, 3, 15)",
+            "mid": "Date(2016, 1, 15)",
+            "start": "Date(2015, 11, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-11",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2000, 2, 28)",
+            "_aux_date_1": "Date(2000, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2000, 2, 28)",
+            "_aux_date_1": "Date(2000, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2000, 2, 28)",
+            "_aux_date_1": "Date(2000, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-12",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2020, 3, 29)",
+            "mid": "Date(2020, 2, 29)",
+            "start": "Date(2020, 1, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2020, 3, 29)",
+            "mid": "Date(2020, 2, 29)",
+            "start": "Date(2020, 1, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2020, 3, 29)",
+            "mid": "Date(2020, 2, 29)",
+            "start": "Date(2020, 1, 30)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-13",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2015, 6, 15)",
+            "b": "Date(2015, 12, 15)",
+            "c": "Date(2016, 1, 29)",
+            "d": "Date(2016, 2, 1)",
+            "_aux_date_0": "Date(2016, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2015, 6, 15)",
+            "b": "Date(2015, 12, 15)",
+            "c": "Date(2016, 1, 29)",
+            "d": "Date(2016, 2, 1)",
+            "_aux_date_0": "Date(2016, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2015, 6, 15)",
+            "b": "Date(2015, 12, 15)",
+            "c": "Date(2016, 1, 29)",
+            "d": "Date(2016, 2, 1)",
+            "_aux_date_0": "Date(2016, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-14",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(1950, 3, 31)",
+            "y": "Date(1951, 3, 31)",
+            "z": "Date(1951, 1, 1)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(1950, 11, 1)",
+            "y": "Date(1951, 11, 1)",
+            "z": "Date(1951, 1, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(1950, 3, 1)",
+            "y": "Date(1951, 3, 1)",
+            "z": "Date(1951, 1, 1)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-15",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "p": "Date(2080, 11, 30)",
+            "q": "Date(2081, 2, 28)",
+            "r": "Date(2081, 3, 27)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "p": "Date(2080, 11, 30)",
+            "q": "Date(2081, 2, 28)",
+            "r": "Date(2081, 3, 27)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "p": "Date(2080, 11, 30)",
+            "q": "Date(2081, 2, 28)",
+            "r": "Date(2081, 3, 27)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-16",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2001, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-17",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-18",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2010, 12, 15)",
+            "mid": "Date(2010, 9, 15)",
+            "start": "Date(2010, 6, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2010, 12, 15)",
+            "mid": "Date(2010, 9, 15)",
+            "start": "Date(2010, 6, 15)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2010, 12, 15)",
+            "mid": "Date(2010, 9, 15)",
+            "start": "Date(2010, 6, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-19",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-2",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2025, 1, 14)",
+            "mid": "Date(2024, 1, 14)",
+            "start": "Date(2023, 7, 14)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2037, 3, 1)",
+            "mid": "Date(2036, 3, 1)",
+            "start": "Date(2035, 9, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(1952, 8, 14)",
+            "mid": "Date(1951, 8, 14)",
+            "start": "Date(1951, 2, 14)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-20",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "d1": "Date(2015, 1, 31)",
+            "d2": "Date(2015, 2, 28)",
+            "d3": "Date(2015, 3, 31)",
+            "d4": "Date(2016, 3, 31)",
+            "_aux_date_0": "Date(2015, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "d1": "Date(2015, 1, 31)",
+            "d2": "Date(2015, 2, 28)",
+            "d3": "Date(2015, 3, 31)",
+            "d4": "Date(2016, 3, 31)",
+            "_aux_date_0": "Date(2015, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "d1": "Date(2015, 1, 31)",
+            "d2": "Date(2015, 2, 28)",
+            "d3": "Date(2015, 3, 31)",
+            "d4": "Date(2016, 3, 31)",
+            "_aux_date_0": "Date(2015, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-3",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-4",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1920, 3, 1)",
+            "b": "Date(1921, 3, 1)",
+            "c": "Date(1920, 12, 31)",
+            "d": "Date(1921, 9, 1)",
+            "e": "Date(1921, 10, 2)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1920, 3, 1)",
+            "b": "Date(1921, 3, 1)",
+            "c": "Date(1920, 12, 31)",
+            "d": "Date(1921, 9, 1)",
+            "e": "Date(1921, 10, 2)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1920, 3, 1)",
+            "b": "Date(1921, 3, 1)",
+            "c": "Date(1920, 12, 31)",
+            "d": "Date(1921, 9, 1)",
+            "e": "Date(1921, 10, 2)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-5",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-6",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "leap_date": "Date(2000, 2, 29)",
+            "next_year": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "leap_date": "Date(2000, 2, 29)",
+            "next_year": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "leap_date": "Date(2000, 2, 29)",
+            "next_year": "Date(2001, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-7",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2020, 3, 2)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 30)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2020, 3, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 30)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2020, 3, 1)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-8",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-logical_operators-9",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "date1": "Date(1950, 4, 30)",
+            "date2": "Date(1950, 10, 30)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "date1": "Date(1950, 3, 31)",
+            "date2": "Date(1950, 9, 30)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "date1": "Date(1950, 4, 30)",
+            "date2": "Date(1950, 10, 30)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-21",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-22",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_later": "Date(2000, 2, 29)",
+            "leap_start": "Date(2000, 1, 31)",
+            "month_later": "Date(2000, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_later": "Date(2000, 2, 29)",
+            "leap_start": "Date(2000, 1, 31)",
+            "month_later": "Date(2000, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_later": "Date(2000, 2, 29)",
+            "leap_start": "Date(2000, 1, 31)",
+            "month_later": "Date(2000, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-23",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-24",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec_start": "Date(2022, 12, 15)",
+            "jan_days": "Date(2023, 1, 15)",
+            "jan_month": "Date(2023, 1, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec_start": "Date(2022, 12, 15)",
+            "jan_days": "Date(2023, 1, 15)",
+            "jan_month": "Date(2023, 1, 15)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec_start": "Date(2022, 12, 15)",
+            "jan_days": "Date(2023, 1, 15)",
+            "jan_month": "Date(2023, 1, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-25",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-26",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_later": "Date(2020, 2, 14)",
+            "month_later": "Date(2020, 2, 15)",
+            "x": "Date(2020, 1, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_later": "Date(2020, 2, 14)",
+            "month_later": "Date(2020, 2, 15)",
+            "x": "Date(2020, 1, 15)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_later": "Date(2020, 2, 14)",
+            "month_later": "Date(2020, 2, 15)",
+            "x": "Date(2020, 1, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-27",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "plus_28": "Date(2023, 2, 28)",
+            "plus_month": "Date(2023, 2, 28)",
+            "start": "Date(2023, 1, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "plus_28": "Date(2023, 2, 28)",
+            "plus_month": "Date(2023, 2, 28)",
+            "start": "Date(2023, 1, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "plus_28": "Date(2023, 2, 28)",
+            "plus_month": "Date(2023, 2, 28)",
+            "start": "Date(2023, 1, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-28",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-29",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-30",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec": "Date(2021, 12, 5)",
+            "feb": "Date(2022, 2, 5)",
+            "jan_days": "Date(2022, 1, 5)",
+            "jan_month": "Date(2022, 1, 5)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec": "Date(2021, 12, 5)",
+            "feb": "Date(2022, 2, 5)",
+            "jan_days": "Date(2022, 1, 5)",
+            "jan_month": "Date(2022, 1, 5)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec": "Date(2021, 12, 5)",
+            "feb": "Date(2022, 2, 5)",
+            "jan_days": "Date(2022, 1, 5)",
+            "jan_month": "Date(2022, 1, 5)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-31",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-32",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-33",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-34",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-35",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-36",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-37",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-38",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-39",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-month_vs_days-40",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec_start": "Date(2021, 12, 15)",
+            "end_check": "Date(2022, 1, 4)",
+            "jan_days": "Date(2022, 1, 15)",
+            "jan_month": "Date(2022, 1, 15)",
+            "mid_check": "Date(2021, 12, 30)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec_start": "Date(2021, 12, 15)",
+            "end_check": "Date(2022, 1, 4)",
+            "jan_days": "Date(2022, 1, 15)",
+            "jan_month": "Date(2022, 1, 15)",
+            "mid_check": "Date(2021, 12, 30)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "dec_start": "Date(2021, 12, 15)",
+            "end_check": "Date(2022, 1, 4)",
+            "jan_days": "Date(2022, 1, 15)",
+            "jan_month": "Date(2022, 1, 15)",
+            "mid_check": "Date(2021, 12, 30)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-41",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-42",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-43",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2020, 3, 15)",
+            "b": "Date(2020, 6, 15)",
+            "c": "Date(2020, 9, 15)",
+            "d": "Date(2020, 12, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2020, 3, 15)",
+            "b": "Date(2020, 6, 15)",
+            "c": "Date(2020, 9, 15)",
+            "d": "Date(2020, 12, 15)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2020, 3, 15)",
+            "b": "Date(2020, 6, 15)",
+            "c": "Date(2020, 9, 15)",
+            "d": "Date(2020, 12, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-44",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-45",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "check": "Date(2002, 1, 1)",
+            "end": "Date(2001, 1, 1)",
+            "mid": "Date(2000, 1, 1)",
+            "start": "Date(1999, 12, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "check": "Date(2002, 1, 1)",
+            "end": "Date(2001, 1, 1)",
+            "mid": "Date(2000, 1, 1)",
+            "start": "Date(1999, 12, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "check": "Date(2002, 1, 1)",
+            "end": "Date(2001, 1, 1)",
+            "mid": "Date(2000, 1, 1)",
+            "start": "Date(1999, 12, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-46",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-47",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2020, 2, 29)",
+            "mid": "Date(2020, 2, 15)",
+            "start": "Date(2020, 1, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2020, 2, 29)",
+            "mid": "Date(2020, 2, 15)",
+            "start": "Date(2020, 1, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2020, 2, 29)",
+            "mid": "Date(2020, 2, 15)",
+            "start": "Date(2020, 1, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-48",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-49",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-50",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(1975, 3, 31)",
+            "future": "Date(1980, 3, 31)",
+            "next": "Date(1975, 4, 30)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(1975, 3, 31)",
+            "future": "Date(1980, 3, 31)",
+            "next": "Date(1975, 4, 30)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(1975, 3, 31)",
+            "future": "Date(1980, 3, 31)",
+            "next": "Date(1975, 4, 30)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-51",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-52",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-53",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-54",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 6, 15)",
+            "b": "Date(2000, 6, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 6, 15)",
+            "b": "Date(2000, 6, 15)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 6, 15)",
+            "b": "Date(2000, 6, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-55",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-56",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-57",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2020, 3, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2020, 3, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 1, 31)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2020, 3, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-58",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-59",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(1951, 12, 2)",
+            "y": "Date(2001, 12, 2)",
+            "z": "Date(2026, 12, 2)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(1954, 2, 27)",
+            "y": "Date(2004, 2, 27)",
+            "z": "Date(2029, 2, 27)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(1951, 2, 14)",
+            "y": "Date(2001, 2, 14)",
+            "z": "Date(2026, 2, 14)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-property_access-60",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2019, 1, 31)",
+            "b": "Date(2019, 2, 28)",
+            "c": "Date(2019, 3, 28)",
+            "d": "Date(2019, 3, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2019, 1, 31)",
+            "b": "Date(2019, 2, 28)",
+            "c": "Date(2019, 3, 28)",
+            "d": "Date(2019, 3, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2019, 1, 31)",
+            "b": "Date(2019, 2, 28)",
+            "c": "Date(2019, 3, 28)",
+            "d": "Date(2019, 3, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-61",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-62",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-63",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2000, 2, 29)",
+            "x": "Date(2001, 2, 28)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2100, 2, 28)",
+            "_aux_date_0": "Date(2001, 2, 28)",
+            "_aux_date_1": "Date(2004, 2, 29)",
+            "_aux_date_2": "Date(2100, 2, 28)",
+            "l": 2004
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2000, 2, 29)",
+            "x": "Date(2001, 2, 28)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2100, 2, 28)",
+            "_aux_date_0": "Date(2001, 2, 28)",
+            "_aux_date_1": "Date(2004, 2, 29)",
+            "_aux_date_2": "Date(2100, 2, 28)",
+            "l": 2004
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2000, 2, 29)",
+            "x": "Date(2001, 2, 28)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2100, 2, 28)",
+            "_aux_date_0": "Date(2001, 2, 28)",
+            "_aux_date_1": "Date(2004, 2, 29)",
+            "_aux_date_2": "Date(2100, 2, 28)",
+            "l": 2004
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-64",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-65",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 6, 15)",
+            "b": "Date(1960, 6, 15)",
+            "c": "Date(1970, 7, 10)",
+            "d": "Date(2000, 6, 15)",
+            "_aux_date_0": "Date(1960, 6, 15)",
+            "_aux_date_1": "Date(1970, 7, 10)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 6, 15)",
+            "b": "Date(1960, 6, 15)",
+            "c": "Date(1970, 7, 10)",
+            "d": "Date(2000, 6, 15)",
+            "_aux_date_0": "Date(1960, 6, 15)",
+            "_aux_date_1": "Date(1970, 7, 10)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 6, 15)",
+            "b": "Date(1960, 6, 15)",
+            "c": "Date(1970, 7, 10)",
+            "d": "Date(2000, 6, 15)",
+            "_aux_date_0": "Date(1960, 6, 15)",
+            "_aux_date_1": "Date(1970, 7, 10)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-66",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2008, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2008, 2, 29)",
+            "l": 2008
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2008, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2008, 2, 29)",
+            "l": 2008
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2008, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2008, 2, 29)",
+            "l": 2008
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-67",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(2020, 3, 15)",
+            "next_year": "Date(2021, 3, 15)",
+            "offset": "Date(2022, 4, 10)",
+            "_aux_date_0": "Date(2021, 3, 15)",
+            "_aux_date_1": "Date(2022, 4, 10)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(2020, 3, 15)",
+            "next_year": "Date(2021, 3, 15)",
+            "offset": "Date(2022, 4, 10)",
+            "_aux_date_0": "Date(2021, 3, 15)",
+            "_aux_date_1": "Date(2022, 4, 10)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(2020, 3, 15)",
+            "next_year": "Date(2021, 3, 15)",
+            "offset": "Date(2022, 4, 10)",
+            "_aux_date_0": "Date(2021, 3, 15)",
+            "_aux_date_1": "Date(2022, 4, 10)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-68",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "anchor": "Date(1950, 6, 15)",
+            "derived1": "Date(2000, 6, 15)",
+            "derived2": "Date(2050, 12, 5)",
+            "derived3": "Date(2010, 3, 20)",
+            "_aux_date_0": "Date(2000, 6, 15)",
+            "_aux_date_1": "Date(2050, 12, 5)",
+            "_aux_date_2": "Date(2010, 3, 20)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "anchor": "Date(1950, 6, 15)",
+            "derived1": "Date(2000, 6, 15)",
+            "derived2": "Date(2050, 12, 5)",
+            "derived3": "Date(2010, 3, 20)",
+            "_aux_date_0": "Date(2000, 6, 15)",
+            "_aux_date_1": "Date(2050, 12, 5)",
+            "_aux_date_2": "Date(2010, 3, 20)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "anchor": "Date(1950, 6, 15)",
+            "derived1": "Date(2000, 6, 15)",
+            "derived2": "Date(2050, 12, 5)",
+            "derived3": "Date(2010, 3, 20)",
+            "_aux_date_0": "Date(2000, 6, 15)",
+            "_aux_date_1": "Date(2050, 12, 5)",
+            "_aux_date_2": "Date(2010, 3, 20)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-69",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "adjusted": "Date(2004, 2, 29)",
+            "leap_cross": "Date(2000, 2, 29)",
+            "start": "Date(1999, 2, 28)",
+            "_aux_date_0": "Date(2000, 2, 29)",
+            "_aux_date_1": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "adjusted": "Date(2004, 2, 29)",
+            "leap_cross": "Date(2000, 2, 29)",
+            "start": "Date(1999, 2, 28)",
+            "_aux_date_0": "Date(2000, 2, 29)",
+            "_aux_date_1": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "adjusted": "Date(2004, 2, 29)",
+            "leap_cross": "Date(2000, 2, 29)",
+            "start": "Date(1999, 2, 28)",
+            "_aux_date_0": "Date(2000, 2, 29)",
+            "_aux_date_1": "Date(2004, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-70",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "computed1": "Date(2020, 3, 25)",
+            "computed2": "Date(2010, 12, 5)",
+            "computed3": "Date(2015, 6, 25)",
+            "origin": "Date(2010, 5, 20)",
+            "_aux_date_0": "Date(2020, 3, 25)",
+            "_aux_date_1": "Date(2010, 12, 5)",
+            "_aux_date_2": "Date(2015, 6, 25)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "computed1": "Date(2020, 3, 25)",
+            "computed2": "Date(2010, 12, 5)",
+            "computed3": "Date(2015, 6, 25)",
+            "origin": "Date(2010, 5, 20)",
+            "_aux_date_0": "Date(2020, 3, 25)",
+            "_aux_date_1": "Date(2010, 12, 5)",
+            "_aux_date_2": "Date(2015, 6, 25)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "computed1": "Date(2020, 3, 25)",
+            "computed2": "Date(2010, 12, 5)",
+            "computed3": "Date(2015, 6, 25)",
+            "origin": "Date(2010, 5, 20)",
+            "_aux_date_0": "Date(2020, 3, 25)",
+            "_aux_date_1": "Date(2010, 12, 5)",
+            "_aux_date_2": "Date(2015, 6, 25)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-71",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)",
+            "z": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2001, 2, 28)",
+            "_aux_date_1": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)",
+            "z": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2001, 2, 28)",
+            "_aux_date_1": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2001, 2, 28)",
+            "z": "Date(2004, 2, 29)",
+            "_aux_date_0": "Date(2001, 2, 28)",
+            "_aux_date_1": "Date(2004, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-72",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2000, 12, 31)",
+            "x": "Date(1995, 6, 15)",
+            "y": "Date(2005, 9, 1)",
+            "z": "Date(1995, 6, 15)",
+            "_aux_date_0": "Date(2005, 9, 1)",
+            "_aux_date_1": "Date(1995, 6, 15)",
+            "_aux_date_2": "Date(2000, 12, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2000, 12, 31)",
+            "x": "Date(1995, 6, 15)",
+            "y": "Date(2005, 9, 1)",
+            "z": "Date(1995, 6, 15)",
+            "_aux_date_0": "Date(2005, 9, 1)",
+            "_aux_date_1": "Date(1995, 6, 15)",
+            "_aux_date_2": "Date(2000, 12, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2000, 12, 31)",
+            "x": "Date(1995, 6, 15)",
+            "y": "Date(2005, 9, 1)",
+            "z": "Date(1995, 6, 15)",
+            "_aux_date_0": "Date(2005, 9, 1)",
+            "_aux_date_1": "Date(1995, 6, 15)",
+            "_aux_date_2": "Date(2000, 12, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-73",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-74",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 2, 15)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2021, 2, 28)",
+            "_aux_date_0": "Date(2020, 2, 29)",
+            "_aux_date_1": "Date(2021, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 2, 15)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2021, 2, 28)",
+            "_aux_date_0": "Date(2020, 2, 29)",
+            "_aux_date_1": "Date(2021, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 2, 15)",
+            "y": "Date(2020, 2, 29)",
+            "z": "Date(2021, 2, 28)",
+            "_aux_date_0": "Date(2020, 2, 29)",
+            "_aux_date_1": "Date(2021, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-75",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-76",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2008, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2008, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2008, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2008, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 2, 29)",
+            "y": "Date(2004, 2, 29)",
+            "z": "Date(2008, 2, 29)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2008, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-77",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(2020, 6, 15)",
+            "next": "Date(2021, 5, 25)",
+            "shifted": "Date(2020, 9, 10)",
+            "_aux_date_0": "Date(2021, 5, 25)",
+            "_aux_date_1": "Date(2020, 9, 10)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(2020, 6, 15)",
+            "next": "Date(2021, 5, 25)",
+            "shifted": "Date(2020, 9, 10)",
+            "_aux_date_0": "Date(2021, 5, 25)",
+            "_aux_date_1": "Date(2020, 9, 10)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "base": "Date(2020, 6, 15)",
+            "next": "Date(2021, 5, 25)",
+            "shifted": "Date(2020, 9, 10)",
+            "_aux_date_0": "Date(2021, 5, 25)",
+            "_aux_date_1": "Date(2020, 9, 10)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-78",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 3, 15)",
+            "b": "Date(2000, 3, 15)",
+            "c": "Date(1975, 9, 25)",
+            "d": "Date(1985, 6, 20)",
+            "_aux_date_0": "Date(2000, 3, 15)",
+            "_aux_date_1": "Date(1975, 9, 25)",
+            "_aux_date_2": "Date(1985, 6, 20)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 3, 15)",
+            "b": "Date(2000, 3, 15)",
+            "c": "Date(1975, 9, 25)",
+            "d": "Date(1985, 6, 20)",
+            "_aux_date_0": "Date(2000, 3, 15)",
+            "_aux_date_1": "Date(1975, 9, 25)",
+            "_aux_date_2": "Date(1985, 6, 20)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(1950, 3, 15)",
+            "b": "Date(2000, 3, 15)",
+            "c": "Date(1975, 9, 25)",
+            "d": "Date(1985, 6, 20)",
+            "_aux_date_0": "Date(2000, 3, 15)",
+            "_aux_date_1": "Date(1975, 9, 25)",
+            "_aux_date_2": "Date(1985, 6, 20)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-79",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "leap1": "Date(2000, 2, 29)",
+            "leap2": "Date(2004, 2, 29)",
+            "nonleap": "Date(2001, 2, 28)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "leap1": "Date(2000, 2, 29)",
+            "leap2": "Date(2004, 2, 29)",
+            "nonleap": "Date(2001, 2, 28)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2001, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "leap1": "Date(2000, 2, 29)",
+            "leap2": "Date(2004, 2, 29)",
+            "nonleap": "Date(2001, 2, 28)",
+            "_aux_date_0": "Date(2004, 2, 29)",
+            "_aux_date_1": "Date(2001, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-symbolic_date_vars-80",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-100",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days1460": "Date(2003, 12, 31)",
+            "days730": "Date(2001, 12, 31)",
+            "start": "Date(2000, 1, 1)",
+            "year2": "Date(2002, 1, 1)",
+            "year4": "Date(2004, 1, 1)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days1460": "Date(2003, 12, 31)",
+            "days730": "Date(2001, 12, 31)",
+            "start": "Date(2000, 1, 1)",
+            "year2": "Date(2002, 1, 1)",
+            "year4": "Date(2004, 1, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days1460": "Date(2003, 12, 31)",
+            "days730": "Date(2001, 12, 31)",
+            "start": "Date(2000, 1, 1)",
+            "year2": "Date(2002, 1, 1)",
+            "year4": "Date(2004, 1, 1)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-81",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-82",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2001, 3, 1)",
+            "b": "Date(2002, 3, 1)",
+            "c": "Date(2002, 3, 1)",
+            "d": "Date(2002, 3, 2)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2001, 3, 1)",
+            "b": "Date(2002, 3, 1)",
+            "c": "Date(2002, 3, 1)",
+            "d": "Date(2002, 3, 2)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2001, 3, 1)",
+            "b": "Date(2002, 3, 1)",
+            "c": "Date(2002, 3, 1)",
+            "d": "Date(2002, 3, 2)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-83",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-84",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 1, 1)",
+            "y": "Date(2002, 1, 1)",
+            "z": "Date(2001, 12, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 1, 1)",
+            "y": "Date(2002, 1, 1)",
+            "z": "Date(2001, 12, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2000, 1, 1)",
+            "y": "Date(2002, 1, 1)",
+            "z": "Date(2001, 12, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-85",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2000, 2, 29)",
+            "b": "Date(2001, 2, 28)",
+            "c": "Date(2001, 3, 1)",
+            "d": "Date(2000, 3, 1)",
+            "e": "Date(2001, 3, 1)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2000, 2, 29)",
+            "b": "Date(2001, 2, 28)",
+            "c": "Date(2001, 3, 1)",
+            "d": "Date(2000, 3, 1)",
+            "e": "Date(2001, 3, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2000, 2, 29)",
+            "b": "Date(2001, 2, 28)",
+            "c": "Date(2001, 3, 1)",
+            "d": "Date(2000, 3, 1)",
+            "e": "Date(2001, 3, 1)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-86",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-87",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_366_later": "Date(2021, 3, 1)",
+            "leap_start": "Date(2020, 2, 29)",
+            "one_year_later": "Date(2021, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_366_later": "Date(2021, 3, 1)",
+            "leap_start": "Date(2020, 2, 29)",
+            "one_year_later": "Date(2021, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "days_366_later": "Date(2021, 3, 1)",
+            "leap_start": "Date(2020, 2, 29)",
+            "one_year_later": "Date(2021, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-88",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-89",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-90",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "v": "Date(2020, 1, 1)",
+            "w": "Date(2016, 1, 1)",
+            "x": "Date(2017, 1, 1)",
+            "y": "Date(2017, 1, 1)",
+            "z": "Date(2020, 1, 1)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "v": "Date(2020, 1, 1)",
+            "w": "Date(2016, 1, 1)",
+            "x": "Date(2017, 1, 1)",
+            "y": "Date(2017, 1, 1)",
+            "z": "Date(2020, 1, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "v": "Date(2020, 1, 1)",
+            "w": "Date(2016, 1, 1)",
+            "x": "Date(2017, 1, 1)",
+            "y": "Date(2017, 1, 1)",
+            "z": "Date(2020, 1, 1)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-91",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-92",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-93",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2000, 1, 1)",
+            "b": "Date(2004, 1, 1)",
+            "c": "Date(2004, 1, 1)",
+            "d": "Date(2003, 12, 31)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2000, 1, 1)",
+            "b": "Date(2004, 1, 1)",
+            "c": "Date(2004, 1, 1)",
+            "d": "Date(2003, 12, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "a": "Date(2000, 1, 1)",
+            "b": "Date(2004, 1, 1)",
+            "c": "Date(2004, 1, 1)",
+            "d": "Date(2003, 12, 31)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-94",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2000, 12, 15)",
+            "middle": "Date(2000, 12, 14)",
+            "start": "Date(1999, 12, 15)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2000, 12, 31)",
+            "middle": "Date(2000, 12, 30)",
+            "start": "Date(1999, 12, 31)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "end": "Date(2000, 12, 15)",
+            "middle": "Date(2000, 12, 14)",
+            "start": "Date(1999, 12, 15)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-95",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "v1": "Date(2000, 2, 29)",
+            "v2": "Date(2001, 2, 28)",
+            "v3": "Date(2001, 3, 1)",
+            "v4": "Date(2004, 2, 29)",
+            "v5": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "v1": "Date(2000, 2, 29)",
+            "v2": "Date(2001, 2, 28)",
+            "v3": "Date(2001, 3, 1)",
+            "v4": "Date(2004, 2, 29)",
+            "v5": "Date(2004, 2, 29)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "v1": "Date(2000, 2, 29)",
+            "v2": "Date(2001, 2, 28)",
+            "v3": "Date(2001, 3, 1)",
+            "v4": "Date(2004, 2, 29)",
+            "v5": "Date(2004, 2, 29)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-96",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-97",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2002, 3, 2)",
+            "x": "Date(2001, 3, 1)",
+            "y": "Date(2002, 3, 1)",
+            "z": "Date(2002, 3, 1)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2002, 3, 2)",
+            "x": "Date(2001, 3, 1)",
+            "y": "Date(2002, 3, 1)",
+            "z": "Date(2002, 3, 1)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "w": "Date(2002, 3, 2)",
+            "x": "Date(2001, 3, 1)",
+            "y": "Date(2002, 3, 1)",
+            "z": "Date(2002, 3, 1)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-98",
+      "approach_statuses": {
+        "hybrid_both_int": "unsat",
+        "hybrid_epoch_int": "unsat",
+        "hybrid_ymd_int": "unsat"
+      },
+      "sat_validation": {},
+      "unsat_consensus": true,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    },
+    {
+      "constraint_id": "llm-year_vs_days-99",
+      "approach_statuses": {
+        "hybrid_both_int": "sat",
+        "hybrid_epoch_int": "sat",
+        "hybrid_ymd_int": "sat"
+      },
+      "sat_validation": {
+        "hybrid_both_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 2, 29)",
+            "y": "Date(2021, 2, 28)",
+            "z": "Date(2021, 2, 28)"
+          }
+        },
+        "hybrid_epoch_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 2, 29)",
+            "y": "Date(2021, 2, 28)",
+            "z": "Date(2021, 2, 28)"
+          }
+        },
+        "hybrid_ymd_int": {
+          "valid": true,
+          "message": "Solution validated successfully",
+          "solution": {
+            "x": "Date(2020, 2, 29)",
+            "y": "Date(2021, 2, 28)",
+            "z": "Date(2021, 2, 28)"
+          }
+        }
+      },
+      "unsat_consensus": false,
+      "verdicts_by_approach": {
+        "hybrid_both_int": "correct",
+        "hybrid_epoch_int": "correct",
+        "hybrid_ymd_int": "correct"
+      },
+      "wrong_approaches": [],
+      "might_correct_approaches": []
+    }
+  ],
+  "enumeration_filter": "supported",
+  "enumeration_support": {
+    "supported": [
+      "llm-logical_operators-1",
+      "llm-logical_operators-10",
+      "llm-logical_operators-11",
+      "llm-logical_operators-12",
+      "llm-logical_operators-13",
+      "llm-logical_operators-14",
+      "llm-logical_operators-15",
+      "llm-logical_operators-16",
+      "llm-logical_operators-17",
+      "llm-logical_operators-18",
+      "llm-logical_operators-19",
+      "llm-logical_operators-2",
+      "llm-logical_operators-20",
+      "llm-logical_operators-3",
+      "llm-logical_operators-4",
+      "llm-logical_operators-5",
+      "llm-logical_operators-6",
+      "llm-logical_operators-7",
+      "llm-logical_operators-8",
+      "llm-logical_operators-9",
+      "llm-month_vs_days-21",
+      "llm-month_vs_days-22",
+      "llm-month_vs_days-23",
+      "llm-month_vs_days-24",
+      "llm-month_vs_days-25",
+      "llm-month_vs_days-26",
+      "llm-month_vs_days-27",
+      "llm-month_vs_days-28",
+      "llm-month_vs_days-29",
+      "llm-month_vs_days-30",
+      "llm-month_vs_days-31",
+      "llm-month_vs_days-32",
+      "llm-month_vs_days-33",
+      "llm-month_vs_days-34",
+      "llm-month_vs_days-35",
+      "llm-month_vs_days-36",
+      "llm-month_vs_days-37",
+      "llm-month_vs_days-38",
+      "llm-month_vs_days-39",
+      "llm-month_vs_days-40",
+      "llm-property_access-41",
+      "llm-property_access-42",
+      "llm-property_access-43",
+      "llm-property_access-44",
+      "llm-property_access-45",
+      "llm-property_access-46",
+      "llm-property_access-47",
+      "llm-property_access-48",
+      "llm-property_access-49",
+      "llm-property_access-50",
+      "llm-property_access-51",
+      "llm-property_access-52",
+      "llm-property_access-53",
+      "llm-property_access-54",
+      "llm-property_access-55",
+      "llm-property_access-56",
+      "llm-property_access-57",
+      "llm-property_access-58",
+      "llm-property_access-59",
+      "llm-property_access-60",
+      "llm-symbolic_date_vars-61",
+      "llm-symbolic_date_vars-62",
+      "llm-symbolic_date_vars-63",
+      "llm-symbolic_date_vars-64",
+      "llm-symbolic_date_vars-65",
+      "llm-symbolic_date_vars-66",
+      "llm-symbolic_date_vars-67",
+      "llm-symbolic_date_vars-68",
+      "llm-symbolic_date_vars-69",
+      "llm-symbolic_date_vars-70",
+      "llm-symbolic_date_vars-71",
+      "llm-symbolic_date_vars-72",
+      "llm-symbolic_date_vars-73",
+      "llm-symbolic_date_vars-74",
+      "llm-symbolic_date_vars-75",
+      "llm-symbolic_date_vars-76",
+      "llm-symbolic_date_vars-77",
+      "llm-symbolic_date_vars-78",
+      "llm-symbolic_date_vars-79",
+      "llm-symbolic_date_vars-80",
+      "llm-year_vs_days-100",
+      "llm-year_vs_days-81",
+      "llm-year_vs_days-82",
+      "llm-year_vs_days-83",
+      "llm-year_vs_days-84",
+      "llm-year_vs_days-85",
+      "llm-year_vs_days-86",
+      "llm-year_vs_days-87",
+      "llm-year_vs_days-88",
+      "llm-year_vs_days-89",
+      "llm-year_vs_days-90",
+      "llm-year_vs_days-91",
+      "llm-year_vs_days-92",
+      "llm-year_vs_days-93",
+      "llm-year_vs_days-94",
+      "llm-year_vs_days-95",
+      "llm-year_vs_days-96",
+      "llm-year_vs_days-97",
+      "llm-year_vs_days-98",
+      "llm-year_vs_days-99"
+    ],
+    "not_supported": [],
+    "supported_count": 100,
+    "not_supported_count": 0
+  },
+  "metrics": {
+    "per_approach_sorted": {
+      "avg_lines_sorted": [
+        {
+          "approach": "hybrid_both_int",
+          "average_lines": 0.0
+        },
+        {
+          "approach": "hybrid_epoch_int",
+          "average_lines": 0.0
+        },
+        {
+          "approach": "hybrid_ymd_int",
+          "average_lines": 0.0
+        }
+      ],
+      "avg_time_sorted": [
+        {
+          "approach": "hybrid_ymd_int",
+          "average_time": 0.04688492774963379
+        },
+        {
+          "approach": "hybrid_both_int",
+          "average_time": 0.08309022188186646
+        },
+        {
+          "approach": "hybrid_epoch_int",
+          "average_time": 0.2459221625328064
+        }
+      ]
+    },
+    "per_implementation_sorted": {
+      "avg_lines_sorted": [
+        {
+          "implementation": "int",
+          "average_lines": 0.0
+        }
+      ],
+      "avg_time_sorted": [
+        {
+          "implementation": "int",
+          "average_time": 0.12529910405476888
+        }
+      ]
+    },
+    "constraints_sorted_by_avg": {
+      "avg_lines_sorted": [
+        {
+          "constraint_id": "llm-logical_operators-1",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-10",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-11",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-12",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-13",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-14",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-15",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-16",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-17",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-18",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-19",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-2",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-20",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-3",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-4",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-5",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-6",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-7",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-8",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-logical_operators-9",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-21",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-22",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-23",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-24",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-25",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-26",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-27",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-28",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-29",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-30",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-31",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-32",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-33",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-34",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-35",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-36",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-37",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-38",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-39",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-month_vs_days-40",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-41",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-42",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-43",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-44",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-45",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-46",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-47",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-48",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-49",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-50",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-51",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-52",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-53",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-54",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-55",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-56",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-57",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-58",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-59",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-property_access-60",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-61",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-62",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-63",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-64",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-65",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-66",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-67",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-68",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-69",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-70",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-71",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-72",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-73",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-74",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-75",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-76",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-77",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-78",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-79",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-80",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-100",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-81",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-82",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-83",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-84",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-85",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-86",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-87",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-88",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-89",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-90",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-91",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-92",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-93",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-94",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-95",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-96",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-97",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-98",
+          "avg_lines": 0.0
+        },
+        {
+          "constraint_id": "llm-year_vs_days-99",
+          "avg_lines": 0.0
+        }
+      ],
+      "avg_time_sorted": [
+        {
+          "constraint_id": "llm-property_access-51",
+          "avg_time": 0.002801020940144857
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-64",
+          "avg_time": 0.0056222279866536455
+        },
+        {
+          "constraint_id": "llm-property_access-49",
+          "avg_time": 0.005945285161336263
+        },
+        {
+          "constraint_id": "llm-property_access-55",
+          "avg_time": 0.0060307979583740234
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-61",
+          "avg_time": 0.006125847498575847
+        },
+        {
+          "constraint_id": "llm-logical_operators-19",
+          "avg_time": 0.006539821624755859
+        },
+        {
+          "constraint_id": "llm-property_access-44",
+          "avg_time": 0.007438103357950847
+        },
+        {
+          "constraint_id": "llm-property_access-56",
+          "avg_time": 0.007530609766642253
+        },
+        {
+          "constraint_id": "llm-property_access-54",
+          "avg_time": 0.00757145881652832
+        },
+        {
+          "constraint_id": "llm-property_access-52",
+          "avg_time": 0.007887919743855795
+        },
+        {
+          "constraint_id": "llm-property_access-41",
+          "avg_time": 0.007922172546386719
+        },
+        {
+          "constraint_id": "llm-property_access-46",
+          "avg_time": 0.008029858271280924
+        },
+        {
+          "constraint_id": "llm-logical_operators-3",
+          "avg_time": 0.00829919179280599
+        },
+        {
+          "constraint_id": "llm-month_vs_days-39",
+          "avg_time": 0.008464336395263672
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-62",
+          "avg_time": 0.008791208267211914
+        },
+        {
+          "constraint_id": "llm-logical_operators-6",
+          "avg_time": 0.00880734125773112
+        },
+        {
+          "constraint_id": "llm-property_access-42",
+          "avg_time": 0.009286165237426758
+        },
+        {
+          "constraint_id": "llm-month_vs_days-34",
+          "avg_time": 0.009870370229085287
+        },
+        {
+          "constraint_id": "llm-month_vs_days-29",
+          "avg_time": 0.00987537701924642
+        },
+        {
+          "constraint_id": "llm-logical_operators-1",
+          "avg_time": 0.00989071528116862
+        },
+        {
+          "constraint_id": "llm-month_vs_days-36",
+          "avg_time": 0.01026622454325358
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-71",
+          "avg_time": 0.01042016347249349
+        },
+        {
+          "constraint_id": "llm-year_vs_days-96",
+          "avg_time": 0.010436693827311197
+        },
+        {
+          "constraint_id": "llm-year_vs_days-84",
+          "avg_time": 0.010457436243693033
+        },
+        {
+          "constraint_id": "llm-year_vs_days-89",
+          "avg_time": 0.01072239875793457
+        },
+        {
+          "constraint_id": "llm-year_vs_days-86",
+          "avg_time": 0.010831912358601889
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-77",
+          "avg_time": 0.010841449101765951
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-74",
+          "avg_time": 0.010877370834350586
+        },
+        {
+          "constraint_id": "llm-logical_operators-16",
+          "avg_time": 0.0108795166015625
+        },
+        {
+          "constraint_id": "llm-year_vs_days-81",
+          "avg_time": 0.01092370351155599
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-76",
+          "avg_time": 0.01092823346455892
+        },
+        {
+          "constraint_id": "llm-year_vs_days-91",
+          "avg_time": 0.011065483093261719
+        },
+        {
+          "constraint_id": "llm-month_vs_days-21",
+          "avg_time": 0.011300881703694662
+        },
+        {
+          "constraint_id": "llm-month_vs_days-31",
+          "avg_time": 0.011307875315348307
+        },
+        {
+          "constraint_id": "llm-month_vs_days-25",
+          "avg_time": 0.011575778325398764
+        },
+        {
+          "constraint_id": "llm-year_vs_days-87",
+          "avg_time": 0.011803229649861654
+        },
+        {
+          "constraint_id": "llm-month_vs_days-32",
+          "avg_time": 0.011873165766398111
+        },
+        {
+          "constraint_id": "llm-property_access-53",
+          "avg_time": 0.011933167775472006
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-79",
+          "avg_time": 0.012055476506551107
+        },
+        {
+          "constraint_id": "llm-logical_operators-5",
+          "avg_time": 0.012489954630533854
+        },
+        {
+          "constraint_id": "llm-year_vs_days-99",
+          "avg_time": 0.012534379959106445
+        },
+        {
+          "constraint_id": "llm-property_access-50",
+          "avg_time": 0.012732823689778646
+        },
+        {
+          "constraint_id": "llm-year_vs_days-83",
+          "avg_time": 0.012782812118530273
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-69",
+          "avg_time": 0.012967268625895182
+        },
+        {
+          "constraint_id": "llm-logical_operators-8",
+          "avg_time": 0.013245185216267904
+        },
+        {
+          "constraint_id": "llm-logical_operators-17",
+          "avg_time": 0.013365507125854492
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-75",
+          "avg_time": 0.013405640920003256
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-80",
+          "avg_time": 0.013762156168619791
+        },
+        {
+          "constraint_id": "llm-month_vs_days-22",
+          "avg_time": 0.013817946116129557
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-67",
+          "avg_time": 0.01386276880900065
+        },
+        {
+          "constraint_id": "llm-property_access-58",
+          "avg_time": 0.013880093892415365
+        },
+        {
+          "constraint_id": "llm-month_vs_days-27",
+          "avg_time": 0.014134963353474935
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-63",
+          "avg_time": 0.014354387919108072
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-65",
+          "avg_time": 0.01442265510559082
+        },
+        {
+          "constraint_id": "llm-year_vs_days-98",
+          "avg_time": 0.014660358428955078
+        },
+        {
+          "constraint_id": "llm-logical_operators-11",
+          "avg_time": 0.014825661977132162
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-68",
+          "avg_time": 0.015175819396972656
+        },
+        {
+          "constraint_id": "llm-month_vs_days-35",
+          "avg_time": 0.015306552251180014
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-78",
+          "avg_time": 0.015341440836588541
+        },
+        {
+          "constraint_id": "llm-month_vs_days-38",
+          "avg_time": 0.015383561452229818
+        },
+        {
+          "constraint_id": "llm-year_vs_days-88",
+          "avg_time": 0.01551206906636556
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-70",
+          "avg_time": 0.015516996383666992
+        },
+        {
+          "constraint_id": "llm-property_access-57",
+          "avg_time": 0.015801747639973957
+        },
+        {
+          "constraint_id": "llm-year_vs_days-92",
+          "avg_time": 0.01606162389119466
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-73",
+          "avg_time": 0.016407251358032227
+        },
+        {
+          "constraint_id": "llm-property_access-48",
+          "avg_time": 0.016702731450398762
+        },
+        {
+          "constraint_id": "llm-month_vs_days-37",
+          "avg_time": 0.017058769861857098
+        },
+        {
+          "constraint_id": "llm-year_vs_days-82",
+          "avg_time": 0.017804781595865887
+        },
+        {
+          "constraint_id": "llm-month_vs_days-26",
+          "avg_time": 0.01804494857788086
+        },
+        {
+          "constraint_id": "llm-year_vs_days-85",
+          "avg_time": 0.018233617146809895
+        },
+        {
+          "constraint_id": "llm-month_vs_days-28",
+          "avg_time": 0.01893329620361328
+        },
+        {
+          "constraint_id": "llm-property_access-43",
+          "avg_time": 0.019891738891601562
+        },
+        {
+          "constraint_id": "llm-logical_operators-15",
+          "avg_time": 0.02065420150756836
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-72",
+          "avg_time": 0.020817677179972332
+        },
+        {
+          "constraint_id": "llm-property_access-47",
+          "avg_time": 0.020883639653523762
+        },
+        {
+          "constraint_id": "llm-month_vs_days-24",
+          "avg_time": 0.021404425303141277
+        },
+        {
+          "constraint_id": "llm-month_vs_days-23",
+          "avg_time": 0.02244885762532552
+        },
+        {
+          "constraint_id": "llm-logical_operators-18",
+          "avg_time": 0.02345736821492513
+        },
+        {
+          "constraint_id": "llm-month_vs_days-40",
+          "avg_time": 0.026097853978474934
+        },
+        {
+          "constraint_id": "llm-logical_operators-13",
+          "avg_time": 0.027566035588582356
+        },
+        {
+          "constraint_id": "llm-property_access-60",
+          "avg_time": 0.030453205108642578
+        },
+        {
+          "constraint_id": "llm-month_vs_days-30",
+          "avg_time": 0.0304717222849528
+        },
+        {
+          "constraint_id": "llm-year_vs_days-93",
+          "avg_time": 0.031167984008789062
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-66",
+          "avg_time": 0.031821091969807945
+        },
+        {
+          "constraint_id": "llm-year_vs_days-90",
+          "avg_time": 0.032699187596639
+        },
+        {
+          "constraint_id": "llm-year_vs_days-97",
+          "avg_time": 0.03291948636372884
+        },
+        {
+          "constraint_id": "llm-logical_operators-10",
+          "avg_time": 0.03941575686136881
+        },
+        {
+          "constraint_id": "llm-logical_operators-20",
+          "avg_time": 0.042989492416381836
+        },
+        {
+          "constraint_id": "llm-year_vs_days-95",
+          "avg_time": 0.06289450327555339
+        },
+        {
+          "constraint_id": "llm-logical_operators-9",
+          "avg_time": 0.06426882743835449
+        },
+        {
+          "constraint_id": "llm-year_vs_days-100",
+          "avg_time": 0.06824429829915364
+        },
+        {
+          "constraint_id": "llm-property_access-45",
+          "avg_time": 0.13091413180033365
+        },
+        {
+          "constraint_id": "llm-logical_operators-4",
+          "avg_time": 0.2385538419087728
+        },
+        {
+          "constraint_id": "llm-logical_operators-12",
+          "avg_time": 0.2775584856669108
+        },
+        {
+          "constraint_id": "llm-logical_operators-7",
+          "avg_time": 0.30386996269226074
+        },
+        {
+          "constraint_id": "llm-logical_operators-14",
+          "avg_time": 0.32288161913553876
+        },
+        {
+          "constraint_id": "llm-year_vs_days-94",
+          "avg_time": 0.721709410349528
+        },
+        {
+          "constraint_id": "llm-month_vs_days-33",
+          "avg_time": 0.9765219688415527
+        },
+        {
+          "constraint_id": "llm-property_access-59",
+          "avg_time": 3.2881096998850503
+        },
+        {
+          "constraint_id": "llm-logical_operators-2",
+          "avg_time": 4.757464170455933
+        }
+      ]
+    }
+  }
+}
