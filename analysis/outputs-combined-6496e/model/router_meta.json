@@ -1,0 +1,655 @@
+{
+ "joined": "analysis/outputs-combined-6496e/joined.csv",
+ "sklearn_version": "1.9.1",
+ "timeout_s": 20.0,
+ "timeout_cost_s": 20.0,
+ "trees": 50,
+ "max_depth": 16,
+ "min_samples_leaf": 10,
+ "random_state": 0,
+ "instances": {
+  "total": 800,
+  "dropped_errored_or_missing": 0,
+  "dropped_all_timeout": 28,
+  "trained_on": 772
+ },
+ "encodings": [
+  "alpha_beta",
+  "epoch_days",
+  "hybrid_both",
+  "hybrid_epoch",
+  "hybrid_ymd",
+  "simple"
+ ],
+ "feature_columns": [
+  "n_free_date_vars",
+  "n_free_int_vars",
+  "n_free_bool_vars",
+  "pinned_var_frac",
+  "pinned_date_frac",
+  "pinned_int_frac",
+  "pinned_bool_frac",
+  "n_date_subexprs",
+  "n_atoms",
+  "n_date_comparisons",
+  "n_int_comparisons",
+  "ordering_cmp_frac",
+  "n_case_splits",
+  "max_disjunction_width",
+  "bool_alternation_depth",
+  "implication_atom_frac",
+  "neg_ordering_frac",
+  "n_unit_constraints",
+  "n_date_period_ops",
+  "ground_arith_frac",
+  "max_abs_years",
+  "max_abs_months",
+  "max_abs_days",
+  "mixed_frac",
+  "max_date_chain_len",
+  "n_dot_year",
+  "n_dot_month",
+  "n_dot_day",
+  "property_access_frac",
+  "n_symbolic_date_ctors",
+  "uses_feb29",
+  "uses_leap_year",
+  "near_month_end_frac",
+  "n_components",
+  "largest_component_frac",
+  "graph_density",
+  "mixed_sort_coupling",
+  "n_self_ops",
+  "n_cross_ops",
+  "n_const_ops",
+  "self_op_frac",
+  "n_year_ops",
+  "n_month_ops",
+  "n_day_ops",
+  "n_mixed_ops",
+  "n_day_steps_ge28",
+  "sum_abs_days",
+  "sum_abs_months",
+  "max_abs_days_nonself",
+  "max_abs_months_nonself",
+  "sum_abs_days_all",
+  "n_arith_unit",
+  "n_arith_in_disj",
+  "n_arith_neq",
+  "n_date_eq",
+  "n_date_neq",
+  "arith_graph_diameter",
+  "n_arith_vars",
+  "lit_year_span",
+  "n_ym_bases",
+  "n_day_bases",
+  "n_field_bases",
+  "n_vars_both_arith",
+  "n_arith_kind_switches",
+  "n_chained_ops",
+  "max_chain_abs_days",
+  "n_lit_date_cmps",
+  "n_var_var_cmps",
+  "n_date_ordering_cmps",
+  "max_lit_year_dist",
+  "emu_simple_divmod",
+  "emu_simple_ite",
+  "emu_epoch_days_divmod",
+  "emu_epoch_days_ite",
+  "emu_epoch_days_conversions",
+  "emu_hybrid_ymd_divmod",
+  "emu_hybrid_ymd_ite",
+  "emu_hybrid_ymd_conversions",
+  "emu_hybrid_ymd_lex_cmps",
+  "emu_hybrid_epoch_divmod",
+  "emu_hybrid_epoch_ite",
+  "emu_hybrid_epoch_conversions",
+  "emu_hybrid_epoch_lex_cmps",
+  "emu_hybrid_both_divmod",
+  "emu_hybrid_both_ite",
+  "emu_hybrid_both_conversions",
+  "emu_hybrid_both_lex_cmps",
+  "emu_alpha_beta_divmod",
+  "emu_alpha_beta_ite",
+  "emu_alpha_beta_conversions",
+  "log2_divmod_alpha_beta_vs_epoch_days",
+  "log2_divmod_alpha_beta_vs_hybrid_both",
+  "log2_divmod_alpha_beta_vs_hybrid_epoch",
+  "log2_divmod_alpha_beta_vs_hybrid_ymd",
+  "log2_divmod_alpha_beta_vs_simple",
+  "log2_divmod_epoch_days_vs_hybrid_both",
+  "log2_divmod_epoch_days_vs_hybrid_epoch",
+  "log2_divmod_epoch_days_vs_hybrid_ymd",
+  "log2_divmod_epoch_days_vs_simple",
+  "log2_divmod_hybrid_both_vs_hybrid_epoch",
+  "log2_divmod_hybrid_both_vs_hybrid_ymd",
+  "log2_divmod_hybrid_both_vs_simple",
+  "log2_divmod_hybrid_epoch_vs_hybrid_ymd",
+  "log2_divmod_hybrid_epoch_vs_simple",
+  "log2_divmod_hybrid_ymd_vs_simple",
+  "log2_ite_alpha_beta_vs_epoch_days",
+  "log2_ite_alpha_beta_vs_hybrid_both",
+  "log2_ite_alpha_beta_vs_hybrid_epoch",
+  "log2_ite_alpha_beta_vs_hybrid_ymd",
+  "log2_ite_alpha_beta_vs_simple",
+  "log2_ite_epoch_days_vs_hybrid_both",
+  "log2_ite_epoch_days_vs_hybrid_epoch",
+  "log2_ite_epoch_days_vs_hybrid_ymd",
+  "log2_ite_epoch_days_vs_simple",
+  "log2_ite_hybrid_both_vs_hybrid_epoch",
+  "log2_ite_hybrid_both_vs_hybrid_ymd",
+  "log2_ite_hybrid_both_vs_simple",
+  "log2_ite_hybrid_epoch_vs_hybrid_ymd",
+  "log2_ite_hybrid_epoch_vs_simple",
+  "log2_ite_hybrid_ymd_vs_simple"
+ ],
+ "bounds": "keep",
+ "total_cost_s": {
+  "alpha_beta": 2178.763,
+  "epoch_days": 2223.128,
+  "hybrid_both": 2666.082,
+  "hybrid_epoch": 2073.234,
+  "hybrid_ymd": 935.597,
+  "simple": 2738.525
+ },
+ "best_single_encoding": "hybrid_ymd",
+ "fallback": "hybrid_ymd",
+ "margin": 0.0,
+ "pairs": {
+  "alpha_beta vs epoch_days": {
+   "examples": 740,
+   "faster": {
+    "alpha_beta": 253,
+    "epoch_days": 487
+   },
+   "weight_s": {
+    "alpha_beta": 1299.788,
+    "epoch_days": 1255.423
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_alpha_beta_vs_epoch_days",
+     "importance": 0.1281
+    },
+    {
+     "feature": "log2_divmod_epoch_days_vs_hybrid_ymd",
+     "importance": 0.1065
+    },
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_hybrid_ymd",
+     "importance": 0.0907
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_both",
+     "importance": 0.0832
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_epoch",
+     "importance": 0.0681
+    }
+   ]
+  },
+  "alpha_beta vs hybrid_both": {
+   "examples": 739,
+   "faster": {
+    "alpha_beta": 456,
+    "hybrid_both": 283
+   },
+   "weight_s": {
+    "alpha_beta": 1649.069,
+    "hybrid_both": 1161.75
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_alpha_beta_vs_hybrid_both",
+     "importance": 0.1443
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_both",
+     "importance": 0.1247
+    },
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.0943
+    },
+    {
+     "feature": "log2_divmod_hybrid_both_vs_simple",
+     "importance": 0.0741
+    },
+    {
+     "feature": "log2_ite_alpha_beta_vs_hybrid_ymd",
+     "importance": 0.0737
+    }
+   ]
+  },
+  "alpha_beta vs hybrid_epoch": {
+   "examples": 747,
+   "faster": {
+    "alpha_beta": 251,
+    "hybrid_epoch": 496
+   },
+   "weight_s": {
+    "alpha_beta": 1265.005,
+    "hybrid_epoch": 1370.534
+   },
+   "top_features": [
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_epoch",
+     "importance": 0.1178
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_both",
+     "importance": 0.0833
+    },
+    {
+     "feature": "log2_divmod_hybrid_epoch_vs_simple",
+     "importance": 0.0727
+    },
+    {
+     "feature": "log2_ite_alpha_beta_vs_hybrid_epoch",
+     "importance": 0.0693
+    },
+    {
+     "feature": "log2_ite_alpha_beta_vs_hybrid_both",
+     "importance": 0.0634
+    }
+   ]
+  },
+  "alpha_beta vs hybrid_ymd": {
+   "examples": 753,
+   "faster": {
+    "alpha_beta": 226,
+    "hybrid_ymd": 527
+   },
+   "weight_s": {
+    "alpha_beta": 211.905,
+    "hybrid_ymd": 1455.071
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_alpha_beta_vs_hybrid_ymd",
+     "importance": 0.1015
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_both",
+     "importance": 0.0879
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_ymd",
+     "importance": 0.0776
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_hybrid_epoch",
+     "importance": 0.0558
+    },
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.0505
+    }
+   ]
+  },
+  "alpha_beta vs simple": {
+   "examples": 723,
+   "faster": {
+    "alpha_beta": 454,
+    "simple": 269
+   },
+   "weight_s": {
+    "alpha_beta": 1386.97,
+    "simple": 827.208
+   },
+   "top_features": [
+    {
+     "feature": "emu_simple_ite",
+     "importance": 0.1093
+    },
+    {
+     "feature": "sum_abs_days_all",
+     "importance": 0.1089
+    },
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.0987
+    },
+    {
+     "feature": "emu_simple_divmod",
+     "importance": 0.096
+    },
+    {
+     "feature": "max_abs_days",
+     "importance": 0.0659
+    }
+   ]
+  },
+  "epoch_days vs hybrid_both": {
+   "examples": 742,
+   "faster": {
+    "epoch_days": 582,
+    "hybrid_both": 160
+   },
+   "weight_s": {
+    "epoch_days": 1508.031,
+    "hybrid_both": 1065.077
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_both",
+     "importance": 0.1425
+    },
+    {
+     "feature": "log2_divmod_epoch_days_vs_hybrid_both",
+     "importance": 0.124
+    },
+    {
+     "feature": "n_chained_ops",
+     "importance": 0.0727
+    },
+    {
+     "feature": "max_lit_year_dist",
+     "importance": 0.0725
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_epoch",
+     "importance": 0.0663
+    }
+   ]
+  },
+  "epoch_days vs hybrid_epoch": {
+   "examples": 741,
+   "faster": {
+    "epoch_days": 445,
+    "hybrid_epoch": 296
+   },
+   "weight_s": {
+    "epoch_days": 891.257,
+    "hybrid_epoch": 1041.151
+   },
+   "top_features": [
+    {
+     "feature": "n_chained_ops",
+     "importance": 0.1082
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_epoch",
+     "importance": 0.1061
+    },
+    {
+     "feature": "max_lit_year_dist",
+     "importance": 0.0877
+    },
+    {
+     "feature": "log2_divmod_epoch_days_vs_hybrid_epoch",
+     "importance": 0.0787
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_both",
+     "importance": 0.0611
+    }
+   ]
+  },
+  "epoch_days vs hybrid_ymd": {
+   "examples": 765,
+   "faster": {
+    "epoch_days": 446,
+    "hybrid_ymd": 319
+   },
+   "weight_s": {
+    "epoch_days": 450.475,
+    "hybrid_ymd": 1738.005
+   },
+   "top_features": [
+    {
+     "feature": "log2_divmod_epoch_days_vs_hybrid_ymd",
+     "importance": 0.1171
+    },
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_hybrid_ymd",
+     "importance": 0.1089
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_both",
+     "importance": 0.0985
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_ymd",
+     "importance": 0.0901
+    },
+    {
+     "feature": "log2_ite_alpha_beta_vs_epoch_days",
+     "importance": 0.0763
+    }
+   ]
+  },
+  "epoch_days vs simple": {
+   "examples": 740,
+   "faster": {
+    "epoch_days": 488,
+    "simple": 252
+   },
+   "weight_s": {
+    "epoch_days": 1788.254,
+    "simple": 1272.857
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_simple",
+     "importance": 0.1008
+    },
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.0906
+    },
+    {
+     "feature": "log2_divmod_hybrid_epoch_vs_simple",
+     "importance": 0.0875
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_simple",
+     "importance": 0.0856
+    },
+    {
+     "feature": "log2_divmod_hybrid_both_vs_simple",
+     "importance": 0.0829
+    }
+   ]
+  },
+  "hybrid_both vs hybrid_epoch": {
+   "examples": 731,
+   "faster": {
+    "hybrid_both": 121,
+    "hybrid_epoch": 610
+   },
+   "weight_s": {
+    "hybrid_both": 615.641,
+    "hybrid_epoch": 1208.49
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_both_vs_hybrid_epoch",
+     "importance": 0.1362
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_both",
+     "importance": 0.0843
+    },
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_hybrid_ymd",
+     "importance": 0.0793
+    },
+    {
+     "feature": "log2_divmod_epoch_days_vs_hybrid_both",
+     "importance": 0.0555
+    },
+    {
+     "feature": "log2_divmod_hybrid_both_vs_hybrid_epoch",
+     "importance": 0.0486
+    }
+   ]
+  },
+  "hybrid_both vs hybrid_ymd": {
+   "examples": 755,
+   "faster": {
+    "hybrid_both": 99,
+    "hybrid_ymd": 656
+   },
+   "weight_s": {
+    "hybrid_both": 153.087,
+    "hybrid_ymd": 1883.572
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_both_vs_hybrid_ymd",
+     "importance": 0.0805
+    },
+    {
+     "feature": "log2_divmod_hybrid_epoch_vs_simple",
+     "importance": 0.0683
+    },
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_simple",
+     "importance": 0.0678
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_simple",
+     "importance": 0.0675
+    },
+    {
+     "feature": "log2_divmod_hybrid_both_vs_simple",
+     "importance": 0.0646
+    }
+   ]
+  },
+  "hybrid_both vs simple": {
+   "examples": 754,
+   "faster": {
+    "hybrid_both": 339,
+    "simple": 415
+   },
+   "weight_s": {
+    "hybrid_both": 2026.66,
+    "simple": 1954.217
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.1295
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_simple",
+     "importance": 0.1203
+    },
+    {
+     "feature": "emu_simple_divmod",
+     "importance": 0.093
+    },
+    {
+     "feature": "log2_divmod_hybrid_ymd_vs_simple",
+     "importance": 0.0674
+    },
+    {
+     "feature": "log2_divmod_hybrid_both_vs_simple",
+     "importance": 0.0667
+    }
+   ]
+  },
+  "hybrid_epoch vs hybrid_ymd": {
+   "examples": 761,
+   "faster": {
+    "hybrid_epoch": 424,
+    "hybrid_ymd": 337
+   },
+   "weight_s": {
+    "hybrid_epoch": 322.306,
+    "hybrid_ymd": 1459.942
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_hybrid_ymd",
+     "importance": 0.1728
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_hybrid_both",
+     "importance": 0.0931
+    },
+    {
+     "feature": "log2_ite_alpha_beta_vs_epoch_days",
+     "importance": 0.0903
+    },
+    {
+     "feature": "log2_divmod_epoch_days_vs_hybrid_ymd",
+     "importance": 0.0846
+    },
+    {
+     "feature": "log2_ite_alpha_beta_vs_hybrid_epoch",
+     "importance": 0.0783
+    }
+   ]
+  },
+  "hybrid_epoch vs simple": {
+   "examples": 754,
+   "faster": {
+    "hybrid_epoch": 489,
+    "simple": 265
+   },
+   "weight_s": {
+    "hybrid_epoch": 2052.712,
+    "simple": 1387.42
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.1287
+    },
+    {
+     "feature": "log2_ite_hybrid_epoch_vs_simple",
+     "importance": 0.1035
+    },
+    {
+     "feature": "log2_ite_epoch_days_vs_simple",
+     "importance": 0.077
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_simple",
+     "importance": 0.0687
+    },
+    {
+     "feature": "log2_divmod_hybrid_epoch_vs_simple",
+     "importance": 0.0647
+    }
+   ]
+  },
+  "hybrid_ymd vs simple": {
+   "examples": 760,
+   "faster": {
+    "hybrid_ymd": 623,
+    "simple": 137
+   },
+   "weight_s": {
+    "hybrid_ymd": 2142.451,
+    "simple": 339.523
+   },
+   "top_features": [
+    {
+     "feature": "log2_ite_hybrid_both_vs_simple",
+     "importance": 0.1133
+    },
+    {
+     "feature": "log2_divmod_hybrid_ymd_vs_simple",
+     "importance": 0.1024
+    },
+    {
+     "feature": "emu_simple_divmod",
+     "importance": 0.0958
+    },
+    {
+     "feature": "log2_divmod_alpha_beta_vs_simple",
+     "importance": 0.0847
+    },
+    {
+     "feature": "log2_divmod_hybrid_both_vs_simple",
+     "importance": 0.0553
+    }
+   ]
+  }
+ }
+}

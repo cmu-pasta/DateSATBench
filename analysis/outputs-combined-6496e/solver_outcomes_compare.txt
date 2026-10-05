@@ -1,0 +1,39 @@
+all: 772 instances; left out: 28 no encoding solves, 0 with an errored or missing run
+                       solved  sat  unsat  timeout total time median time beats baseline median speedup
+encoding                                                                                               
+simple        661/772 (85.6%)  366    295      111   2738.5 s    117.6 ms       baseline              -
+alpha_beta    686/772 (88.9%)  354    332       86   2178.8 s     32.4 ms  454/772 (59%)          1.14x
+epoch_days    685/772 (88.7%)  357    328       87   2223.1 s     19.6 ms  488/772 (63%)          2.57x
+hybrid_both   683/772 (88.5%)  327    356       89   2666.1 s     50.7 ms  339/772 (44%)          0.92x
+hybrid_epoch  700/772 (90.7%)  341    359       72   2073.2 s     21.7 ms  489/772 (63%)          2.77x
+hybrid_ymd    749/772 (97.0%)  390    359       23    935.6 s     23.5 ms  623/772 (81%)          1.25x
+
+llm: 100 instances; left out: 0 no encoding solves, 0 with an errored or missing run
+                        solved  sat  unsat  timeout total time median time beats baseline median speedup
+encoding                                                                                                
+simple          99/100 (99.0%)   58     41        1     59.4 s     16.9 ms       baseline              -
+alpha_beta    100/100 (100.0%)   59     41        0      3.2 s     13.3 ms   52/100 (52%)          1.03x
+epoch_days    100/100 (100.0%)   59     41        0     16.1 s     10.2 ms   58/100 (58%)          1.30x
+hybrid_both   100/100 (100.0%)   59     41        0      8.6 s     15.5 ms   49/100 (49%)          0.91x
+hybrid_epoch  100/100 (100.0%)   59     41        0     24.6 s     11.6 ms   55/100 (55%)          1.28x
+hybrid_ymd    100/100 (100.0%)   59     41        0      4.7 s     12.4 ms   97/100 (97%)          1.16x
+
+legal: 200 instances; left out: 0 no encoding solves, 0 with an errored or missing run
+                       solved  sat  unsat  timeout total time median time beats baseline median speedup
+encoding                                                                                               
+simple        198/200 (99.0%)  198      0        2    202.1 s     68.8 ms       baseline              -
+alpha_beta    175/200 (87.5%)  175      0       25    696.6 s    172.6 ms   66/200 (33%)          0.57x
+epoch_days    185/200 (92.5%)  185      0       15    551.1 s    192.3 ms   66/200 (33%)          0.37x
+hybrid_both   141/200 (70.5%)  141      0       59   1659.3 s      3.86 s   20/200 (10%)          0.06x
+hybrid_epoch  158/200 (79.0%)  158      0       42   1127.4 s    602.1 ms   51/200 (26%)          0.14x
+hybrid_ymd    193/200 (96.5%)  193      0        7    312.9 s     51.1 ms  117/200 (58%)          1.11x
+
+grammar: 472 instances; left out: 28 no encoding solves, 0 with an errored or missing run
+                       solved  sat  unsat  timeout total time median time beats baseline median speedup
+encoding                                                                                               
+simple        364/472 (77.1%)  110    254      108   2477.1 s    300.6 ms       baseline              -
+alpha_beta    411/472 (87.1%)  120    291       61   1478.9 s     33.3 ms  336/472 (71%)          1.22x
+epoch_days    400/472 (84.7%)  113    287       72   1655.9 s     14.6 ms  364/472 (77%)          3.89x
+hybrid_both   442/472 (93.6%)  127    315       30    998.2 s     31.0 ms  270/472 (57%)          1.14x
+hybrid_epoch  442/472 (93.6%)  124    318       30    921.2 s     18.2 ms  383/472 (81%)          4.19x
+hybrid_ymd    456/472 (96.6%)  138    318       16    618.0 s     23.4 ms  409/472 (87%)          2.00x
