@@ -18,17 +18,19 @@
   --c-llm: #2a78d6;
   --c-legal: #eb6834;
   --c-grammar: #1baf7a;
-  /* Fastest encoding in the feature-space projection. Six slots of the reference palette
-     chosen for a scatter, where every pair meets: worst pair Delta E 15.6 for normal vision,
-     6.9 under protan/deutan simulation, so each encoding also gets its own marker shape. */
-  --e-hybrid_ymd: #2a78d6;
-  --e-hybrid_epoch: #1baf7a;
-  --e-epoch_days: #008300;
+  /* Fastest encoding in the feature-space projection: one colour per family, the three
+     hybrids sharing green and told apart by shape. Four slots of the reference palette that
+     hold up when every pair meets, as in a scatter: worst pair Delta E 16.3 for normal
+     vision, 13.0 under protan/deutan simulation. */
+  --e-hybrid_ymd: #008300;
+  --e-hybrid_epoch: #008300;
+  --e-hybrid_both: #008300;
+  --e-epoch_days: #2a78d6;
   --e-alpha_beta: #eda100;
-  --e-simple: #e34948;
-  --e-hybrid_both: #4a3aa7;
+  --e-simple: #4a3aa7;
   --e-other: #55544e;
   --e-none: #95938b;   /* every encoding timed out: grey, >= 3:1 on the surface */
+  --ctx-dot: #d9d7cf;  /* the other instances, behind a highlighted encoding */
   --div-n2: #991b1b;   /* darkest red at rho = -1 */
   --div-n1: #e3807d;
   --div-0: #f0efec;
@@ -178,6 +180,7 @@ table.out td[data-tip]:hover { background: var(--chip); }
 #scatter { width: 100%; height: 640px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; }
 @media (max-width: 600px) { #scatter { height: 420px; } }
 .mix-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font: 400 12px/1.3 var(--mono); color: var(--ink-2); }
+#ctl-focus[hidden] { display: none; }
 .mix-legend .glyph { display: inline-block; width: 1.2em; text-align: center; margin-right: 4px; }
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px 20px; margin-top: 18px; }
 .stat .k { font: 500 11px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
@@ -290,6 +293,9 @@ footer li { margin: 3px 0; }
           <button id="pcol-c" data-v="corpus" aria-pressed="true">Corpus</button>
           <button id="pcol-f" data-v="fastest" aria-pressed="false">Fastest encoding</button>
         </div>
+      </div>
+      <div class="ctl" id="ctl-focus" hidden><span class="ctl-label" id="lbl-focus">Highlight</span>
+        <div class="seg" role="group" aria-labelledby="lbl-focus" id="seg-focus"></div>
       </div>
     </div>
     <div class="cl-layout">
@@ -486,7 +492,7 @@ function showTip(e, html) {
 function hideTip() { tip.hidden = true; }
 
 /* ---------- segmented controls ---------- */
-const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3", pcol: "corpus" };
+const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3", pcol: "corpus", pfocus: "all" };
 function wireSeg(id, key, cb) {
   const seg = $(id);
   seg.addEventListener("click", (e) => {
@@ -875,9 +881,9 @@ function axis2(title) {
 function coords(p) { return state.proj === "p" ? p.p : state.dim === "3" ? p.t3 : p.t2; }
 /* Colour by fastest encoding: a fixed colour and marker shape per encoding (the shape is the
    second cue the palette needs), grey for the instances on which every encoding timed out. */
-const ENC_ORDER = ["hybrid_ymd", "hybrid_epoch", "epoch_days", "alpha_beta", "simple", "hybrid_both"];
-const ENC_SYMBOL = { hybrid_ymd: "circle", hybrid_epoch: "square", epoch_days: "diamond",
-  alpha_beta: "cross", simple: "x", hybrid_both: "diamond-open" };
+const ENC_ORDER = ["hybrid_ymd", "hybrid_epoch", "hybrid_both", "epoch_days", "alpha_beta", "simple"];
+const ENC_SYMBOL = { hybrid_ymd: "circle", hybrid_epoch: "square", hybrid_both: "diamond",
+  epoch_days: "circle", alpha_beta: "circle", simple: "circle" };
 const SYMBOL_GLYPH = { circle: "●", square: "■", diamond: "◆", cross: "✚", x: "✕", "diamond-open": "◇", "circle-open": "○", "square-open": "□" };
 function fastestGroups() {
   const encs = [...ENC_ORDER.filter((e) => CL.encodings.includes(e)),
@@ -888,32 +894,59 @@ function fastestGroups() {
     pts: CL.points.filter((p) => p.b == null) });
   return groups.filter((g) => g.pts.length);
 }
-function renderScatter() {
-  const P = CL.points, n = Number(state.dim), d3 = n === 3;
-  const trace = (pts, name, color, symbol = "circle") => {
-    const xyz = pts.map(coords);
-    return {
-      type: d3 ? "scatter3d" : "scatter", mode: "markers", name,
-      x: xyz.map((v) => v[0]), y: xyz.map((v) => v[1]), ...(d3 ? { z: xyz.map((v) => v[2]) } : {}),
-      text: pts.map((p) => `${p.i}<br>${CNAME[p.c]}<br>fastest: ${p.b ?? "none, all timed out"}`),
-      hovertemplate: "%{text}<extra></extra>",
-      /* Plotly draws a 3D "x" about twice the size of its other 3D symbols. */
-      marker: { size: d3 ? (symbol === "x" ? 1.8 : 3.6) : 6, color, symbol, opacity: d3 ? 0.9 : 0.75,
-        /* 2D draws open and line shapes with their outline; 3D markers have no usable
-           outline (a width inflates them), so there every shape is drawn filled. */
-        line: { width: !d3 && (symbol.endsWith("-open") || symbol === "x" || symbol === "cross") ? 1.5 : 0, color } },
-    };
-  };
-  const traces = state.pcol === "fastest"
-    ? fastestGroups().map((g) => trace(g.pts, `${g.label} (${g.pts.length})`, g.color, g.symbol))
-    : CORPORA.map((c) => trace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`)));
-  const ax = (state.proj === "p"
+const groupKey = (g) => g.key ?? "none";
+function scatterAxes(n) {
+  return (state.proj === "p"
     ? CL.pca_explained_variance.map((v, i) => `PC${i + 1} (${(v * 100).toFixed(0)}%)`)
     : ["t-SNE 1", "t-SNE 2", "t-SNE 3"]).slice(0, n);
-  const layout = {
-    ...plotTheme(),
-    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
+}
+function markerTrace(pts, name, color, symbol, d3, { size, opacity, hover = true, legend = true } = {}) {
+  const xyz = pts.map(coords);
+  return {
+    type: d3 ? "scatter3d" : "scatter", mode: "markers", name, showlegend: legend,
+    x: xyz.map((v) => v[0]), y: xyz.map((v) => v[1]), ...(d3 ? { z: xyz.map((v) => v[2]) } : {}),
+    text: pts.map((p) => `${p.i}<br>${CNAME[p.c]}<br>fastest: ${p.b ?? "none, all timed out"}`),
+    hovertemplate: "%{text}<extra></extra>", hoverinfo: hover ? undefined : "skip",
+    /* Plotly draws a 3D "x" about twice the size of its other 3D symbols. */
+    marker: { size: d3 && symbol === "x" ? size / 2 : size, color, symbol, opacity,
+      /* 2D draws open and line shapes with their outline; 3D markers have no usable
+         outline (a width inflates them), so there every shape is drawn filled. */
+      line: { width: !d3 && (symbol.endsWith("-open") || symbol === "x" || symbol === "cross") ? 1.5 : 0, color } },
   };
+}
+/* One encoding's instances in colour over every other instance in faint grey. */
+function focusTraces(g, d3, size) {
+  const rest = CL.points.filter((p) => p.b !== g.key && !(g.key == null && p.b == null));
+  return [
+    markerTrace(rest, `other instances (${rest.length})`, css("--ctx-dot"), "circle", d3,
+      { size: size * 0.7, opacity: d3 ? 0.45 : 0.8, hover: false }),
+    /* Alone in colour, the highlighted encoding needs no shape; 3D draws its thin
+       shapes (+, x, open marks) too faintly, so there it is a filled dot. */
+    markerTrace(g.pts, `${g.label} (${g.pts.length})`, g.color, d3 ? "circle" : g.symbol, d3, { size: size * 1.15, opacity: 0.95 }),
+  ];
+}
+function hoverLabel() {
+  return { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") };
+}
+function renderFocusSeg() {
+  const groups = fastestGroups();
+  if (state.pfocus !== "all" && !groups.some((g) => groupKey(g) === state.pfocus)) state.pfocus = "all";
+  $("#seg-focus").innerHTML = [`<button data-v="all" aria-pressed="${state.pfocus === "all"}">Every encoding</button>`,
+    ...groups.map((g) => `<button data-v="${esc(groupKey(g))}" aria-pressed="${state.pfocus === groupKey(g)}">${esc(g.key ?? "timed out")}</button>`)].join("");
+}
+function renderScatter() {
+  $("#ctl-focus").hidden = state.pcol !== "fastest";
+  if (state.pcol === "fastest") renderFocusSeg();
+  const P = CL.points, n = Number(state.dim), d3 = n === 3, size = d3 ? 3.6 : 6;
+  const fast = state.pcol === "fastest";
+  const focus = fast && state.pfocus !== "all" ? fastestGroups().find((g) => groupKey(g) === state.pfocus) : null;
+  const traces = focus
+    ? focusTraces(focus, d3, size)
+    : fast
+      ? fastestGroups().map((g) => markerTrace(g.pts, `${g.label} (${g.pts.length})`, g.color, g.symbol, d3, { size, opacity: d3 ? 0.9 : 0.75 }))
+      : CORPORA.map((c) => markerTrace(P.filter((p) => p.c === c), `${CNAME[c]} (${M.corpora[c]})`, css(`--c-${c}`), "circle", d3, { size, opacity: d3 ? 0.9 : 0.75 }));
+  const ax = scatterAxes(n);
+  const layout = { ...plotTheme(), hoverlabel: hoverLabel() };
   if (d3) {
     Object.assign(layout, {
       margin: { l: 0, r: 0, t: 0, b: 0 },
@@ -932,7 +965,9 @@ function renderScatter() {
   }
   Plotly.react("scatter", traces, layout, { displaylogo: false, responsive: true,
     modeBarButtonsToRemove: ["toImage", "resetCameraLastSave3d", "select2d", "lasso2d"] });
-  $("#scatter").setAttribute("aria-label", `${n}D ${state.proj === "p" ? "PCA" : "t-SNE"} scatter of benchmark instances, coloured by ${state.pcol === "fastest" ? "the encoding that solved each fastest" : "corpus"}`);
+  const what = focus ? `the instances ${focus.key ? `${focus.key} solved fastest` : "every encoding timed out on"} highlighted`
+    : fast ? "the encoding that solved each fastest" : "corpus";
+  $("#scatter").setAttribute("aria-label", `${n}D ${state.proj === "p" ? "PCA" : "t-SNE"} scatter of benchmark instances, ${focus ? "" : "coloured by "}${what}`);
   renderProjectionSide();
 }
 function renderProjectionSide() {
@@ -942,13 +977,15 @@ function renderProjectionSide() {
     ? `<h3>PCA, ${n} axes</h3><p>The ${n} directions along which the standardised features vary most. Together they keep <b class="mono">${pct(pv.reduce((a, b) => a + b, 0))}</b> of the variance: ${pv.map((v, i) => `PC${i + 1} ${pct(v)}`).join(" + ")}.</p>`
     : `<h3>t-SNE, ${n} axes</h3><p>Places instances with similar features next to each other. Which instances are neighbours is meaningful; the axes, the size of a group and the gaps between groups are not. The 2D and 3D layouts are fitted separately, so they differ.</p>`;
   const colour = state.pcol === "fastest"
-    ? `<div class="blk"><h3>Fastest encoding</h3><p>Colour and shape show which encoding solved each instance fastest: the lowest median time over the ${M.runs} run${M.runs > 1 ? "s" : ""}, a timeout counting at the ${M.timeout_s} s limit. Grey: every encoding timed out. The projection never sees the times, so a region of one colour is a kind of instance one encoding is best at.</p>
+    ? `<div class="blk"><h3>Fastest encoding</h3><p>Colour shows which encoding, or for the three hybrids which family, solved each instance fastest, and shape tells the hybrids apart: the lowest median time over the ${M.runs} run${M.runs > 1 ? "s" : ""}, a timeout counting at the ${M.timeout_s} s limit. Grey: every encoding timed out. The projection never sees the times, so a region of one colour is a kind of instance one encoding is best at.</p>
       <div class="mix-legend">${fastestGroups().map((g) => `<span><span class="glyph" style="color:${g.color}" aria-hidden="true">${SYMBOL_GLYPH[g.symbol] || "●"}</span>${esc(g.label)} ${g.pts.length}</span>`).join("")}</div></div>`
     : `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. The projection never sees it, so corpora that land apart are ones the features tell apart.</p>
       <div class="mix-legend">${CORPORA.map((c) => `<span><span class="dot" style="background:var(--c-${c})"></span>${CNAME[c]} ${M.corpora[c]}</span>`).join("")}</div></div>`;
   $("#cl-side").innerHTML = `${colour}
     <div class="blk">${method}</div>
-    <p>${n === 3 ? "Drag to rotate, scroll to zoom." : "Drag to zoom, double-click to zoom back out."} Click ${state.pcol === "fastest" ? "an encoding" : "a corpus"} in the legend to hide it.</p>`;
+    <p>${state.pcol === "fastest" && state.pfocus !== "all"
+        ? `${n === 3 ? "Drag to rotate, scroll to zoom." : "Drag to zoom, double-click to zoom back out."} Grey dots are every other instance.`
+        : `${n === 3 ? "Drag to rotate, scroll to zoom." : "Drag to zoom, double-click to zoom back out."} Click ${state.pcol === "fastest" ? "an encoding" : "a corpus"} in the legend to hide it.`}</p>`;
 }
 
 /* ---------- feature correlation ---------- */
@@ -1069,6 +1106,7 @@ wireSeg("#seg-rscope", "rscope", renderRouter);
 wireSeg("#seg-proj", "proj", renderScatter);
 wireSeg("#seg-dim", "dim", renderScatter);
 wireSeg("#seg-pcol", "pcol", renderScatter);
+wireSeg("#seg-focus", "pfocus", renderScatter);
 
 function renderAll() {
   renderHeat(); renderOutcomes(); renderRouter(); renderReduction();
