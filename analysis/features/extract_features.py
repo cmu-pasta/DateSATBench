@@ -517,6 +517,7 @@ EMULATED = {"simple": ("divmod", "ite"),
             "epoch_days": ("divmod", "ite", "conversions"),
             "hybrid_ymd": ("divmod", "ite", "conversions", "lex_cmps"),
             "hybrid_epoch": ("divmod", "ite", "conversions", "lex_cmps"),
+            "hybrid_both": ("divmod", "ite", "conversions", "lex_cmps"),
             "alpha_beta": ("divmod", "ite", "conversions")}
 ENCODING_EMULATION = [f"emu_{e}_{m}" for e, ms in EMULATED.items() for m in ms]
 ENCODING_CONTRASTS = [f"log2_{measure}_{a}_vs_{b}" for measure in ("divmod", "ite")

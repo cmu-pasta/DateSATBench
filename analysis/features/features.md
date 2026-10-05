@@ -1,4 +1,4 @@
-# features(5): the 106 columns of features.csv
+# features(5): the 120 columns of features.csv
 
 Each entry gives the feature's meaning in one or two lines, then a small example with the
 value it produces. `test_features_md.py` runs every example below through
@@ -1005,16 +1005,19 @@ a > Date(1990,5,1);  a < Date(2024,1,1);  b >= Date(1,1,1)
 
 ## ENCODING EMULATION
 
-What each of DateSat's five encodings would emit for the instance, counted without solving
-it. `emulate_encodings.py` walks the parsed constraints the way DateSat's builder does and
+What each of DateSat's six int encodings would emit for the instance, counted without
+solving it. `emulate_encodings.py` walks the parsed constraints the way DateSat's builder does and
 follows each encoding's rules from `datesat/symbolic_int/`: `simple` keeps (year, month,
 day) and unrolls day steps one day at a time; `epoch_days` keeps a day count and decodes it
 for year/month steps and field reads; `alpha_beta` keeps (months since the epoch, day of the
-month) and goes through the day count when a day step leaves the month; `hybrid_ymd` and
-`hybrid_epoch` keep both forms and convert when an operation needs the one that is out of
-date. The hybrids start a variable in (year, month, day) form and as a day count
-respectively, and which form is up to date changes as the constraints are built, so the
-walk visits the constraints in DateSat's order and keeps the same state.
+month) and goes through the day count when a day step leaves the month; the three hybrids
+keep both forms and convert when an operation needs the one that is out of date.
+`hybrid_ymd` starts a variable in (year, month, day) form and `hybrid_epoch` as a day count,
+and both tie the other form to it only when an operation needs it. `hybrid_both` starts a
+variable in (year, month, day) form tied to its day count at once, and ties the day count
+to the result of every year/month step at once too. Which form is up to date changes as the
+constraints are built, so the walk visits the constraints in DateSat's order and keeps the
+same state.
 
 Four things are counted:
 
@@ -1031,8 +1034,9 @@ A term DateSat builds twice from the same inputs is counted once, because Z3 sha
 identical terms, and a term no assertion uses is not counted: reading only `.month` of a
 day count uses 5 of the decoding's 8 divisions. The injected bounds are literal comparisons,
 so with `--bounds keep` they change only the `lex_cmps` columns. The walk follows DateSat's
-code and must be updated when DateSat's encodings change. Every divmod and ite example below
-was checked against the formula DateSat builds.
+code and must be updated when DateSat's encodings change; `check_emulation.py` compares it
+with the formulas DateSat builds for every DateSatBench instance. Every divmod and ite
+example below was checked against the formula DateSat builds.
 
 
 
@@ -1093,10 +1097,11 @@ Dates `epoch_days` converts.
 ### emu_hybrid_ymd_divmod
 
 `div` and `mod` terms `hybrid_ymd` emits. Every date variable starts in (year, month, day)
-form, tied to a day count by an encoding, so it costs divisions before any arithmetic.
+form and is tied to a day count only when an operation needs one, so comparisons between
+variables in that form cost only their validity checks.
 
 ```
-a < Date(2020,1,1);  a <= b                               →  16   (a and b tied to day counts)
+a < Date(2020,1,1);  a <= b                               →  6    (the leap-year tests of a and b)
 ```
 
 
@@ -1106,7 +1111,7 @@ a < Date(2020,1,1);  a <= b                               →  16   (a and b tie
 If-then-else terms `hybrid_ymd` emits.
 
 ```
-(same example)                                            →  10
+(same example)                                            →  6
 ```
 
 
@@ -1119,9 +1124,9 @@ Dates `hybrid_ymd` converts.
 b == a + Period(0,0,5)                                    →  4
 ```
 
-`a` and `b` are encoded when they are declared. `a + 5d` is a day count, and comparing it
-with `==` to `b`, which is in (year, month, day) form, decodes it into fresh year, month and
-day variables, which are encoded again to tie them to it.
+`a + 5d` needs `a`'s day count, so `a` is encoded. Comparing `a + 5d`, a day count, with `==`
+to `b`, which is in (year, month, day) form, encodes `b` and decodes `a + 5d` into fresh year,
+month and day variables, which are encoded again to tie them to it.
 
 
 
@@ -1182,6 +1187,49 @@ b > a + Period(0,0,7);  b.month == 2;  b < Date(2020,1,1) →  1   (the last one
 
 
 
+### emu_hybrid_both_divmod
+
+`div` and `mod` terms `hybrid_both` emits. Every date variable is tied to its day count when
+it is declared, so it costs an encoding's divisions even when nothing needs the day count.
+
+```
+a < Date(2020,1,1);  a <= b                               →  16   (a and b encoded at declaration)
+```
+
+
+
+### emu_hybrid_both_ite
+
+If-then-else terms `hybrid_both` emits.
+
+```
+(same example)                                            →  10
+```
+
+
+
+### emu_hybrid_both_conversions
+
+Dates `hybrid_both` converts.
+
+```
+b == a + Period(0,0,5)                                    →  2    (a and b, at declaration)
+b == a + Period(0,1,0)                                    →  3    (and a + 1m, as soon as it is built)
+```
+
+
+
+### emu_hybrid_both_lex_cmps
+
+Date comparisons `hybrid_both` writes component by component. Both forms of a variable are up
+to date, so comparing two variables uses the day counts, but comparing one with a literal
+date uses (year, month, day).
+
+```
+a < Date(2020,1,1);  a <= b                               →  1    (a < Date(...))
+```
+
+
 ### emu_alpha_beta_divmod
 
 `div` and `mod` terms `alpha_beta` emits. A day step may leave the month, so it also emits a
@@ -1231,9 +1279,9 @@ below 0 means encoding `a` emits fewer such terms than `b`. The examples all use
 `b == a + Period(0,1,5)`, for which the counts are:
 
 ```
-             simple  epoch_days  hybrid_ymd  hybrid_epoch  alpha_beta
-divmod           26          18          39            23          29
-ite              51          11          23            13          22
+             simple  epoch_days  hybrid_ymd  hybrid_epoch  hybrid_both  alpha_beta
+divmod           26          18          34            23           26          29
+ite              51          11          21            13           17          22
 ```
 
 
@@ -1242,6 +1290,14 @@ ite              51          11          23            13          22
 
 ```
 b == a + Period(0,1,5)                                    →  0.659   (log2(30/19))
+```
+
+
+
+### log2_divmod_alpha_beta_vs_hybrid_both
+
+```
+(same example)                                            →  0.152
 ```
 
 
@@ -1257,7 +1313,7 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_divmod_alpha_beta_vs_hybrid_ymd
 
 ```
-(same example)                                            →  -0.415
+(same example)                                            →  -0.222
 ```
 
 
@@ -1266,6 +1322,14 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 
 ```
 (same example)                                            →  0.152
+```
+
+
+
+### log2_divmod_epoch_days_vs_hybrid_both
+
+```
+(same example)                                            →  -0.507
 ```
 
 
@@ -1281,7 +1345,7 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_divmod_epoch_days_vs_hybrid_ymd
 
 ```
-(same example)                                            →  -1.074
+(same example)                                            →  -0.881
 ```
 
 
@@ -1294,10 +1358,34 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 
 
 
+### log2_divmod_hybrid_both_vs_hybrid_epoch
+
+```
+(same example)                                            →  0.170
+```
+
+
+
+### log2_divmod_hybrid_both_vs_hybrid_ymd
+
+```
+(same example)                                            →  -0.374
+```
+
+
+
+### log2_divmod_hybrid_both_vs_simple
+
+```
+(same example)                                            →  0.000
+```
+
+
+
 ### log2_divmod_hybrid_epoch_vs_hybrid_ymd
 
 ```
-(same example)                                            →  -0.737
+(same example)                                            →  -0.544
 ```
 
 
@@ -1313,7 +1401,7 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_divmod_hybrid_ymd_vs_simple
 
 ```
-(same example)                                            →  0.567
+(same example)                                            →  0.374
 ```
 
 
@@ -1321,7 +1409,15 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_ite_alpha_beta_vs_epoch_days
 
 ```
-(same example)                                            →  0.939   (log2(23/12))
+(same example)                                            →  0.939
+```
+
+
+
+### log2_ite_alpha_beta_vs_hybrid_both
+
+```
+(same example)                                            →  0.354
 ```
 
 
@@ -1337,7 +1433,7 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_ite_alpha_beta_vs_hybrid_ymd
 
 ```
-(same example)                                            →  -0.061
+(same example)                                            →  0.064
 ```
 
 
@@ -1346,6 +1442,14 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 
 ```
 (same example)                                            →  -1.177
+```
+
+
+
+### log2_ite_epoch_days_vs_hybrid_both
+
+```
+(same example)                                            →  -0.585
 ```
 
 
@@ -1361,7 +1465,7 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_ite_epoch_days_vs_hybrid_ymd
 
 ```
-(same example)                                            →  -1.000
+(same example)                                            →  -0.874
 ```
 
 
@@ -1374,10 +1478,34 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 
 
 
+### log2_ite_hybrid_both_vs_hybrid_epoch
+
+```
+(same example)                                            →  0.363
+```
+
+
+
+### log2_ite_hybrid_both_vs_hybrid_ymd
+
+```
+(same example)                                            →  -0.290
+```
+
+
+
+### log2_ite_hybrid_both_vs_simple
+
+```
+(same example)                                            →  -1.531
+```
+
+
+
 ### log2_ite_hybrid_epoch_vs_hybrid_ymd
 
 ```
-(same example)                                            →  -0.778
+(same example)                                            →  -0.652
 ```
 
 
@@ -1393,7 +1521,5 @@ b == a + Period(0,1,5)                                    →  0.659   (log2(30/
 ### log2_ite_hybrid_ymd_vs_simple
 
 ```
-(same example)                                            →  -1.115
+(same example)                                            →  -1.241
 ```
-
----

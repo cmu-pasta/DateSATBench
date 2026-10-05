@@ -1,5 +1,5 @@
 """
-Replay, without solving, how each of DateSat's five int encodings translates a constraint,
+Replay, without solving, how each of DateSat's six int encodings translates a constraint,
 and count what the translation emits.
 
 Section 4 of the DateSAT paper explains the encodings' speed by two measures of the formula
@@ -22,10 +22,11 @@ forms is up to date, and the flags change as the constraints are built; the repl
 same flags and visits the constraints in DateSat's order.
 
 The counts follow DateSat's datesat/symbolic_int/*_int.py and datesat/constraint_parser.py,
-and have to be updated when those change. They were checked on 2026-09-29 by building every
-DateSatBench formula with DateSat (without solving) and counting its distinct div, mod and
-if-then-else nodes: the replay matched on every instance and encoding but one. `simple`'s
-largest formulas were too big to build and were skipped. The one miss is a Date(...) whose
+and have to be updated when those change; check_emulation.py builds every DateSatBench
+formula with DateSat (without solving) and compares its distinct div, mod and if-then-else
+nodes with the replay. Against DateSat 6496e1f (hybrid_both added, hybrid_ymd and
+hybrid_epoch made fully lazy) the replay matched on every instance and encoding but one.
+`simple`'s largest formulas are too big to build and are skipped. The one miss is a Date(...) whose
 argument is in parentheses, `Date((y - 1), 1, 1)`: DateSat's parser does not replace it by
 an auxiliary variable and compares its fields instead, and the parsed tree here no longer
 shows the parentheses.
@@ -38,7 +39,7 @@ from analysis.features.datesat_parser import (
     walk,
 )
 
-ENCODINGS = ("simple", "epoch_days", "hybrid_ymd", "hybrid_epoch", "alpha_beta")
+ENCODINGS = ("simple", "epoch_days", "hybrid_ymd", "hybrid_epoch", "hybrid_both", "alpha_beta")
 
 # (div/mod, if-then-else) terms of each building block, from DateSat's symbolic_int code.
 DIM = (3, 3)        # days_in_month(y, m): y%4, y%100, y%400; If(m==2, If(leap, 29, 28), If(.., 30, 31))
@@ -232,17 +233,24 @@ class AlphaBeta(Encoding):
 class Hybrid(Encoding):
     """Both forms per date, kept up to date lazily: year/month arithmetic on (y, m, d), day
     arithmetic on the day count, and a conversion whenever an operation needs a form that is
-    out of date (DateSat's hybrid_*_int.py). hybrid_ymd starts a variable in (y, m, d) form,
-    linked to its day count; hybrid_epoch starts it as a day count only."""
+    out of date (DateSat's hybrid_*_int.py). hybrid_ymd starts a variable in (y, m, d) form
+    and hybrid_epoch as a day count, and both link the other form only when it is needed;
+    hybrid_both starts it in both forms, linked at once."""
 
     ymd_first = True
+    # hybrid_both links the day count to (y, m, d) as soon as a variable is declared and after
+    # every year/month step; hybrid_ymd and hybrid_epoch emit that link only when a later
+    # operation needs the day count.
+    eager_link = False
 
     def declare(self, name):
         v = Value(name)
         if self.ymd_first:
             v.ymd_exists = v.ymd_ok = True
-            self.encode(name, name)                        # epoch_var == encode(y, m, d)
             self.emit(("dim", name), DIM)                  # 1 <= d <= days_in_month(y, m)
+            if self.eager_link:
+                self.encode(name, name)                    # epoch_var == encode(y, m, d)
+                v.epoch_ok = True
         else:
             v.epoch_ok = True
         return v
@@ -274,12 +282,15 @@ class Hybrid(Encoding):
         ym = f"{v.ymd}{p.ny:+}y{p.nm:+}m"
         self.emit(("dim", ym), DIM)
         self.emit(("clamp", ym), CLAMP)
-        self.encode(ym, ym)
         if p.nd:
+            self.encode(ym, ym)
             r.epoch_ok, r.epoch = True, f"enc({ym}){p.nd:+}d"
-        else:                                              # a fresh epoch_var, linked to (y, m, d)
-            r.ymd_exists = r.ymd_ok = True
-            r.ymd, r.epoch = ym, f"#epoch{next(self.fresh)}"
+            return r
+        r.ymd_exists = r.ymd_ok = True                     # the result is (y, m, d)
+        r.ymd, r.epoch = ym, f"#epoch{next(self.fresh)}"
+        if self.eager_link:                                # epoch_var == encode(y, m, d)
+            self.encode(ym, ym)
+            r.epoch_ok = True
         return r
 
     def field(self, v, fname):
@@ -314,8 +325,13 @@ class HybridEpoch(Hybrid):
     ymd_first = False
 
 
+class HybridBoth(Hybrid):
+    ymd_first = True
+    eager_link = True
+
+
 CLASSES = {"simple": Simple, "epoch_days": EpochDays, "hybrid_ymd": HybridYmd,
-           "hybrid_epoch": HybridEpoch, "alpha_beta": AlphaBeta}
+           "hybrid_epoch": HybridEpoch, "hybrid_both": HybridBoth, "alpha_beta": AlphaBeta}
 
 
 def is_symbolic_ctor(n):
