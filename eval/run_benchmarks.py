@@ -255,8 +255,9 @@ ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
 
 # Approaches that --approaches accepts but the default run leaves out. `router` picks one
 # of the int encodings per instance with a trained model (see DateSat's docs/router.md).
+# `hybrid_both` keeps both the Y/M/D and epoch representations of a date (DateSat constraint-features branch).
 OPT_IN_APPROACHES_BY_IMPL = {
-    "int": ["alpha_beta_table", "router"],
+    "int": ["alpha_beta_table", "router", "hybrid_both"],
     "bitvector": [],
 }
 
