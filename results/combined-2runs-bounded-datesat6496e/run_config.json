@@ -1,0 +1,40 @@
+{
+  "timeout_ms": 20000,
+  "hard_timeout_ms": 20000,
+  "approaches": [
+    "alpha_beta",
+    "epoch_days",
+    "hybrid_both",
+    "hybrid_epoch",
+    "hybrid_ymd",
+    "simple"
+  ],
+  "datasets": [
+    "grammar",
+    "legal",
+    "llm"
+  ],
+  "maxsat": false,
+  "tag": "combined-2runs-bounded-datesat6496e",
+  "combined_from": {
+    "all-2runs-bounded": {
+      "approaches": [
+        "alpha_beta",
+        "epoch_days",
+        "simple"
+      ],
+      "timestamp": "20260929_042247",
+      "datesatbench_root": "/home/shrey/pldi/DateSATBench/datesatbench"
+    },
+    "hybrid-2runs-bounded-datesat6496e": {
+      "approaches": [
+        "hybrid_both",
+        "hybrid_epoch",
+        "hybrid_ymd"
+      ],
+      "timestamp": "20261005_031336",
+      "datesatbench_root": "/home/angelc2/DateSATBench/datesatbench",
+      "datesat_commit": "6496e1f"
+    }
+  }
+}
