@@ -6,7 +6,7 @@ Relates DateSAT's solver results on DateSATBench to features of the benchmark in
 
 | Folder | Stage | What it holds |
 |---|---|---|
-| `features/` | 1 | The constraint parser, `extract_features.py`, `emulate_encodings.py` (counts, without solving, what each DateSat encoding would emit), `features.md` (documents every feature column) and its tests |
+| `features/` | 1 | The constraint parser, `extract_features.py`, `emulate_encodings.py` (counts, without solving, what each DateSat encoding would emit), `check_emulation.py` (compares those counts with the formulas DateSat builds), `features.md` (documents every feature column) and its tests |
 | `stats/` | 2–4 | `join_results.py` (joins solver timings to the features), `cluster.py` (PCA and t-SNE projections of the features to 2D and 3D), `solver_outcomes.py`, the two `plot_*.py` scripts and `select_features.py` (one feature per family of correlated features) |
 | `report/` | 5 | `build_report.py` and the HTML template it fills in |
 | `router/` | 6–7 | `crossval_router.py` (measures the router's setting on unseen constraints, by cross-validation), `train_router.py` (trains the encoding router on every instance: one random forest per pair of encodings) and their tests |
@@ -38,6 +38,14 @@ python -m analysis.router.train_router                   # 7: outputs/model/rout
 `python -m analysis.stats.solver_outcomes --compare` prints a summary of what each encoding
 did, per corpus. Every stage takes `--help`.
 
+To analyse other results without overwriting `outputs/`, point `--results` (stages 2 and 5)
+at them and set `DATESAT_ANALYSIS_OUTPUTS` to another directory, which every stage then
+reads and writes instead. Create the directory first. For example,
+`outputs-combined-6496e/` is the pipeline run on
+`results/combined-2runs-bounded-datesat6496e` with
+`DATESAT_ANALYSIS_OUTPUTS=analysis/outputs-combined-6496e` and
+`extract_features --dataset-root datesatbench --bounds keep`.
+
 The report's *Specialized router* section reads the outputs of stages 6 and 7
 (`model_cross_validation/router_eval.json` and `model/router_meta.json`), so rebuild the
 report after running them; without them the section says so and stays empty. Its
@@ -68,6 +76,7 @@ trained on every instance with the same setting, goes to `model/`.
 ```
 python -m analysis.features.test_features_md        # runs every example in features.md
 python -m analysis.features.test_extract_features
+python -m analysis.features.check_emulation         # needs DateSat; takes about 10 minutes
 python -m analysis.router.test_train_router
 python -m analysis.router.test_crossval_router
 python -m analysis.stats.test_select_features
