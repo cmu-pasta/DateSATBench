@@ -1,7 +1,7 @@
 {
  "features": "analysis/outputs/features.csv",
  "threshold": 0.8,
- "n_features": 59,
+ "n_features": 63,
  "constant": [
   "pinned_bool_frac",
   "ground_arith_frac"
@@ -132,6 +132,10 @@
     {
      "feature": "sum_abs_days_all",
      "rho": 0.8864
+    },
+    {
+     "feature": "n_day_steps",
+     "rho": 0.8214
     }
    ]
   },
@@ -198,7 +202,10 @@
   "n_date_eq",
   "n_date_neq",
   "n_arith_vars",
-  "lit_year_span"
+  "lit_year_span",
+  "n_ymd_needs",
+  "form_balance",
+  "n_unavoidable_conversions"
  ],
  "most_correlated_left": {
   "a": "n_dot_month",

@@ -13,7 +13,8 @@
  "setting": {
   "min_samples_leaf": 10,
   "max_depth": 16,
-  "margin": 0.0
+  "margin": 0.0,
+  "train_timeout_cost_s": 80.0
  },
  "feature_columns": [
   "n_free_date_vars",
@@ -66,7 +67,6 @@
   "sum_abs_months",
   "max_abs_days_nonself",
   "max_abs_months_nonself",
-  "sum_abs_days_all",
   "n_arith_unit",
   "n_arith_in_disj",
   "n_arith_neq",
@@ -75,53 +75,11 @@
   "arith_graph_diameter",
   "n_arith_vars",
   "lit_year_span",
-  "n_ym_bases",
-  "n_day_bases",
-  "n_field_bases",
-  "n_vars_both_arith",
-  "n_arith_kind_switches",
-  "n_chained_ops",
-  "max_chain_abs_days",
-  "n_lit_date_cmps",
-  "n_var_var_cmps",
-  "n_date_ordering_cmps",
-  "max_lit_year_dist",
-  "emu_simple_divmod",
-  "emu_simple_ite",
-  "emu_epoch_days_divmod",
-  "emu_epoch_days_ite",
-  "emu_epoch_days_conversions",
-  "emu_hybrid_ymd_divmod",
-  "emu_hybrid_ymd_ite",
-  "emu_hybrid_ymd_conversions",
-  "emu_hybrid_ymd_lex_cmps",
-  "emu_hybrid_epoch_divmod",
-  "emu_hybrid_epoch_ite",
-  "emu_hybrid_epoch_conversions",
-  "emu_hybrid_epoch_lex_cmps",
-  "emu_alpha_beta_divmod",
-  "emu_alpha_beta_ite",
-  "emu_alpha_beta_conversions",
-  "log2_divmod_alpha_beta_vs_epoch_days",
-  "log2_divmod_alpha_beta_vs_hybrid_epoch",
-  "log2_divmod_alpha_beta_vs_hybrid_ymd",
-  "log2_divmod_alpha_beta_vs_simple",
-  "log2_divmod_epoch_days_vs_hybrid_epoch",
-  "log2_divmod_epoch_days_vs_hybrid_ymd",
-  "log2_divmod_epoch_days_vs_simple",
-  "log2_divmod_hybrid_epoch_vs_hybrid_ymd",
-  "log2_divmod_hybrid_epoch_vs_simple",
-  "log2_divmod_hybrid_ymd_vs_simple",
-  "log2_ite_alpha_beta_vs_epoch_days",
-  "log2_ite_alpha_beta_vs_hybrid_epoch",
-  "log2_ite_alpha_beta_vs_hybrid_ymd",
-  "log2_ite_alpha_beta_vs_simple",
-  "log2_ite_epoch_days_vs_hybrid_epoch",
-  "log2_ite_epoch_days_vs_hybrid_ymd",
-  "log2_ite_epoch_days_vs_simple",
-  "log2_ite_hybrid_epoch_vs_hybrid_ymd",
-  "log2_ite_hybrid_epoch_vs_simple",
-  "log2_ite_hybrid_ymd_vs_simple"
+  "sum_abs_days_all",
+  "n_day_steps",
+  "n_ymd_needs",
+  "form_balance",
+  "n_unavoidable_conversions"
  ],
  "fallbacks": [
   "hybrid_ymd"
@@ -167,11 +125,11 @@
     "speedup_geomean": 1.0
    },
    "router": {
-    "total_s": 446.692,
-    "timeouts": 7,
-    "speedup_total": 6.0041,
-    "speedup_median": 3.3849,
-    "speedup_geomean": 6.8261
+    "total_s": 482.014,
+    "timeouts": 6.4,
+    "speedup_total": 5.5724,
+    "speedup_median": 3.1386,
+    "speedup_geomean": 6.6007
    },
    "oracle": {
     "total_s": 248.475,
@@ -182,21 +140,21 @@
    }
   },
   "router_picks": {
-   "alpha_beta": 86.2,
-   "epoch_days": 235,
-   "hybrid_epoch": 142.2,
-   "hybrid_ymd": 153,
-   "simple": 152.6
+   "alpha_beta": 83.2,
+   "epoch_days": 236.6,
+   "hybrid_epoch": 153,
+   "hybrid_ymd": 142.4,
+   "simple": 153.8
   },
-  "router_fell_back": 25.8,
-  "router_picks_fastest": 0.4466,
+  "router_fell_back": 30.8,
+  "router_picks_fastest": 0.4432,
   "gap_closed_to_oracle": {
    "router": {
-    "always simple": 0.9184,
-    "always hybrid_ymd": 0.6215
+    "always simple": 0.9038,
+    "always hybrid_ymd": 0.554
    }
   },
-  "router_total_sd_s": 21.85
+  "router_total_sd_s": 31.697
  },
  "by_corpus": {
   "grammar": {
@@ -238,11 +196,11 @@
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 352.487,
-     "timeouts": 6.4,
-     "speedup_total": 6.8587,
-     "speedup_median": 4.6155,
-     "speedup_geomean": 10.9171
+     "total_s": 373.159,
+     "timeouts": 6,
+     "speedup_total": 6.4892,
+     "speedup_median": 4.4232,
+     "speedup_geomean": 10.6925
     },
     "oracle": {
      "total_s": 215.558,
@@ -253,21 +211,21 @@
     }
    },
    "router_picks": {
-    "alpha_beta": 65,
-    "epoch_days": 138.4,
-    "hybrid_epoch": 128,
-    "hybrid_ymd": 118.6,
-    "simple": 19
+    "alpha_beta": 59.6,
+    "epoch_days": 149,
+    "hybrid_epoch": 140.4,
+    "hybrid_ymd": 109.8,
+    "simple": 10.2
    },
-   "router_fell_back": 16.4,
-   "router_picks_fastest": 0.3804,
+   "router_fell_back": 19.2,
+   "router_picks_fastest": 0.3808,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.9378,
-     "always hybrid_ymd": 0.5297
+     "always simple": 0.9284,
+     "always hybrid_ymd": 0.4587
     }
    },
-   "router_total_sd_s": 8.572
+   "router_total_sd_s": 19.147
   },
   "legal": {
    "instances": 200,
@@ -308,11 +266,11 @@
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 91.568,
-     "timeouts": 0.6,
-     "speedup_total": 2.3044,
+     "total_s": 105.654,
+     "timeouts": 0.4,
+     "speedup_total": 1.9366,
      "speedup_median": 1.0,
-     "speedup_geomean": 2.2849
+     "speedup_geomean": 2.1018
     },
     "oracle": {
      "total_s": 30.954,
@@ -323,21 +281,21 @@
     }
    },
    "router_picks": {
-    "alpha_beta": 19.6,
-    "epoch_days": 54.8,
-    "hybrid_epoch": 11,
-    "hybrid_ymd": 29,
-    "simple": 85.6
+    "alpha_beta": 11.6,
+    "epoch_days": 43.6,
+    "hybrid_epoch": 8.2,
+    "hybrid_ymd": 28.2,
+    "simple": 108.4
    },
-   "router_fell_back": 6.4,
-   "router_picks_fastest": 0.461,
+   "router_fell_back": 7.6,
+   "router_picks_fastest": 0.467,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.6443,
-     "always hybrid_ymd": 0.7377
+     "always simple": 0.5616,
+     "always hybrid_ymd": 0.6767
     }
    },
-   "router_total_sd_s": 20.59
+   "router_total_sd_s": 14.493
   },
   "llm": {
    "instances": 100,
@@ -378,11 +336,11 @@
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 2.637,
+     "total_s": 3.201,
      "timeouts": 0,
-     "speedup_total": 22.5534,
-     "speedup_median": 1.0424,
-     "speedup_geomean": 6.7437
+     "speedup_total": 19.3425,
+     "speedup_median": 1.1121,
+     "speedup_geomean": 6.7807
     },
     "oracle": {
      "total_s": 1.964,
@@ -393,21 +351,21 @@
     }
    },
    "router_picks": {
-    "alpha_beta": 1.6,
-    "epoch_days": 41.8,
-    "hybrid_epoch": 3.2,
-    "hybrid_ymd": 5.4,
-    "simple": 48
+    "alpha_beta": 12,
+    "epoch_days": 44,
+    "hybrid_epoch": 4.4,
+    "hybrid_ymd": 4.4,
+    "simple": 35.2
    },
-   "router_fell_back": 3,
-   "router_picks_fastest": 0.728,
+   "router_fell_back": 4,
+   "router_picks_fastest": 0.688,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.9882,
-     "always hybrid_ymd": 0.5336
+     "always simple": 0.9783,
+     "always hybrid_ymd": 0.1426
     }
    },
-   "router_total_sd_s": 0.271
+   "router_total_sd_s": 0.819
   }
  }
 }
