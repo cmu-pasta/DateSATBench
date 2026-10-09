@@ -17,7 +17,6 @@ Conventions:
 import argparse
 import csv
 import json
-import math
 from collections import deque
 from itertools import combinations
 from pathlib import Path
@@ -25,17 +24,16 @@ from pathlib import Path
 from analysis.features.datesat_parser import (
     BinOp, BoolLit, DateAdd, DateCtor, Field, IntLit, PeriodConst, UnOp, Var,
     COMPARISONS, ORDERING,
-    canonical, date_chain_base, date_chain_len, flatten, is_comparison,
+    canonical, date_chain_len, flatten, is_comparison,
     is_connective, is_ground_date, parse_constraint, parse_declarations,
     to_nnf, walk,
 )
-from analysis.features.emulate_encodings import ENCODINGS, emulate
 from analysis.paths import OUTPUTS, REPO
 
-# The results under results/bench-datetime-bound were run on this bounded variant, so
-# features are extracted from the same text. The injected bound atoms are stripped
-# before extraction unless --bounds keep is passed.
-DATASET_ROOT = REPO / "datesatbench_bounded/positive_years"
+# The datasets under datesatbench/ carry the bounds datesatbench/utils/bounds.py injected,
+# which the solver results were run with, so features are extracted from the same text. The
+# injected bound atoms are stripped before extraction unless --bounds keep is passed.
+DATASET_ROOT = REPO / "datesatbench"
 DATASETS = {
     "llm": "llm_constraints/constraints/constraints.json",
     "grammar": "grammar_constraints/constraints/constraints.json",
@@ -216,8 +214,8 @@ def graph_diameter(edges):
 def arithmetic_structure(trees, sorts):
     """The Arithmetic structure columns: what the `date ± period` operations on variables
     connect, and how large their steps are, counted over the date comparisons that hold
-    them. Self-referential operations (a < a + p) count only in n_self_ops, self_op_frac
-    and sum_abs_days_all."""
+    them. Self-referential operations (a < a + p) count only in n_self_ops and
+    self_op_frac."""
     f = dict.fromkeys(ARITHMETIC_STRUCTURE, 0)
     edges = set()
     for t in trees:
@@ -252,8 +250,6 @@ def arithmetic_structure(trees, sorts):
                     f["max_abs_months_nonself"] = max(f["max_abs_months_nonself"], abs(p.months))
     n_ops = f["n_self_ops"] + f["n_cross_ops"] + f["n_const_ops"]
     f["self_op_frac"] = f["n_self_ops"] / n_ops if n_ops else 0.0
-    f["sum_abs_days_all"] = sum(abs(n.period.nd) for t in trees for n in walk(t)
-                                if isinstance(n, DateAdd) and not is_ground_date(n))
     f["arith_graph_diameter"] = graph_diameter(edges)
     f["n_arith_vars"] = len({v for e in edges for v in e})
     years = literal_years(trees)
@@ -269,57 +265,84 @@ def literal_years(trees):
             and (n.y.value, n.m.value, n.d.value) not in ((1, 1, 1), (9999, 12, 31))]
 
 
-def chain_abs_days(n):
-    """Sum of |days| over a chain of `± period` steps, down to the date it starts from."""
-    total = 0
-    while isinstance(n, DateAdd):
-        total += abs(n.period.nd)
-        n = n.base
-    return total
+def step_needs(p):
+    """The form a step with period `p` needs its date in: a day count when `p` has only a
+    days part."""
+    return "ymd" if p.months else "days"
 
 
-def representation_demands(trees):
-    """The Representation demands columns: which form each date value is needed in, how the
-    date comparisons are written, and how far the literals are from the encodings' epoch."""
-    f = dict.fromkeys(REPRESENTATION_DEMANDS, 0)
-    ym_bases, day_bases, field_bases = set(), set(), set()
-    kinds = {}                                    # date variable -> kinds of step applied to it
+def step_gives(p):
+    """The form a step's result is in: (year, month, day) only when `p` has a years or
+    months part and no days part."""
+    return "ymd" if p.months and not p.nd else "days"
+
+
+def form_needs(trees):
+    """Which forms, a day count or (year, month, day), each date variable is needed in, and
+    how often a step's result is needed in the form it was not made in."""
+    needs = {}                                    # variable -> forms it is needed in
+    switches = 0
+
+    def variable(n):
+        """The variable `n` stands for, or None for a literal date or a step's result. DateSat
+        replaces each symbolic Date(...) by an auxiliary variable."""
+        if isinstance(n, Var):
+            return n.name
+        if isinstance(n, DateCtor) and not is_ground_date(n):
+            return id(n)
+        return None
+
+    def need(n, form):
+        nonlocal switches
+        if is_ground_date(n):
+            return
+        v = variable(n)
+        if v is not None:
+            needs.setdefault(v, set()).add(form)
+        elif isinstance(n, DateAdd) and step_gives(n.period) != form:
+            switches += 1
+
     for t in trees:
         for n in walk(t):
             if isinstance(n, DateAdd) and not is_ground_date(n):
-                kind = "ym" if n.period.months else "day"
-                (ym_bases if kind == "ym" else day_bases).add(canonical(n.base))
-                root = date_chain_base(n)
-                if isinstance(root, Var):
-                    kinds.setdefault(root.name, set()).add(kind)
-                if isinstance(n.base, DateAdd):
-                    f["n_chained_ops"] += 1
-                    f["n_arith_kind_switches"] += (n.base.period.months != 0) != (kind == "ym")
-                f["max_chain_abs_days"] = max(f["max_chain_abs_days"], chain_abs_days(n))
-            elif isinstance(n, Field) and not is_ground_date(n.base):
-                field_bases.add(canonical(n.base))
+                need(n.base, step_needs(n.period))
+            elif isinstance(n, Field):
+                need(n.base, "ymd")
+            elif isinstance(n, DateCtor) and not is_ground_date(n):
+                need(n, "ymd")                    # DateSat sets its year, month and day
             elif is_comparison(n) and n.lhs.sort == "date":
-                ground = [is_ground_date(s) for s in (n.lhs, n.rhs)]
-                f["n_lit_date_cmps"] += any(ground) and not all(ground)
-                f["n_var_var_cmps"] += isinstance(n.lhs, Var) and isinstance(n.rhs, Var)
-                f["n_date_ordering_cmps"] += n.op in ORDERING
-    f["n_ym_bases"] = len(ym_bases)
-    f["n_day_bases"] = len(day_bases)
-    f["n_field_bases"] = len(field_bases)
-    f["n_vars_both_arith"] = sum(1 for k in kinds.values() if len(k) == 2)
-    f["max_lit_year_dist"] = max((abs(y - EPOCH_YEAR) for y in literal_years(trees)), default=0)
-    return f
+                steps = [s for s in (n.lhs, n.rhs)
+                         if isinstance(s, DateAdd) and not is_ground_date(s)]
+                if len(steps) == 2:
+                    switches += step_gives(steps[0].period) != step_gives(steps[1].period)
+                elif len(steps) == 1:
+                    other = n.rhs if steps[0] is n.lhs else n.lhs
+                    if variable(other) is not None:
+                        need(other, step_gives(steps[0].period))
+
+    return needs, switches
 
 
-def encoding_emulation(trees, sorts):
-    """The Encoding emulation and Encoding contrasts columns, from emulate_encodings.py."""
-    counts = emulate(trees, sorts)
-    f = {f"emu_{e}_{m}": counts[e][m] for e, ms in EMULATED.items() for m in ms}
-    for measure in ("divmod", "ite"):
-        for a, b in combinations(sorted(ENCODINGS), 2):
-            f[f"log2_{measure}_{a}_vs_{b}"] = math.log2(
-                (counts[a][measure] + 1) / (counts[b][measure] + 1))
-    return f
+def encoding_costs(trees):
+    """The Encoding costs columns: for each DateSat encoding, how often the constraints use
+    the operation it pays for, counted from the text alone."""
+    steps = [n for t in trees for n in walk(t) if isinstance(n, DateAdd) and not is_ground_date(n)]
+    ymd_needs = {canonical(n.base) for n in steps if n.period.months}
+    for t in trees:
+        for n in walk(t):
+            if isinstance(n, Field) and not is_ground_date(n.base):
+                ymd_needs.add(canonical(n.base))
+            elif isinstance(n, DateCtor) and not is_ground_date(n):
+                ymd_needs.add(canonical(n))
+    needs, switches = form_needs(trees)
+    days_only = sum(1 for v in needs.values() if v == {"days"})
+    ymd_only = sum(1 for v in needs.values() if v == {"ymd"})
+    both = sum(1 for v in needs.values() if len(v) == 2)
+    return {"sum_abs_days_all": sum(abs(n.period.nd) for n in steps),
+            "n_day_steps": sum(1 for n in steps if n.period.nd),
+            "n_ymd_needs": len(ymd_needs),
+            "form_balance": days_only - ymd_only,
+            "n_unavoidable_conversions": both + switches}
 
 
 # --------------------------------------------------------------------------
@@ -485,9 +508,8 @@ def features_for(entry, corpus):
     # ---- arithmetic structure -------------------------------------------
     f.update(arithmetic_structure(trees, sorts))
 
-    # ---- representation demands, encoding emulation and contrasts ------
-    f.update(representation_demands(trees))
-    f.update(encoding_emulation(trees, sorts))
+    # ---- encoding costs --------------------------------------------------
+    f.update(encoding_costs(trees))
 
     # ---- labels (solver output, NOT features) ---------------------------
     f["label_execution_time"] = entry.get("execution_time")
@@ -501,27 +523,13 @@ ARITHMETIC_STRUCTURE = [
     "n_self_ops", "n_cross_ops", "n_const_ops", "self_op_frac",
     "n_year_ops", "n_month_ops", "n_day_ops", "n_mixed_ops", "n_day_steps_ge28",
     "sum_abs_days", "sum_abs_months", "max_abs_days_nonself", "max_abs_months_nonself",
-    "sum_abs_days_all", "n_arith_unit", "n_arith_in_disj", "n_arith_neq",
+    "n_arith_unit", "n_arith_in_disj", "n_arith_neq",
     "n_date_eq", "n_date_neq", "arith_graph_diameter", "n_arith_vars", "lit_year_span"]
 
-# Year of DateSat's epoch, 2000-03-01, which the day-count forms count from.
-EPOCH_YEAR = 2000
-REPRESENTATION_DEMANDS = [
-    "n_ym_bases", "n_day_bases", "n_field_bases", "n_vars_both_arith",
-    "n_arith_kind_switches", "n_chained_ops", "max_chain_abs_days",
-    "n_lit_date_cmps", "n_var_var_cmps", "n_date_ordering_cmps", "max_lit_year_dist"]
-# The emulated counts kept per encoding. `simple` converts nothing, and `simple` and
-# `alpha_beta` write every date comparison component by component, so those columns would
-# repeat other ones.
-EMULATED = {"simple": ("divmod", "ite"),
-            "epoch_days": ("divmod", "ite", "conversions"),
-            "hybrid_ymd": ("divmod", "ite", "conversions", "lex_cmps"),
-            "hybrid_epoch": ("divmod", "ite", "conversions", "lex_cmps"),
-            "hybrid_both": ("divmod", "ite", "conversions", "lex_cmps"),
-            "alpha_beta": ("divmod", "ite", "conversions")}
-ENCODING_EMULATION = [f"emu_{e}_{m}" for e, ms in EMULATED.items() for m in ms]
-ENCODING_CONTRASTS = [f"log2_{measure}_{a}_vs_{b}" for measure in ("divmod", "ite")
-                      for a, b in combinations(sorted(ENCODINGS), 2)]
+# One column per encoding's costly operation: simple, alpha_beta, epoch_days, then the hybrids.
+ENCODING_COSTS = [
+    "sum_abs_days_all", "n_day_steps", "n_ymd_needs", "form_balance",
+    "n_unavoidable_conversions"]
 
 FEATURE_GROUPS = [
     ("Search space", [
@@ -541,9 +549,7 @@ FEATURE_GROUPS = [
     ("Variable coupling", [
         "n_components", "largest_component_frac", "graph_density", "mixed_sort_coupling"]),
     ("Arithmetic structure", ARITHMETIC_STRUCTURE),
-    ("Representation demands", REPRESENTATION_DEMANDS),
-    ("Encoding emulation", ENCODING_EMULATION),
-    ("Encoding contrasts", ENCODING_CONTRASTS),
+    ("Encoding costs", ENCODING_COSTS),
 ]
 
 COLUMNS = (["id", "corpus"]

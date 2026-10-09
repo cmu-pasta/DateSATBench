@@ -1,4 +1,4 @@
-# features(5): the 120 columns of features.csv
+# features(5): the 63 columns of features.csv
 
 Each entry gives the feature's meaning in one or two lines, then a small example with the
 value it produces. `test_features_md.py` runs every example below through
@@ -24,8 +24,8 @@ Sections follow the column order of `features.csv` and of the heatmaps.
 
 ## INJECTED BOUNDS (`--bounds keep|strip`)
 
-Features are extracted from `datesatbench_bounded/positive_years`, the variant the solver
-results were run on. `datesatbench/utils/bounds.py inject` appended two constraints to the end of every
+Features are extracted from `datesatbench/`, whose entries carry the bounds the solver
+results were run with. `datesatbench/utils/bounds.py inject` appended two constraints to the end of every
 entry for each date variable `d`:
 
 ```
@@ -53,13 +53,6 @@ implication_atom_frac   0.12     0.21    151
 property_access_frac    0.07     0.12    109
 neg_ordering_frac       0.02     0.04     50
 ```
-
-Four columns of REPRESENTATION DEMANDS and ENCODING EMULATION, added after this table was
-made, count the bounds too, because they count comparisons with a literal date:
-`n_lit_date_cmps` and `n_date_ordering_cmps`, two more per date variable, and
-`emu_hybrid_ymd_lex_cmps` and `emu_hybrid_epoch_lex_cmps`, which count a bound whenever its
-variable is in (year, month, day) form by the end of the instance. The bounds add no `div`,
-`mod` or if-then-else terms under any encoding.
 
 All other features are identical in both modes. Each bound mentions a single variable, so the
 variable-coupling graph does not change; the bounds are `>=`/`<=`, not `==`, so nothing gets
@@ -741,19 +734,6 @@ b < a + Period(1,2,0);  a != a + Period(0,50,0)           →  14   (max_abs_mon
 
 
 
-### sum_abs_days_all
-
-Sum of the days parts, ignoring their sign, over **every** operation on a variable:
-self-referential ones included, and wherever the operation sits, a field access included.
-An encoding that steps through days one at a time pays for each of them.
-
-```
-b < a + Period(0,1,40);  a != a + Period(0,0,90);  b > Date(2020,1,1) + Period(0,0,7)
-                                                          →  130   (the literal's 7 folds)
-```
-
-
-
 ### n_arith_unit
 
 Operations in a top-level conjunct that has no `||` once negations are pushed to the leaves
@@ -848,678 +828,134 @@ a > Date(2010,5,1);  a < Date(2024,1,1);  b == Date(a.year,2,29);  a >= Date(1,1
 
 
 
-## REPRESENTATION DEMANDS
+## ENCODING COSTS
 
-Which form each date value is needed in, and how the date comparisons are written. Section 4
-of the DateSAT paper explains the encodings' speed by the form they keep a date in. An
-encoding that keeps a **day count** (`epoch_days`) adds days with one addition and compares
-two dates with one integer comparison, but must recover the year, month and day with
-integer divisions for every year or month step and every field read. An encoding that keeps
-the **year, month and day** (`simple`) adds years and months cheaply, but adds days one day
-at a time and compares dates lexicographically, which is a disjunction. The hybrid encodings
-keep both and convert when an operation needs the form that is out of date. These columns
-count those demands from the constraint text alone, without following any one encoding;
-ENCODING EMULATION below follows each encoding exactly.
+One column for each operation that a DateSat encoding pays heavily for. DateSat holds a date
+in one of two **forms**: a **day count**, the number of days since its epoch 2000-03-01, or
+**(year, month, day)**. The encodings keep different forms, so each one is slow on a
+different operation:
 
-A **year/month step** is a `date ± period` operation on a variable whose period has a years
-or months part; a **day step** is one whose period has only a days part. The **date a step
-starts from** is the date expression it is applied to, and two starting dates are the same
-when they are written the same way. As in DATE ARITHMETIC, steps on a literal date fold to a
-constant and do not count.
+- `simple` keeps (year, month, day). It adds days one day at a time, checking each day
+against the length of the month, so its cost grows with the number of days added:
+`sum_abs_days_all`.
+- `alpha_beta` keeps the month and the day within the month. Adding days is one addition
+when the result stays in the same month, and a conversion to a day count and back when it
+does not. The solver cannot know in advance which case applies, so every step with a days
+part carries both: `n_day_steps`.
+- `epoch_days` keeps a day count. Adding days and comparing two dates are single integer
+operations, but every date it must read as (year, month, day) costs a conversion by
+integer division: `n_ymd_needs`.
+- `hybrid_ymd` and `hybrid_epoch` hold a date in either form or in both, and build the
+missing form only when an operation needs it, which is a **conversion**. They differ only
+in the form a date variable starts in: (year, month, day) for `hybrid_ymd`, a day count
+for `hybrid_epoch`. `form_balance` says which start saves conversions, and
+`n_unavoidable_conversions` counts the conversions that neither start saves.
 
+The columns count operations in the constraint text and do not follow DateSat's code.
 
+A **step** is a `date ± period` operation on a variable. As in DATE ARITHMETIC, a step on a
+literal date folds to a constant and does not count. The **date a step starts from** is the
+date expression it is applied to, and two dates are the same when they are written the same
+way.
 
-### n_ym_bases
+The two hybrid columns rest on the form each operation needs:
 
-Distinct dates that a year/month step starts from. An encoding that keeps a day count
-decodes each of them to (year, month, day).
+- Reading `.year`, `.month` or `.day` needs (year, month, day).
+- A step whose period has only a days part needs a day count. A step whose period has a
+years or months part needs (year, month, day).
+- A step gives (year, month, day) when its period has no days part, and a day count when it
+has one.
+- Two dates are compared in a common form. A literal date fits either form.
 
-```
-b == a + Period(0,1,0);  c == a + Period(1,0,5);  d == (a + Period(0,0,3)) + Period(0,2,0)
-                                                          →  2   (a, and a + 3d)
-```
-
-
-
-### n_day_bases
-
-Distinct dates that a day step starts from.
-
-```
-(same example)                                            →  1   (a)
-```
-
-
-
-### n_field_bases
-
-Distinct dates whose `.year`, `.month` or `.day` is read. An encoding that keeps a day count
-decodes each of them.
-
-```
-a.year == 2020;  a.month == 3;  (b + Period(0,0,1)).day == 1
-                                                          →  2   (a, and b + 1d)
-```
-
-
-
-### n_vars_both_arith
-
-Date variables that both a day step and a year/month step start from, directly or through a
-chain of steps. The paper's hybrid encoding is built on the observation that real
-constraints rarely mix the two on one date.
-
-```
-b == a + Period(0,1,0);  c == a + Period(0,0,5);  d == b + Period(0,0,1)
-                                                          →  1   (a; b has day steps only)
-```
-
-
-
-### n_arith_kind_switches
-
-Steps applied to the result of a step of the other kind: a year/month step on the result of
-a day step, or the reverse. In the hybrid encodings each one converts the date to the other
-form.
-
-```
-b == (a + Period(0,0,8)) + Period(0,1,0);  c == (a + Period(0,1,0)) + Period(0,2,0)
-                                                          →  1   (+1m on a + 8d)
-```
-
-
-
-### n_chained_ops
-
-Steps applied to the result of another step. `max_date_chain_len` records only the longest
-chain.
-
-```
-(same example)                                            →  2
-```
-
-
-
-### max_chain_abs_days
-
-Largest sum of the days parts, ignoring their sign, along one chain of steps. `simple`
-unrolls day arithmetic one day at a time, so this is how deep its deepest unrolling goes,
-the paper's *logical depth*. Unlike the ARITHMETIC STRUCTURE columns, it counts every step
-on a variable, self-referential ones and field accesses included.
-
-```
-b == (a + Period(0,0,20)) - Period(0,1,15);  c == a + Period(0,0,30)
-                                                          →  35   (20 + 15)
-```
-
-
-
-### n_lit_date_cmps
-
-Date comparisons with a literal date on one side and not on the other. `simple` writes each
-one lexicographically, `epoch_days` as one integer comparison. With `--bounds keep` the
-injected bounds count here, two per date variable.
-
-```
-a < Date(2020,1,1);  b + Period(0,1,0) != Date(2020,5,1);  a < b;  a == b
-                                                          →  2
-```
-
-
-
-### n_var_var_cmps
-
-Date comparisons between two date variables, with no arithmetic on either side.
-
-```
-(same example)                                            →  2   (a < b, a == b)
-```
-
-
-
-### n_date_ordering_cmps
-
-Date comparisons with `<`, `<=`, `>` or `>=`, each a disjunction when written
-lexicographically. `ordering_cmp_frac` takes int and bool comparisons too.
-
-```
-(same example)                                            →  2   (a < Date(...), a < b)
-```
-
-
-
-### max_lit_year_dist
-
-Largest distance in years from 2000, the year of DateSat's epoch 2000-03-01, over the
-literal dates. `Date(1,1,1)` and `Date(9999,12,31)` are left out, as for `lit_year_span`,
-because they are the injected bounds.
-
-```
-a > Date(1990,5,1);  a < Date(2024,1,1);  b >= Date(1,1,1)
-                                                          →  24   (2024)
-```
-
----
-
-
-
-## ENCODING EMULATION
-
-What each of DateSat's six int encodings would emit for the instance, counted without
-solving it. `emulate_encodings.py` walks the parsed constraints the way DateSat's builder does and
-follows each encoding's rules from `datesat/symbolic_int/`: `simple` keeps (year, month,
-day) and unrolls day steps one day at a time; `epoch_days` keeps a day count and decodes it
-for year/month steps and field reads; `alpha_beta` keeps (months since the epoch, day of the
-month) and goes through the day count when a day step leaves the month; the three hybrids
-keep both forms and convert when an operation needs the one that is out of date.
-`hybrid_ymd` starts a variable in (year, month, day) form and `hybrid_epoch` as a day count,
-and both tie the other form to it only when an operation needs it. `hybrid_both` starts a
-variable in (year, month, day) form tied to its day count at once, and ties the day count
-to the result of every year/month step at once too. Which form is up to date changes as the
-constraints are built, so the walk visits the constraints in DateSat's order and keeps the
-same state.
-
-Four things are counted:
-
-- **divmod**: integer `div` and `mod` terms, the paper's *arithmetic complexity*. The
-  conversions between day counts and (year, month, day) and the leap-year test are made of
-  them.
-- **ite**: if-then-else terms, the paper's *logical depth* in count form.
-- **conversions**: dates converted between the two forms, one per date value and direction.
-- **lex_cmps**: date comparisons the hybrids write component by component, which are
-  disjunctions for an ordering or `!=`. `simple` and `alpha_beta` write every date
-  comparison this way and `epoch_days` none, so only the hybrids get this column.
-
-A term DateSat builds twice from the same inputs is counted once, because Z3 shares
-identical terms, and a term no assertion uses is not counted: reading only `.month` of a
-day count uses 5 of the decoding's 8 divisions. The injected bounds are literal comparisons,
-so with `--bounds keep` they change only the `lex_cmps` columns. The walk follows DateSat's
-code and must be updated when DateSat's encodings change; `check_emulation.py` compares it
-with the formulas DateSat builds for every DateSatBench instance. Every divmod and ite
-example below was checked against the formula DateSat builds.
-
-
-
-### emu_simple_divmod
-
-`div` and `mod` terms `simple` emits. Each day it unrolls tests for a leap year, three
-`mod`s, so the count grows with the days added.
-
-```
-b == a + Period(0,0,5)                                    →  21   (5 days; a's and b's bounds)
-```
-
-
-
-### emu_simple_ite
-
-If-then-else terms `simple` emits.
-
-```
-(same example)                                            →  46
-```
-
-
-
-### emu_epoch_days_divmod
-
-`div` and `mod` terms `epoch_days` emits. A day step is one addition; a year/month step
-decodes the date, adds the months, and encodes the result.
-
-```
-b == a + Period(0,0,5)                                    →  0
-b == a + Period(0,1,0)                                    →  18   (decode a, add 1 month, encode)
-a.month == 2                                              →  5   (the part of the decoding .month needs)
-```
-
-
-
-### emu_epoch_days_ite
-
-If-then-else terms `epoch_days` emits.
-
-```
-b == a + Period(0,1,0)                                    →  11
-```
-
-
-
-### emu_epoch_days_conversions
-
-Dates `epoch_days` converts.
-
-```
-(same example)                                            →  2   (a decoded, a + 1m encoded)
-```
-
-
-
-### emu_hybrid_ymd_divmod
-
-`div` and `mod` terms `hybrid_ymd` emits. Every date variable starts in (year, month, day)
-form and is tied to a day count only when an operation needs one, so comparisons between
-variables in that form cost only their validity checks.
-
-```
-a < Date(2020,1,1);  a <= b                               →  6    (the leap-year tests of a and b)
-```
-
-
-
-### emu_hybrid_ymd_ite
-
-If-then-else terms `hybrid_ymd` emits.
-
-```
-(same example)                                            →  6
-```
-
-
-
-### emu_hybrid_ymd_conversions
-
-Dates `hybrid_ymd` converts.
-
-```
-b == a + Period(0,0,5)                                    →  4
-```
-
-`a + 5d` needs `a`'s day count, so `a` is encoded. Comparing `a + 5d`, a day count, with `==`
-to `b`, which is in (year, month, day) form, encodes `b` and decodes `a + 5d` into fresh year,
-month and day variables, which are encoded again to tie them to it.
-
-
-
-### emu_hybrid_ymd_lex_cmps
-
-Date comparisons `hybrid_ymd` writes component by component: those whose sides are both in
-(year, month, day) form.
-
-```
-a < Date(2020,1,1);  a <= b                               →  2
-a != b + Period(0,0,5);  a < Date(2020,1,1)               →  1   (a < Date(...); b + 5d is a day count)
-```
-
-
-
-### emu_hybrid_epoch_divmod
-
-`div` and `mod` terms `hybrid_epoch` emits. Its variables start as day counts, so they cost
-nothing until an operation needs (year, month, day); the first one then decodes the date
-and encodes the fresh variables back.
-
-```
-a < Date(2020,1,1);  a <= b                               →  0
-b == a + Period(0,1,0)                                    →  36
-```
-
-
-
-### emu_hybrid_epoch_ite
-
-If-then-else terms `hybrid_epoch` emits.
-
-```
-(same example)                                            →  19
-```
-
-
-
-### emu_hybrid_epoch_conversions
-
-Dates `hybrid_epoch` converts.
-
-```
-(same example)                                            →  5
-```
-
-
-
-### emu_hybrid_epoch_lex_cmps
-
-Date comparisons `hybrid_epoch` writes component by component. Once a field read has put a
-variable in (year, month, day) form, it compares that variable with literals component by
-component.
-
-```
-b > a + Period(0,0,7);  b.month == 2;  b < Date(2020,1,1) →  1   (the last one, after b.month)
-```
-
-
-
-### emu_hybrid_both_divmod
-
-`div` and `mod` terms `hybrid_both` emits. Every date variable is tied to its day count when
-it is declared, so it costs an encoding's divisions even when nothing needs the day count.
-
-```
-a < Date(2020,1,1);  a <= b                               →  16   (a and b encoded at declaration)
-```
-
-
-
-### emu_hybrid_both_ite
-
-If-then-else terms `hybrid_both` emits.
-
-```
-(same example)                                            →  10
-```
+A **variable** here is a declared date variable, or a `Date(...)` with a part that is not a
+literal. DateSat replaces such a `Date(...)` by an auxiliary date variable and sets its year,
+month and day, so it is needed as (year, month, day). A variable is needed in the form that
+the field reads and steps on it need. A variable compared with a step's result, by `==`,
+`!=` or an ordering, is needed in the form that result is in. Comparisons with a literal
+date, and comparisons between two variables, need neither form. A variable needed only as a
+day count costs `hybrid_ymd` one conversion and `hybrid_epoch` none, a variable needed only
+as (year, month, day) costs the reverse, and a variable needed in both forms costs one
+conversion under either.
 
+The order of the constraints is ignored. DateSat's exact count can depend on it, because a
+variable that has already been converted has both forms when a later constraint uses it.
 
 
-### emu_hybrid_both_conversions
 
-Dates `hybrid_both` converts.
+### sum_abs_days_all
 
-```
-b == a + Period(0,0,5)                                    →  2    (a and b, at declaration)
-b == a + Period(0,1,0)                                    →  3    (and a + 1m, as soon as it is built)
-```
-
-
-
-### emu_hybrid_both_lex_cmps
-
-Date comparisons `hybrid_both` writes component by component. Both forms of a variable are up
-to date, so comparing two variables uses the day counts, but comparing one with a literal
-date uses (year, month, day).
-
-```
-a < Date(2020,1,1);  a <= b                               →  1    (a < Date(...))
-```
-
-
-### emu_alpha_beta_divmod
-
-`div` and `mod` terms `alpha_beta` emits. A day step may leave the month, so it also emits a
-conversion through the day count and back.
-
-```
-b == a + Period(0,0,5)                                    →  25
-b == a + Period(0,1,0)                                    →  12   (a months step stays in alpha)
-```
-
-
-
-### emu_alpha_beta_ite
-
-If-then-else terms `alpha_beta` emits.
-
-```
-b == a + Period(0,0,5)                                    →  17
-```
-
-
-
-### emu_alpha_beta_conversions
-
-Dates `alpha_beta` converts.
-
-```
-(same example)                                            →  2   (a + 5d encoded and decoded)
-```
-
----
-
-
-
-## ENCODING CONTRASTS
-
-How two encodings compare on the same instance. The router has one forest per pair of
-encodings, each deciding which of the two is faster, and a decision tree can only split on
-one column at a time: it cannot tell from `emu_epoch_days_divmod` and
-`emu_hybrid_ymd_divmod` side by side which of the two is larger. These columns give it the
-comparison directly, for every pair of encodings in the order the router's forests use:
-
-    log2_<measure>_<a>_vs_<b> = log2((count of a + 1) / (count of b + 1))
-
-for the two measures of the paper, `divmod` and `ite`, from ENCODING EMULATION. A value
-below 0 means encoding `a` emits fewer such terms than `b`. The examples all use
-`b == a + Period(0,1,5)`, for which the counts are:
-
-```
-             simple  epoch_days  hybrid_ymd  hybrid_epoch  hybrid_both  alpha_beta
-divmod           26          18          34            23           26          29
-ite              51          11          21            13           17          22
-```
-
-
-
-### log2_divmod_alpha_beta_vs_epoch_days
-
-```
-b == a + Period(0,1,5)                                    →  0.659   (log2(30/19))
-```
-
-
-
-### log2_divmod_alpha_beta_vs_hybrid_both
-
-```
-(same example)                                            →  0.152
-```
-
-
-
-### log2_divmod_alpha_beta_vs_hybrid_epoch
-
-```
-(same example)                                            →  0.322
-```
-
-
-
-### log2_divmod_alpha_beta_vs_hybrid_ymd
-
-```
-(same example)                                            →  -0.222
-```
-
-
-
-### log2_divmod_alpha_beta_vs_simple
-
-```
-(same example)                                            →  0.152
-```
-
-
-
-### log2_divmod_epoch_days_vs_hybrid_both
-
-```
-(same example)                                            →  -0.507
-```
-
-
-
-### log2_divmod_epoch_days_vs_hybrid_epoch
-
-```
-(same example)                                            →  -0.337
-```
-
-
-
-### log2_divmod_epoch_days_vs_hybrid_ymd
-
-```
-(same example)                                            →  -0.881
-```
-
-
-
-### log2_divmod_epoch_days_vs_simple
-
-```
-(same example)                                            →  -0.507
-```
+Sum of the days parts, ignoring their sign, over every step: self-referential ones included,
+and wherever the step sits, a field access included. This is how many days `simple` adds one
+at a time.
 
-
-
-### log2_divmod_hybrid_both_vs_hybrid_epoch
-
-```
-(same example)                                            →  0.170
-```
-
-
-
-### log2_divmod_hybrid_both_vs_hybrid_ymd
-
-```
-(same example)                                            →  -0.374
-```
-
-
-
-### log2_divmod_hybrid_both_vs_simple
-
-```
-(same example)                                            →  0.000
-```
-
-
-
-### log2_divmod_hybrid_epoch_vs_hybrid_ymd
-
-```
-(same example)                                            →  -0.544
-```
-
-
-
-### log2_divmod_hybrid_epoch_vs_simple
-
-```
-(same example)                                            →  -0.170
-```
-
-
-
-### log2_divmod_hybrid_ymd_vs_simple
-
-```
-(same example)                                            →  0.374
-```
-
-
-
-### log2_ite_alpha_beta_vs_epoch_days
-
-```
-(same example)                                            →  0.939
-```
-
-
-
-### log2_ite_alpha_beta_vs_hybrid_both
-
-```
-(same example)                                            →  0.354
-```
-
-
-
-### log2_ite_alpha_beta_vs_hybrid_epoch
-
-```
-(same example)                                            →  0.716
-```
-
-
-
-### log2_ite_alpha_beta_vs_hybrid_ymd
-
-```
-(same example)                                            →  0.064
-```
-
-
-
-### log2_ite_alpha_beta_vs_simple
-
-```
-(same example)                                            →  -1.177
-```
-
-
-
-### log2_ite_epoch_days_vs_hybrid_both
-
-```
-(same example)                                            →  -0.585
 ```
-
-
-
-### log2_ite_epoch_days_vs_hybrid_epoch
-
+b < a + Period(0,1,40);  a != a + Period(0,0,90);  b > Date(2020,1,1) + Period(0,0,7)
+                                                          →  130   (the literal's 7 folds)
 ```
-(same example)                                            →  -0.222
-```
-
 
 
-### log2_ite_epoch_days_vs_hybrid_ymd
 
-```
-(same example)                                            →  -0.874
-```
-
+### n_day_steps
 
+Steps whose period has a days part, with or without years or months, counted wherever they
+sit, as for `sum_abs_days_all`. Each one carries a conversion to a day count and back under
+`alpha_beta`, however small the days part is.
 
-### log2_ite_epoch_days_vs_simple
-
 ```
-(same example)                                            →  -2.115
+b == a + Period(0,0,5);  c == a + Period(0,1,3);  d == a + Period(1,0,0);
+(b + Period(0,0,1)).day == 2
+                                                          →  3   (all but the 1y)
+b == a + Period(0,0,400)                                  →  1   (sum_abs_days_all is 400)
 ```
-
-
 
-### log2_ite_hybrid_both_vs_hybrid_epoch
 
-```
-(same example)                                            →  0.363
-```
-
 
+### n_ymd_needs
 
-### log2_ite_hybrid_both_vs_hybrid_ymd
+Distinct dates needed as (year, month, day): those a step with a years or months part starts
+from, those whose `.year`, `.month` or `.day` is read, and every `Date(...)` with a part that
+is not a literal. `epoch_days` converts each of them between a day count and
+(year, month, day).
 
 ```
-(same example)                                            →  -0.290
+b == a + Period(0,1,0);  c == a + Period(1,0,5);  a.year == 2020;  d == b + Period(0,0,3);
+c.month == 4
+                                                          →  2   (a and c; b has only a day step)
+b == Date(a.year, 2, 28)                                  →  2   (a, and the Date(...))
 ```
-
-
-
-### log2_ite_hybrid_both_vs_simple
 
-```
-(same example)                                            →  -1.531
-```
 
 
+### form_balance
 
-### log2_ite_hybrid_epoch_vs_hybrid_ymd
+Variables needed only as a day count minus variables needed only as (year, month, day).
+Below 0, starting the variables as (year, month, day) saves conversions, as `hybrid_ymd`
+does; above 0, starting them as day counts does, as `hybrid_epoch` does.
 
 ```
-(same example)                                            →  -0.652
+a.month == 4;  b == a + Period(2,3,0);  b.year == 2028    →  -2   (a and b as (year, month, day))
+b == a + Period(0,0,100);  a < b                          →  2    (a starts the step; b is compared with its result)
+b == a + Period(0,0,10) + Period(0,1,0) + Period(0,0,20) + Period(2,0,0)
+     + Period(0,0,30) + Period(0,3,0);  a < b             →  0    (a a day count, b (year, month, day))
 ```
-
 
 
-### log2_ite_hybrid_epoch_vs_simple
-
-```
-(same example)                                            →  -1.893
-```
 
+### n_unavoidable_conversions
 
+Conversions that every hybrid encoding pays, whatever form its variables start in. There are
+two kinds:
 
-### log2_ite_hybrid_ymd_vs_simple
+- a variable needed in both forms;
+- a **form switch**, a place where a step's result is needed in the form the step did not
+make it in: a step that starts from it, a field read from it, or a comparison with another
+step's result that is in the other form.
 
 ```
-(same example)                                            →  -1.241
+(same example)                                            →  5   (every step after the first)
+a.year == 2020;  b == a + Period(0,0,5)                   →  1   (a, needed in both forms)
+b == (a + Period(0,1,5)) + Period(0,1,0);  c == (a + Period(0,1,5)) + Period(0,0,3)
+                                                          →  1   (+1m on a + 1m5d, a day count)
+(a + Period(0,0,3)).month == 2;  a + Period(0,1,0) < b + Period(0,0,1)
+                                                          →  3   (a in both forms; two form switches)
 ```
