@@ -126,11 +126,14 @@ def router_section(cv_path, meta_path):
         out["model"] = {
             "encodings": m["encodings"], "trees": m["trees"], "max_depth": m["max_depth"],
             "min_samples_leaf": m["min_samples_leaf"], "margin": m["margin"],
+            "timeout_cost_s": m.get("timeout_cost_s", cv["timeout_cost_s"]),
+            "train_timeout_cost_s": m.get("train_timeout_cost_s",
+                                          m.get("timeout_cost_s", cv["timeout_cost_s"])),
             "fallback": m["fallback"], "trained_on": m["instances"]["trained_on"],
             "n_features": len(m["feature_columns"]),
             "pairs": [{"pair": pair, "top": [t["feature"] for t in p["top_features"][:2]]}
                       for pair, p in m["pairs"].items()],
-            "matches_cv": all(m[k] == v for k, v in cv["setting"].items()) and m["trees"] == cv["trees"],
+            "matches_cv": all(m.get(k) == v for k, v in cv["setting"].items()) and m["trees"] == cv["trees"],
         }
     return out
 

@@ -17,8 +17,11 @@ training data, and are ignored.
 
 Costs. An instance's cost on an encoding is the median time over its runs, with a
 timed-out run counting at --timeout-cost (default: the timeout); the definition is
-analysis/stats/instance_costs.py's, which every other stage uses too. Instances are dropped
-when
+analysis/stats/instance_costs.py's, which every other stage uses too. The forests are
+trained on the same costs with a timed-out run counting at --train-timeout-cost instead
+(DEFAULT_SETTINGS' train_timeout_cost_s, 80 s), so a pick that times out weighs more than
+its 20 s and the router steers further away from timeouts; the totals and the fallback
+use --timeout-cost. Instances are dropped when
     - any encoding has an errored or missing run on them, or
     - every encoding timed out on them, so no encoding is faster than another.
 Instances on which only some encodings time out are kept: they are the examples that
@@ -77,7 +80,10 @@ ROUTER = "router"                  # the encoding name the router's own results 
 FORMAT_VERSION = 1                 # of router.json
 EXPORT_TOLERANCE = 1e-9
 # The router's setting. crossval_router.py measures it; ROUTER.md says why it was chosen.
-DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "margin": 0.0}
+# train_timeout_cost_s is what a timed-out run counts as in the training examples only;
+# totals, the fallback and every score count it at the timeout.
+DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "margin": 0.0,
+                    "train_timeout_cost_s": 80.0}
 DEFAULT_TREES = 50                 # trees per forest
 
 # The columns join_results.py writes ahead of the feature columns.
@@ -233,6 +239,9 @@ def main():
     add_timeout_arg(ap)
     ap.add_argument("--timeout-cost", type=float,
                     help="ms that a timed-out run counts as (default: the timeout)")
+    ap.add_argument("--train-timeout-cost", type=float,
+                    default=DEFAULT_SETTINGS["train_timeout_cost_s"] * 1000,
+                    help="ms that a timed-out run counts as in the training examples")
     ap.add_argument("--trees", type=int, default=DEFAULT_TREES, help="trees per forest")
     ap.add_argument("--max-depth", type=int, default=DEFAULT_SETTINGS["max_depth"],
                     help="maximum depth of each tree")
@@ -246,8 +255,11 @@ def main():
     args = ap.parse_args()
     timeout = timeout_seconds(ap, args)
     timeout_cost = timeout if args.timeout_cost is None else args.timeout_cost / 1000
+    train_timeout_cost = args.train_timeout_cost / 1000
     if timeout_cost < timeout:
         ap.error(f"--timeout-cost must be at least the timeout ({timeout * 1000:g} ms)")
+    if train_timeout_cost < timeout:
+        ap.error(f"--train-timeout-cost must be at least the timeout ({timeout * 1000:g} ms)")
     if not 0 <= args.margin < 0.5:
         ap.error(f"--margin must be in [0, 0.5), got {args.margin:g}")
     bounds = json.loads(Path(args.features_meta).read_text())["bounds"]
@@ -258,6 +270,7 @@ def main():
     cols = feature_columns(joined)
     n_total = joined["id"].nunique()
     costs, dropped = training_set(joined, timeout_cost)
+    train_costs, _ = training_set(joined, train_timeout_cost)    # the same instances
     feats = instance_features(joined, cols, costs.index)
     encodings = sorted(costs.columns)
 
@@ -265,7 +278,8 @@ def main():
         print(f"ignored {n_router} rows of the router's own results")
     print(f"encodings: {encodings}")
     print(f"features: {len(cols)} columns, extracted with the injected bounds {bounds}")
-    print(f"timeout: {timeout:g} s, counted as {timeout_cost:g} s")
+    print(f"timeout: {timeout:g} s, counted as {timeout_cost:g} s "
+          f"({train_timeout_cost:g} s in the training examples)")
     print(f"instances: {n_total}; dropped {dropped['errored_or_missing']} with an errored or "
           f"missing run and {dropped['all_timeout']} on which every encoding timed out; "
           f"training on {len(costs)}")
@@ -273,9 +287,9 @@ def main():
     pairs = {}
     print(f"\n{len(encodings) * (len(encodings) - 1) // 2} forests of {args.trees} trees, "
           f"depth <= {args.max_depth}, at least {args.min_samples_leaf} instances per leaf:")
-    forests = fit_forests(costs, feats, args.trees, args.max_depth, args.min_samples_leaf)
+    forests = fit_forests(train_costs, feats, args.trees, args.max_depth, args.min_samples_leaf)
     for (a, b), forest in forests.items():
-        _, label, weight = pair_examples(costs, a, b)
+        _, label, weight = pair_examples(train_costs, a, b)
         wins = {e: int((label == e).sum()) for e in (a, b)}
         gaps = {e: round(float(weight[label == e].sum()), 3) for e in (a, b)}
         order = np.argsort(-forest.feature_importances_)[:TOP_FEATURES]
@@ -311,6 +325,7 @@ def main():
         "sklearn_version": sklearn.__version__,
         "timeout_s": timeout,
         "timeout_cost_s": timeout_cost,
+        "train_timeout_cost_s": train_timeout_cost,
         "trees": args.trees,
         "max_depth": args.max_depth,
         "min_samples_leaf": args.min_samples_leaf,
