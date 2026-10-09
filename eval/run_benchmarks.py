@@ -234,14 +234,16 @@ def _load_constraints(constraints_file: str) -> list[dict]:
 
 
 # Define all solver approaches per implementation.
-# The int implementation splits hybrid into hybrid_ymd / hybrid_epoch;
-# the bitvector implementation keeps the single "hybrid" approach.
+# The int implementation splits hybrid into hybrid_init_ymd / hybrid_init_epoch (named for
+# the form a fresh date starts in) and hybrid_both, which keeps both forms linked from the
+# start; the bitvector implementation keeps the single "hybrid" approach.
 ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
     "int": [
         "simple",
         "epoch_days",
-        "hybrid_ymd",
-        "hybrid_epoch",
+        "hybrid_init_ymd",
+        "hybrid_init_epoch",
+        "hybrid_both",
         "alpha_beta",
     ],
     "bitvector": [
@@ -255,9 +257,8 @@ ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
 
 # Approaches that --approaches accepts but the default run leaves out. `router` picks one
 # of the int encodings per instance with a trained model (see DateSat's docs/router.md).
-# `hybrid_both` keeps both the Y/M/D and epoch representations of a date (DateSat constraint-features branch).
 OPT_IN_APPROACHES_BY_IMPL = {
-    "int": ["alpha_beta_table", "router", "hybrid_both"],
+    "int": ["alpha_beta_table", "router"],
     "bitvector": [],
 }
 
