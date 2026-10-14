@@ -7,18 +7,19 @@
  "trees": 50,
  "max_depth": 16,
  "min_samples_leaf": 10,
+ "max_features": 0.5,
  "random_state": 0,
  "instances": {
   "total": 800,
   "dropped_errored_or_missing": 0,
-  "dropped_all_timeout": 31,
-  "trained_on": 769
+  "dropped_all_timeout": 32,
+  "trained_on": 768
  },
  "encodings": [
   "alpha_beta",
   "epoch_days",
-  "hybrid_epoch",
-  "hybrid_ymd",
+  "hybrid_init_epoch",
+  "hybrid_init_ymd",
   "simple"
  ],
  "feature_columns": [
@@ -88,343 +89,343 @@
  ],
  "bounds": "keep",
  "total_cost_s": {
-  "alpha_beta": 2117.338,
-  "epoch_days": 2161.831,
-  "hybrid_epoch": 1801.441,
-  "hybrid_ymd": 772.148,
-  "simple": 2676.789
+  "alpha_beta": 2111.651,
+  "epoch_days": 2143.408,
+  "hybrid_init_epoch": 1788.136,
+  "hybrid_init_ymd": 672.422,
+  "simple": 2698.198
  },
- "best_single_encoding": "hybrid_ymd",
- "fallback": "hybrid_ymd",
+ "best_single_encoding": "hybrid_init_ymd",
+ "fallback": "hybrid_init_ymd",
  "margin": 0.0,
  "pairs": {
   "alpha_beta vs epoch_days": {
    "examples": 740,
    "faster": {
-    "alpha_beta": 251,
-    "epoch_days": 489
+    "alpha_beta": 250,
+    "epoch_days": 490
    },
    "weight_s": {
-    "alpha_beta": 4599.345,
-    "epoch_days": 4494.852
+    "alpha_beta": 4595.248,
+    "epoch_days": 4563.491
    },
    "top_features": [
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.1026
-    },
-    {
-     "feature": "sum_abs_days",
-     "importance": 0.1014
-    },
-    {
-     "feature": "n_day_steps",
-     "importance": 0.0979
+     "importance": 0.2291
     },
     {
      "feature": "form_balance",
-     "importance": 0.0861
-    },
-    {
-     "feature": "max_abs_days_nonself",
-     "importance": 0.0546
-    }
-   ]
-  },
-  "alpha_beta vs hybrid_epoch": {
-   "examples": 753,
-   "faster": {
-    "alpha_beta": 278,
-    "hybrid_epoch": 475
-   },
-   "weight_s": {
-    "alpha_beta": 3548.48,
-    "hybrid_epoch": 5484.376
-   },
-   "top_features": [
-    {
-     "feature": "sum_abs_days",
-     "importance": 0.1735
-    },
-    {
-     "feature": "sum_abs_days_all",
-     "importance": 0.1315
-    },
-    {
-     "feature": "n_day_steps",
-     "importance": 0.1211
-    },
-    {
-     "feature": "form_balance",
-     "importance": 0.0993
-    },
-    {
-     "feature": "n_day_ops",
-     "importance": 0.0743
-    }
-   ]
-  },
-  "alpha_beta vs hybrid_ymd": {
-   "examples": 747,
-   "faster": {
-    "alpha_beta": 377,
-    "hybrid_ymd": 370
-   },
-   "weight_s": {
-    "alpha_beta": 147.085,
-    "hybrid_ymd": 5092.275
-   },
-   "top_features": [
-    {
-     "feature": "n_day_steps",
-     "importance": 0.0517
-    },
-    {
-     "feature": "sum_abs_days_all",
-     "importance": 0.0502
-    },
-    {
-     "feature": "n_components",
-     "importance": 0.0461
-    },
-    {
-     "feature": "lit_year_span",
-     "importance": 0.0448
+     "importance": 0.1841
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.0436
+     "importance": 0.1498
+    },
+    {
+     "feature": "n_day_steps",
+     "importance": 0.0772
+    },
+    {
+     "feature": "n_ymd_needs",
+     "importance": 0.0488
+    }
+   ]
+  },
+  "alpha_beta vs hybrid_init_epoch": {
+   "examples": 753,
+   "faster": {
+    "alpha_beta": 252,
+    "hybrid_init_epoch": 501
+   },
+   "weight_s": {
+    "alpha_beta": 3682.188,
+    "hybrid_init_epoch": 5565.704
+   },
+   "top_features": [
+    {
+     "feature": "sum_abs_days_all",
+     "importance": 0.3273
+    },
+    {
+     "feature": "n_day_steps",
+     "importance": 0.2208
+    },
+    {
+     "feature": "max_abs_days",
+     "importance": 0.1971
+    },
+    {
+     "feature": "form_balance",
+     "importance": 0.0585
+    },
+    {
+     "feature": "max_abs_days_nonself",
+     "importance": 0.0259
+    }
+   ]
+  },
+  "alpha_beta vs hybrid_init_ymd": {
+   "examples": 754,
+   "faster": {
+    "alpha_beta": 219,
+    "hybrid_init_ymd": 535
+   },
+   "weight_s": {
+    "alpha_beta": 378.58,
+    "hybrid_init_ymd": 5717.809
+   },
+   "top_features": [
+    {
+     "feature": "max_disjunction_width",
+     "importance": 0.1363
+    },
+    {
+     "feature": "max_abs_months",
+     "importance": 0.0923
+    },
+    {
+     "feature": "sum_abs_days_all",
+     "importance": 0.0762
+    },
+    {
+     "feature": "sum_abs_months",
+     "importance": 0.0709
+    },
+    {
+     "feature": "max_abs_days",
+     "importance": 0.0705
     }
    ]
   },
   "alpha_beta vs simple": {
-   "examples": 723,
+   "examples": 720,
    "faster": {
     "alpha_beta": 451,
-    "simple": 272
+    "simple": 269
    },
    "weight_s": {
-    "alpha_beta": 5106.547,
-    "simple": 3047.095
+    "alpha_beta": 5025.144,
+    "simple": 2878.598
    },
    "top_features": [
     {
+     "feature": "max_abs_days",
+     "importance": 0.4139
+    },
+    {
      "feature": "sum_abs_days_all",
-     "importance": 0.1907
+     "importance": 0.3697
     },
     {
      "feature": "sum_abs_days",
-     "importance": 0.1503
-    },
-    {
-     "feature": "max_abs_days",
-     "importance": 0.1037
+     "importance": 0.0898
     },
     {
      "feature": "max_abs_days_nonself",
-     "importance": 0.0751
+     "importance": 0.0681
     },
     {
-     "feature": "lit_year_span",
-     "importance": 0.0504
+     "feature": "max_abs_months",
+     "importance": 0.0166
     }
    ]
   },
-  "epoch_days vs hybrid_epoch": {
-   "examples": 746,
+  "epoch_days vs hybrid_init_epoch": {
+   "examples": 743,
    "faster": {
-    "epoch_days": 477,
-    "hybrid_epoch": 269
+    "epoch_days": 473,
+    "hybrid_init_epoch": 270
    },
    "weight_s": {
-    "epoch_days": 2765.914,
-    "hybrid_epoch": 4806.304
+    "epoch_days": 2661.718,
+    "hybrid_init_epoch": 4576.989
    },
    "top_features": [
     {
      "feature": "max_date_chain_len",
-     "importance": 0.1156
-    },
-    {
-     "feature": "implication_atom_frac",
-     "importance": 0.0821
+     "importance": 0.3726
     },
     {
      "feature": "n_atoms",
-     "importance": 0.071
+     "importance": 0.0707
+    },
+    {
+     "feature": "implication_atom_frac",
+     "importance": 0.0694
+    },
+    {
+     "feature": "n_free_date_vars",
+     "importance": 0.0538
     },
     {
      "feature": "n_arith_unit",
-     "importance": 0.0617
-    },
-    {
-     "feature": "n_date_comparisons",
-     "importance": 0.0611
+     "importance": 0.0498
     }
    ]
   },
-  "epoch_days vs hybrid_ymd": {
+  "epoch_days vs hybrid_init_ymd": {
    "examples": 763,
    "faster": {
-    "epoch_days": 472,
-    "hybrid_ymd": 291
+    "epoch_days": 442,
+    "hybrid_init_ymd": 321
    },
    "weight_s": {
-    "epoch_days": 1409.225,
-    "hybrid_ymd": 6458.908
+    "epoch_days": 1096.742,
+    "hybrid_init_ymd": 6467.728
    },
    "top_features": [
     {
      "feature": "n_date_comparisons",
-     "importance": 0.1495
+     "importance": 0.2714
     },
     {
      "feature": "n_atoms",
-     "importance": 0.0954
-    },
-    {
-     "feature": "sum_abs_months",
-     "importance": 0.0521
-    },
-    {
-     "feature": "n_free_date_vars",
-     "importance": 0.0505
+     "importance": 0.1593
     },
     {
      "feature": "form_balance",
-     "importance": 0.0449
+     "importance": 0.1209
+    },
+    {
+     "feature": "n_date_eq",
+     "importance": 0.0545
+    },
+    {
+     "feature": "n_day_ops",
+     "importance": 0.0376
     }
    ]
   },
   "epoch_days vs simple": {
    "examples": 740,
    "faster": {
-    "epoch_days": 490,
-    "simple": 250
+    "epoch_days": 489,
+    "simple": 251
    },
    "weight_s": {
-    "epoch_days": 6527.299,
-    "simple": 4572.341
+    "epoch_days": 6693.127,
+    "simple": 4578.337
    },
    "top_features": [
     {
-     "feature": "sum_abs_days",
-     "importance": 0.1777
-    },
-    {
      "feature": "sum_abs_days_all",
-     "importance": 0.1625
+     "importance": 0.4013
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.0916
-    },
-    {
-     "feature": "n_day_steps",
-     "importance": 0.088
+     "importance": 0.3805
     },
     {
      "feature": "form_balance",
-     "importance": 0.076
+     "importance": 0.1272
+    },
+    {
+     "feature": "max_abs_days_nonself",
+     "importance": 0.0412
+    },
+    {
+     "feature": "mixed_frac",
+     "importance": 0.0107
     }
    ]
   },
-  "hybrid_epoch vs hybrid_ymd": {
-   "examples": 758,
+  "hybrid_init_epoch vs hybrid_init_ymd": {
+   "examples": 759,
    "faster": {
-    "hybrid_epoch": 490,
-    "hybrid_ymd": 268
+    "hybrid_init_epoch": 414,
+    "hybrid_init_ymd": 345
    },
    "weight_s": {
-    "hybrid_epoch": 972.805,
-    "hybrid_ymd": 3982.098
+    "hybrid_init_epoch": 726.971,
+    "hybrid_init_ymd": 4182.685
    },
    "top_features": [
     {
-     "feature": "mixed_frac",
-     "importance": 0.0941
-    },
-    {
-     "feature": "sum_abs_days",
-     "importance": 0.0916
-    },
-    {
-     "feature": "n_day_steps",
-     "importance": 0.066
-    },
-    {
      "feature": "form_balance",
-     "importance": 0.0652
+     "importance": 0.2645
     },
     {
      "feature": "n_day_ops",
-     "importance": 0.0594
-    }
-   ]
-  },
-  "hybrid_epoch vs simple": {
-   "examples": 757,
-   "faster": {
-    "hybrid_epoch": 477,
-    "simple": 280
-   },
-   "weight_s": {
-    "hybrid_epoch": 7849.417,
-    "simple": 3854.07
-   },
-   "top_features": [
-    {
-     "feature": "sum_abs_days",
-     "importance": 0.1497
-    },
-    {
-     "feature": "sum_abs_days_all",
-     "importance": 0.1234
+     "importance": 0.1553
     },
     {
      "feature": "n_day_steps",
-     "importance": 0.0985
+     "importance": 0.0659
     },
     {
-     "feature": "form_balance",
-     "importance": 0.0908
-    },
-    {
-     "feature": "max_abs_days",
-     "importance": 0.0827
-    }
-   ]
-  },
-  "hybrid_ymd vs simple": {
-   "examples": 756,
-   "faster": {
-    "hybrid_ymd": 422,
-    "simple": 334
-   },
-   "weight_s": {
-    "hybrid_ymd": 7841.593,
-    "simple": 836.953
-   },
-   "top_features": [
-    {
-     "feature": "n_atoms",
-     "importance": 0.1039
+     "feature": "max_abs_months_nonself",
+     "importance": 0.063
     },
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.1011
-    },
+     "importance": 0.0573
+    }
+   ]
+  },
+  "hybrid_init_epoch vs simple": {
+   "examples": 756,
+   "faster": {
+    "hybrid_init_epoch": 496,
+    "simple": 260
+   },
+   "weight_s": {
+    "hybrid_init_epoch": 7935.717,
+    "simple": 3905.655
+   },
+   "top_features": [
     {
-     "feature": "n_unit_constraints",
-     "importance": 0.0975
+     "feature": "sum_abs_days_all",
+     "importance": 0.4558
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.0902
+     "importance": 0.2915
+    },
+    {
+     "feature": "form_balance",
+     "importance": 0.1306
+    },
+    {
+     "feature": "n_day_steps",
+     "importance": 0.0378
+    },
+    {
+     "feature": "max_abs_days_nonself",
+     "importance": 0.0167
+    }
+   ]
+  },
+  "hybrid_init_ymd vs simple": {
+   "examples": 758,
+   "faster": {
+    "hybrid_init_ymd": 636,
+    "simple": 122
+   },
+   "weight_s": {
+    "hybrid_init_ymd": 8158.287,
+    "simple": 672.511
+   },
+   "top_features": [
+    {
+     "feature": "max_abs_days",
+     "importance": 0.3526
+    },
+    {
+     "feature": "sum_abs_days_all",
+     "importance": 0.2098
+    },
+    {
+     "feature": "n_unit_constraints",
+     "importance": 0.0633
+    },
+    {
+     "feature": "n_atoms",
+     "importance": 0.0608
     },
     {
      "feature": "n_free_bool_vars",
-     "importance": 0.0857
+     "importance": 0.0388
     }
    ]
   }
