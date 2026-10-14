@@ -845,11 +845,12 @@ part carries both: `n_day_steps`.
 - `epoch_days` keeps a day count. Adding days and comparing two dates are single integer
 operations, but every date it must read as (year, month, day) costs a conversion by
 integer division: `n_ymd_needs`.
-- `hybrid_ymd` and `hybrid_epoch` hold a date in either form or in both, and build the
-missing form only when an operation needs it, which is a **conversion**. They differ only
-in the form a date variable starts in: (year, month, day) for `hybrid_ymd`, a day count
-for `hybrid_epoch`. `form_balance` says which start saves conversions, and
-`n_unavoidable_conversions` counts the conversions that neither start saves.
+- `hybrid_init_ymd` and `hybrid_init_epoch` hold a date in either form or in both, and
+build the missing form only when an operation needs it, which is a **conversion**. They
+differ only in the form a date variable starts in: (year, month, day) for
+`hybrid_init_ymd`, a day count for `hybrid_init_epoch`. `form_balance` says which start
+saves conversions, and `n_unavoidable_conversions` counts the conversions that neither
+start saves.
 
 The columns count operations in the constraint text and do not follow DateSat's code.
 
@@ -873,9 +874,9 @@ month and day, so it is needed as (year, month, day). A variable is needed in th
 the field reads and steps on it need. A variable compared with a step's result, by `==`,
 `!=` or an ordering, is needed in the form that result is in. Comparisons with a literal
 date, and comparisons between two variables, need neither form. A variable needed only as a
-day count costs `hybrid_ymd` one conversion and `hybrid_epoch` none, a variable needed only
-as (year, month, day) costs the reverse, and a variable needed in both forms costs one
-conversion under either.
+day count costs `hybrid_init_ymd` one conversion and `hybrid_init_epoch` none, a variable
+needed only as (year, month, day) costs the reverse, and a variable needed in both forms
+costs one conversion under either.
 
 The order of the constraints is ignored. DateSat's exact count can depend on it, because a
 variable that has already been converted has both forms when a later constraint uses it.
@@ -929,8 +930,9 @@ b == Date(a.year, 2, 28)                                  →  2   (a, and the D
 ### form_balance
 
 Variables needed only as a day count minus variables needed only as (year, month, day).
-Below 0, starting the variables as (year, month, day) saves conversions, as `hybrid_ymd`
-does; above 0, starting them as day counts does, as `hybrid_epoch` does.
+Below 0, starting the variables as (year, month, day) saves conversions, as
+`hybrid_init_ymd` does; above 0, starting them as day counts does, as `hybrid_init_epoch`
+does.
 
 ```
 a.month == 4;  b == a + Period(2,3,0);  b.year == 2028    →  -2   (a and b as (year, month, day))

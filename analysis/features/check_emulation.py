@@ -1,7 +1,7 @@
 """
 Check emulate_encodings.py against the formulas DateSat actually builds.
 
-    python -m analysis.features.check_emulation [--encodings hybrid_ymd ...] [--limit N]
+    python -m analysis.features.check_emulation [--encodings hybrid_init_ymd ...] [--limit N]
 
 For every DateSatBench instance and encoding, builds the formula with DateSat (without
 solving it), counts the distinct div, mod and if-then-else nodes in its assertions, and
