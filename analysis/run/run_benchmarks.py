@@ -7,16 +7,12 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-# Ensure the DateSATBench repository root is on sys.path so `eval.utils` imports work
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if REPO_ROOT not in sys.path:
-    sys.path.insert(0, REPO_ROOT)
-
 try:
     import datesat
 except ImportError:
     sys.exit("DateSat is not installed. Install it from the DateSat repo with: pip install -e <path to DateSat>")
-from eval.utils.validation import check_results_dir
+from analysis.paths import REPO
+from analysis.run.validation import check_results_dir
 
 TIMEOUT_MS = 20000
 # Default wall-clock limit per instance, covering build and solve.
@@ -475,7 +471,7 @@ def main():
         - the package directory itself.
         """
         if not repo_path:
-            return Path(REPO_ROOT) / "datesatbench"
+            return REPO / "datesatbench"
         p = Path(repo_path).expanduser().resolve()
         # If user passed the repo root, prefer the package directory.
         pkg_dir = p / "datesatbench"
@@ -499,7 +495,7 @@ def main():
         results_base = Path(args.results_dir).expanduser().resolve()
     else:
         bench_repo_root = _find_repo_root(datesatbench_root)
-        results_base = (bench_repo_root or Path(REPO_ROOT)) / "results"
+        results_base = (bench_repo_root or REPO) / "results"
     results_root = results_base / tag
 
     # Where to load constraints from

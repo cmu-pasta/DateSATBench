@@ -1123,10 +1123,10 @@ def main():
         epilog="""
 Examples:
   # Validate one run of the LLM dataset
-  python eval/utils/validation.py results/<tag>/llm/run_1
+  python -m analysis.run.validation results/<tag>/llm/run_1
 
   # Write the summary somewhere else
-  python eval/utils/validation.py results/<tag>/legal/run_1 --output validation_check.json
+  python -m analysis.run.validation results/<tag>/legal/run_1 --output validation_check.json
         """,
     )
     parser.add_argument(

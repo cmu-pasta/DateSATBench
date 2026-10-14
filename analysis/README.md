@@ -1,13 +1,25 @@
 # Analysis
 
-Relates DateSAT's solver results on DateSATBench to features of the benchmark instances.
+Runs the [DateSAT](https://github.com/cmu-pasta/DateSAT) solver on DateSATBench and relates
+its results to features of the benchmark instances.
+
+## Prereqs
+
+The solver lives in the separate DateSAT repo. Install it into the Python environment you run
+`analysis/` with:
+
+```bash
+pip install -e /path/to/DateSat            # the solver (z3, lark, dateutil come with it)
+pip install -e ".[analysis]"               # pandas, scikit-learn, plotting libraries, pytest
+```
 
 ## Layout
 
 | Folder | Stage | What it holds |
 |---|---|---|
+| `run/` | 0 | `run_benchmarks.py` (runs DateSat on the datasets and writes `results/<tag>/`), `validation.py` (checks every solution by concrete execution) and its tests |
 | `features/` | 1 | The constraint parser, `extract_features.py`, `emulate_encodings.py` (counts, without solving, what each DateSat encoding would emit; no feature uses it at present), `check_emulation.py` (compares those counts with the formulas DateSat builds), `features.md` (documents every feature column) and its tests |
-| `stats/` | 2–4 | `join_results.py` (joins solver timings to the features), `cluster.py` (PCA and t-SNE projections of the features to 2D and 3D), `solver_outcomes.py`, the two `plot_*.py` scripts and `select_features.py` (one feature per family of correlated features) |
+| `stats/` | 2–4 | `join_results.py` (joins solver timings to the features), `cluster.py` (PCA and t-SNE projections of the features to 2D and 3D), `solver_outcomes.py`, the `plot_*.py` scripts (`plot_tsne.py` draws the paper's t-SNE figure from `clusters.json`) and `select_features.py` (one feature per family of correlated features) |
 | `report/` | 5 | `build_report.py` and the HTML template it fills in |
 | `router/` | 6–7 | `crossval_router.py` (measures the router's setting on unseen constraints, by cross-validation), `train_router.py` (trains the encoding router on every instance: one random forest per pair of encodings) and their tests |
 | `outputs/` | | Everything the stages write: `features.csv`, `features_meta.json`, `selected_features.json`, `joined.csv`, `clusters.json`, `plots/`, `report.html`, `model/` (the router trained on every instance), `model_cross_validation/` (the cross-validation's results) and `model_cross_validation_selected/` (the same on the selected features only) |
@@ -15,6 +27,52 @@ Relates DateSAT's solver results on DateSATBench to features of the benchmark in
 `paths.py` holds the locations the stages share.
 
 `outputs/model/router.json` is the model for DateSat's `router` approach: copy it to `datesat/router/model.json` in the DateSat repo, or point `DATESAT_ROUTER_MODEL` at it. DateSat only accepts a model whose features kept the injected bounds (`extract_features --bounds keep`).
+
+## Running the solver (stage 0)
+
+Run every dataset in `datesatbench/`, then check every solution:
+
+```bash
+python -m analysis.run.run_benchmarks
+```
+
+Run only one dataset (short names: `llm`, `grammar`, `legal`):
+
+```bash
+python -m analysis.run.run_benchmarks --datesatbenchs llm
+```
+
+Choose the approaches, the timeout, etc.:
+
+```bash
+python -m analysis.run.run_benchmarks \
+  --timeout 20000 \
+  --approaches alpha_beta_table \
+  --datesatbenchs legal
+```
+
+To run a different dataset directory, pass it with `--datesatbench-repo` (or set `DATESATBENCH_REPO`). Bounds are part of the dataset text: add or remove them in place with `python -m datesatbench.utils.bounds inject|remove` before running.
+
+`--timeout` only bounds the Z3 check; building the constraints is not covered by it and can hang (e.g. `simple` on a `Period` with tens of thousands of days). Each instance therefore runs in a child process that is killed after `--hard-timeout` ms of wall-clock time (default: 20000). A killed instance is recorded as `"status": "timeout"` with `"hard_timeout": true`. Each result also splits `execution_time` into `build_time` (constructing the constraints) and `solve_time` (the Z3 check and model extraction).
+
+After the runs, `validation.py` checks every solution by executing the constraints on it, and writes `checked_summary_with_baseline.json`; `--no-analysis` skips that check. To check results again later: `python -m analysis.run.validation results/<tag>/llm/run_1`.
+
+Results are written to `<results-dir>/<tag>/`:
+
+- `<results-dir>` defaults to `results/` in this repo (or, with `--datesatbench-repo`, in the DateSATBench checkout that contains the dataset). Override with `--results-dir`.
+- `<tag>` defaults to a `YYYYmmdd_HHMMSS` timestamp. Override with `--tag`; invocations sharing a tag write into the same directory.
+- Every run goes in its own `run_N/`. Each invocation takes, per dataset, the lowest `N` whose `run_N/` has no result file for the approaches being run. So re-running with the same `--tag` adds `run_2`, `run_3`, …, while invocations covering *different* approaches (e.g. one per approach, launched in parallel) share a `run_N`. `--runs K` produces `K` consecutive run directories.
+
+```
+<results-dir>/<tag>/
+├── run_config.json                # timeout, approaches, datasets, dataset root
+└── <llm|grammar|legal>/
+    └── run_N/
+        ├── <approach>_int.json    # per-constraint status, time, solution
+        └── checked_summary_with_baseline.json   # unless --no-analysis
+```
+
+A result file is written only once its approach finishes every constraint, so a killed run leaves its `run_N/` reusable. Starting the *same* approach again while an earlier invocation is still running will pick the same `run_N`.
 
 ## Running the pipeline
 
@@ -29,6 +87,7 @@ python -m analysis.stats.plot_speedup_heatmap            # 4: outputs/plots/ (an
 python -m analysis.stats.plot_feature_correlation        # 4: outputs/plots/feature_correlation.png
 python -m analysis.stats.select_features                 # 4: outputs/selected_features.json
 python -m analysis.stats.plot_feature_correlation --selected   # 4: outputs/plots/feature_correlation_selected.png
+python -m analysis.stats.plot_tsne                       # 4: outputs/plots/dataset_tsne.pdf, the paper's t-SNE figure
 python -m analysis.report.build_report                   # 5: outputs/report.html
 python -m analysis.router.crossval_router                # 6: outputs/model_cross_validation/router_eval.json, router_eval.csv
 python -m analysis.router.crossval_router --selected     # 6: the same on the selected features, in outputs/model_cross_validation_selected/
@@ -36,7 +95,9 @@ python -m analysis.router.train_router                   # 7: outputs/model/rout
 ```
 
 `python -m analysis.stats.solver_outcomes --compare` prints a summary of what each encoding
-did, per corpus. Every stage takes `--help`.
+did, per corpus. Every stage takes `--help`. `join_results --exclude <encoding> ...` leaves
+encodings in the results out of `joined.csv` and so out of every later stage; the report's
+header names them.
 
 To analyse other results without overwriting `outputs/`, point `--results` (stages 2 and 5)
 at them and set `DATESAT_ANALYSIS_OUTPUTS` to another directory, which every stage then
@@ -67,13 +128,14 @@ bias from the choice. `train_router` and DateSat's model still use every feature
 cross-validation over every instance, stratified by corpus and repeated 5 times, in which
 every instance is routed by a router trained on the other folds. It measures one fixed
 setting, `train_router`'s (`DEFAULT_SETTINGS` and `DEFAULT_TREES`), and does not search
-for a better one; pass `--min-samples-leaf`, `--max-depth`, `--margin` or `--trees` to
-measure another. Its results go to `model_cross_validation/`; the model DateSat uses,
+for a better one; pass `--min-samples-leaf`, `--max-depth`, `--max-features`, `--margin`,
+`--train-timeout-cost` or `--trees` to measure another. Its results go to `model_cross_validation/`; the model DateSat uses,
 trained on every instance with the same setting, goes to `model/`.
 
 ## Tests
 
 ```
+python -m pytest                                    # analysis/run/test_validation.py; needs DateSat
 python -m analysis.features.test_features_md        # runs every example in features.md
 python -m analysis.features.test_extract_features
 python -m analysis.features.check_emulation         # needs DateSat; takes about 10 minutes
