@@ -22,8 +22,8 @@
      hybrids sharing green and told apart by shape. Four slots of the reference palette that
      hold up when every pair meets, as in a scatter: worst pair Delta E 16.3 for normal
      vision, 13.0 under protan/deutan simulation. */
-  --e-hybrid_ymd: #008300;
-  --e-hybrid_epoch: #008300;
+  --e-hybrid_init_ymd: #008300;
+  --e-hybrid_init_epoch: #008300;
   --e-hybrid_both: #008300;
   --e-epoch_days: #2a78d6;
   --e-alpha_beta: #eda100;
@@ -451,7 +451,7 @@ document.querySelectorAll(".n-feat").forEach((el) => { el.textContent = N_FEAT; 
 {
   const parts = [
     `<span><b>${M.n_instances}</b> instances (${CORPORA.map((c) => `${CNAME[c]} ${M.corpora[c]}`).join(", ")})</span>`,
-    `<span><b>${ENC.length}</b> encodings vs <b>${esc(M.baseline)}</b></span>`,
+    `<span><b>${ENC.length}</b> encodings vs <b>${esc(M.baseline)}</b>${(M.left_out || []).length ? ` (left out: <b>${M.left_out.map(esc).join(", ")}</b>)` : ""}</span>`,
     `<span><b>${M.runs}</b> run${M.runs === 1 ? "" : "s"} per instance${M.timeout_s ? `, ${M.timeout_s} s timeout` : ""}</span>`,
     `<span>injected bounds <b>${esc(M.bounds === "strip" ? "stripped" : M.bounds === "keep" ? "kept" : M.bounds)}</b></span>`,
     `<span>results <b>${esc(M.results)}</b></span>`,
@@ -594,8 +594,7 @@ function renderOutcomes() {
       const o = DATA.outcomes[c][e], N = o.instances;
       const head = `<b class="m">${esc(e)}</b> · ${CNAME[c]}<br>`;
       const dot = c === "all" ? "" : `<span class="dot" style="background:var(--c-${c})"></span>`;
-      const out = o.unsolvable + o.incomplete;                 // the note under the table says why
-      const corp = i ? "" : `${dot}${CNAME[c]}<span class="sub">${N} instances${out ? `<br>${out} left out` : ""}</span>`;
+      const corp = i ? "" : `${dot}${CNAME[c]}<span class="sub">${N} instances${o.unsolvable ? `<br>${o.unsolvable} no encoding solves` : ""}${o.incomplete ? `<br>${o.incomplete} left out` : ""}</span>`;
 
       const segs = OSTATUS.filter(([k]) => o[k] > 0);
       const bar = `<span class="obar" aria-hidden="true">${segs.map(([k]) => `<i class="o-${k}" style="flex-grow:${o[k]}"></i>`).join("")}</span>`;
@@ -623,7 +622,7 @@ function renderOutcomes() {
   }
   $("#out").innerHTML = h + "</tbody>";
   const all = DATA.outcomes.all[M.baseline];
-  $("#out-note").innerHTML = `Every section of this report measures time the same way. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Only instances that some encoding solves count: the ${all.unsolvable} on which every encoding timed out are left out everywhere, and shown under each corpus. Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`;
+  $("#out-note").innerHTML = `Every section of this report measures time the same way. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Every instance counts here: the ${all.unsolvable} on which every encoding timed out count as a timeout for every encoding, and are shown under each corpus. The speedup heatmap and the router leave them out, since no encoding is faster than another on them.${all.incomplete ? ` The ${all.incomplete} with an errored or missing run are left out everywhere.` : ""} Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`;
 }
 $("#out").addEventListener("mouseover", (e) => {
   const td = e.target.closest("td[data-tip]");
@@ -837,7 +836,7 @@ function renderRouter() {
 
   const md = RT.model;
   const modelBlk = md
-    ? `<h3>The model</h3><p>The router is made of ${md.pairs.length} random forests, one per pair of the ${md.encodings.length} encodings. Each has ${md.trees} trees of depth at most ${md.max_depth}, and no leaf rests on fewer than ${md.min_samples_leaf} training instances. A forest predicts from the ${md.n_features} features which of its two encodings is faster. Every training instance is weighted by the two encodings' time difference, so avoiding a timeout counts far more than winning a near-tie.${md.train_timeout_cost_s > md.timeout_cost_s ? ` In the training examples a timed-out run counts as ${md.train_timeout_cost_s} s instead of ${md.timeout_cost_s} s, which steers the router further away from timeouts; every figure in this section still counts a timeout as ${cv.timeout_cost_s} s.` : ""}</p>
+    ? `<h3>The model</h3><p>The router is made of ${md.pairs.length} random forests, one per pair of the ${md.encodings.length} encodings. Each has ${md.trees} trees of depth at most ${md.max_depth}, and no leaf rests on fewer than ${md.min_samples_leaf} training instances. Every split chooses the best of ${typeof md.max_features === "number" ? `a random ${Math.round(md.max_features * 100)}% of the ${md.n_features} features` : `${md.max_features === "log2" ? "log2" : "the square root"} of the number of features, picked at random`}. A forest predicts from the ${md.n_features} features which of its two encodings is faster. Every training instance is weighted by the two encodings' time difference, so avoiding a timeout counts far more than winning a near-tie.${md.train_timeout_cost_s > md.timeout_cost_s ? ` In the training examples a timed-out run counts as ${md.train_timeout_cost_s} s instead of ${md.timeout_cost_s} s, which steers the router further away from timeouts; every figure in this section still counts a timeout as ${cv.timeout_cost_s} s.` : ""}</p>
        <p>The encoding that wins the most pairs is picked. On a tie, or when the pick does not beat <span class="mono">${esc(md.fallback)}</span> in their own forest${md.margin > 0 ? ` by more than ${md.margin}` : ""}, the router uses <span class="mono">${esc(md.fallback)}</span>${md.fallback === cv.best_performing_encoding ? ", the best single encoding" : ""}. The model DateSat uses, <span class="mono">outputs/model/router.json</span>, is trained on all ${md.trained_on} instances with these settings.</p>`
       + (md.matches_cv ? "" : `<p class="rt-warn">The cross-validation measured a different setting (leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth}, margin ${cv.setting.margin}, ${cv.trees} trees${cv.setting.train_timeout_cost_s !== undefined ? `, timeouts counted as ${cv.setting.train_timeout_cost_s} s in training` : ""}) from the one this model was trained with, so its figures do not describe this model. Rerun <span class="mono">crossval_router.py</span> with the model's setting.</p>`)
     : `<h3>The model</h3><p>No trained model was found in <span class="mono">outputs/model/</span>.</p>`;
@@ -881,8 +880,8 @@ function axis2(title) {
 function coords(p) { return state.proj === "p" ? p.p : state.dim === "3" ? p.t3 : p.t2; }
 /* Colour by fastest encoding: a fixed colour and marker shape per encoding (the shape is the
    second cue the palette needs), grey for the instances on which every encoding timed out. */
-const ENC_ORDER = ["hybrid_ymd", "hybrid_epoch", "hybrid_both", "epoch_days", "alpha_beta", "simple"];
-const ENC_SYMBOL = { hybrid_ymd: "circle", hybrid_epoch: "square", hybrid_both: "diamond",
+const ENC_ORDER = ["hybrid_init_ymd", "hybrid_init_epoch", "hybrid_both", "epoch_days", "alpha_beta", "simple"];
+const ENC_SYMBOL = { hybrid_init_ymd: "circle", hybrid_init_epoch: "square", hybrid_both: "diamond",
   epoch_days: "circle", alpha_beta: "circle", simple: "circle" };
 const SYMBOL_GLYPH = { circle: "●", square: "■", diamond: "◆", cross: "✚", x: "✕", "diamond-open": "◇", "circle-open": "○", "square-open": "□" };
 function fastestGroups() {
@@ -976,8 +975,9 @@ function renderProjectionSide() {
   const method = state.proj === "p"
     ? `<h3>PCA, ${n} axes</h3><p>The ${n} directions along which the standardised features vary most. Together they keep <b class="mono">${pct(pv.reduce((a, b) => a + b, 0))}</b> of the variance: ${pv.map((v, i) => `PC${i + 1} ${pct(v)}`).join(" + ")}.</p>`
     : `<h3>t-SNE, ${n} axes</h3><p>Places instances with similar features next to each other. Which instances are neighbours is meaningful; the axes, the size of a group and the gaps between groups are not. The 2D and 3D layouts are fitted separately, so they differ.</p>`;
+  const nHyb = CL.encodings.filter((e) => e.startsWith("hybrid")).length;
   const colour = state.pcol === "fastest"
-    ? `<div class="blk"><h3>Fastest encoding</h3><p>Colour shows which encoding, or for the three hybrids which family, solved each instance fastest, and shape tells the hybrids apart: the lowest median time over the ${M.runs} run${M.runs > 1 ? "s" : ""}, a timeout counting at the ${M.timeout_s} s limit. Grey: every encoding timed out. The projection never sees the times, so a region of one colour is a kind of instance one encoding is best at.</p>
+    ? `<div class="blk"><h3>Fastest encoding</h3><p>Colour shows which encoding${nHyb > 1 ? `, or for the ${["two", "three", "four"][nHyb - 2] || nHyb} hybrids which family,` : ""} solved each instance fastest${nHyb > 1 ? ", and shape tells the hybrids apart" : ""}: the lowest median time over the ${M.runs} run${M.runs > 1 ? "s" : ""}, a timeout counting at the ${M.timeout_s} s limit. Grey: every encoding timed out. The projection never sees the times, so a region of one colour is a kind of instance one encoding is best at.</p>
       <div class="mix-legend">${fastestGroups().map((g) => `<span><span class="glyph" style="color:${g.color}" aria-hidden="true">${SYMBOL_GLYPH[g.symbol] || "●"}</span>${esc(g.label)} ${g.pts.length}</span>`).join("")}</div></div>`
     : `<div class="blk"><h3>Corpus</h3><p>Colour shows which generator produced each instance. The projection never sees it, so corpora that land apart are ones the features tell apart.</p>
       <div class="mix-legend">${CORPORA.map((c) => `<span><span class="dot" style="background:var(--c-${c})"></span>${CNAME[c]} ${M.corpora[c]}</span>`).join("")}</div></div>`;

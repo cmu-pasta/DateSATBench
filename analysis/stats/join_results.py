@@ -5,7 +5,8 @@ Join solver timings to the feature matrix.
 
 Reads every <corpus>/run_N/<approach>_<impl>.json (or, for a single-run eval,
 <corpus>/<approach>_<impl>.json) under the results root and joins each record to
-features.csv on id. Nothing is aggregated: every timing measurement becomes its own
+features.csv on id. Encodings given with --exclude are left out, and so are left out of
+every later stage. Nothing is aggregated: every timing measurement becomes its own
 row, so an instance solved by 4 encodings over 3 runs contributes 12 rows.
 
 Speedup is relative to the baseline encoding (--baseline, default `simple`) on the
@@ -95,6 +96,8 @@ def main():
                     help="results directory (multi-run <corpus>/run_N/ or single-run <corpus>/)")
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
+    ap.add_argument("--exclude", nargs="+", default=[], metavar="ENCODING",
+                    help="encodings in the results to leave out, e.g. hybrid_both")
     add_timeout_arg(ap)
     ap.add_argument("--output", default=str(OUTPUTS / "joined.csv"))
     args = ap.parse_args()
@@ -103,13 +106,16 @@ def main():
 
     root = Path(args.results)
     obs = {}                          # (id, encoding, run) -> (time, status)
-    corpora, encodings, run_ids = set(), set(), set()
+    corpora, encodings, run_ids, excluded = set(), set(), set(), set()
 
     multi = sorted(root.glob("*/run_*/*_int.json"))
     files = [(f, f.parts[-3], f.parts[-2]) for f in multi] or \
             [(f, f.parts[-2], "run_1") for f in sorted(root.glob("*/*_int.json"))]
     for f, corpus_dir, run_id in files:
         encoding = f.stem.replace("_int", "")
+        if encoding in args.exclude:
+            excluded.add(encoding)
+            continue
         corpora.add(corpus_dir)
         encodings.add(encoding)
         run_ids.add(run_id)
@@ -119,6 +125,10 @@ def main():
 
     print(f"corpora: {sorted(corpora)}")
     print(f"encodings: {sorted(encodings)}")
+    if args.exclude:
+        print(f"left out: {sorted(excluded)}")
+        if set(args.exclude) - excluded:
+            print(f"WARNING: --exclude {sorted(set(args.exclude) - excluded)} not in the results")
     print(f"runs: {sorted(run_ids)}")
     print(f"timeout: {timeout:g} s")
     if args.baseline not in encodings:

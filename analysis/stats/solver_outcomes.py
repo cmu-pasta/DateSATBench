@@ -13,13 +13,15 @@ calls solver_outcomes() for every scope, so the report shows these exact numbers
 
 Every number comes from instance_costs.py, the measurement the router is trained and
 cross-validated on: an instance's cost is the median over its runs, a timed-out run counts
-at the timeout (--timeout, or $DATESAT_TIMEOUT_MS), and only the usable instances count,
-those every encoding ran without an error and some encoding solved. So always-<encoding>
-in the router's cross-validation has the same total, timeouts and median speedup as the
-encoding's row here.
+at the timeout (--timeout, or $DATESAT_TIMEOUT_MS), and every instance that every encoding
+ran without an error counts. An instance on which every encoding timed out counts as a
+timeout for every encoding. The router's cross-validation leaves those out, since no
+encoding is faster than another on them, so always-<encoding> there has `unsolvable` fewer
+timeouts and `unsolvable` x the timeout less total time than the encoding's row here.
 
 Columns
-  instances            usable instances in the scope; the same for every row
+  instances            instances in the scope with no errored or missing run; the same
+                       for every row
   sat, unsat, timeout  instances this encoding answered sat, answered unsat, or timed out on
   solved               sat + unsat
   solve_rate           solved / instances
@@ -27,9 +29,10 @@ Columns
   median_time          median cost over the instances, timeouts at the timeout
   wins                 instances on which it costs less than the baseline
   median_speedup       median over the instances of the baseline's cost / its cost
-  unsolvable           instances of the scope on which every encoding timed out, left out
-                       of every other column
-  incomplete           instances with an errored or missing run, left out likewise
+  unsolvable           of those instances, the ones on which every encoding timed out;
+                       they count as a timeout in every row
+  incomplete           instances with an errored or missing run, left out of every other
+                       column
 
 The baseline's win and speedup columns are empty: it is not compared with itself.
 """
@@ -39,7 +42,7 @@ import argparse
 import pandas as pd
 
 from analysis.paths import OUTPUTS
-from analysis.stats.instance_costs import answers, usable_costs
+from analysis.stats.instance_costs import all_timeout_ids, answers, complete_costs
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 
 CORPORA = ["llm", "legal", "grammar"]
@@ -51,7 +54,8 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
     """One row per encoding (baseline first) for one scope; corpus None or 'all' pools."""
     if corpus and corpus != "all":
         df = df[df["corpus"] == corpus]
-    costs, dropped = usable_costs(df, timeout_cost)
+    costs, incomplete = complete_costs(df, timeout_cost)
+    unsolvable = int(costs.index.isin(all_timeout_ids(df)).sum())
     answer = answers(df).reindex(index=costs.index, columns=costs.columns)
     encodings = [baseline] + sorted(e for e in costs.columns if e != baseline)
     n = len(costs)
@@ -74,8 +78,8 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
             "median_time": c.median() if n else None,
             "wins": int((speedup > 1).sum()) if compared else None,
             "median_speedup": speedup.median() if compared and n else None,
-            "unsolvable": dropped["all_timeout"],
-            "incomplete": dropped["errored_or_missing"],
+            "unsolvable": unsolvable,
+            "incomplete": incomplete,
         })
     out = pd.DataFrame(rows).set_index("encoding")
     return out.astype({c: "Int64" for c in COUNTS}).astype({c: "float64" for c in FLOATS})
@@ -103,8 +107,8 @@ def display(t, scope):
             "median speedup": "-" if pd.isna(r["median_speedup"]) else f"{r['median_speedup']:.2f}x",
         })
     first = t.iloc[0]
-    head = (f"{scope}: {int(first['instances'])} instances; left out: {int(first['unsolvable'])} "
-            f"no encoding solves, {int(first['incomplete'])} with an errored or missing run")
+    head = (f"{scope}: {int(first['instances'])} instances, {int(first['unsolvable'])} of which no "
+            f"encoding solves; left out: {int(first['incomplete'])} with an errored or missing run")
     return head + "\n" + pd.DataFrame(rows).set_index("encoding").to_string()
 
 

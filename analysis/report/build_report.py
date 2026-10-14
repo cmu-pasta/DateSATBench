@@ -60,6 +60,14 @@ def rel(path):
         return str(path)
 
 
+def left_out_encodings(results, encodings):
+    """Encodings with result files under `results` that are not in joined.csv, i.e. the ones
+    join_results.py --exclude left out."""
+    found = {f.stem.replace("_int", "") for f in Path(results).glob("*/run_*/*_int.json")} or \
+            {f.stem.replace("_int", "") for f in Path(results).glob("*/*_int.json")}
+    return sorted(found - set(encodings))
+
+
 def fastest_encoding(joined, timeout_s):
     """The encoding with the lowest cost on each instance (instance_costs.py's cost: the
     median over runs, a timeout counting at the limit), or None for the instances on which
@@ -126,6 +134,7 @@ def router_section(cv_path, meta_path):
         out["model"] = {
             "encodings": m["encodings"], "trees": m["trees"], "max_depth": m["max_depth"],
             "min_samples_leaf": m["min_samples_leaf"], "margin": m["margin"],
+            "max_features": m.get("max_features", "sqrt"),
             "timeout_cost_s": m.get("timeout_cost_s", cv["timeout_cost_s"]),
             "train_timeout_cost_s": m.get("train_timeout_cost_s",
                                           m.get("timeout_cost_s", cv["timeout_cost_s"])),
@@ -269,6 +278,7 @@ def main():
             "timeout_s": timeout_s,
             "baseline": args.baseline,
             "encodings": others,
+            "left_out": left_out_encodings(args.results, encodings),
             "corpora": {c: int((feats["corpus"] == c).sum()) for c in CORPORA},
             "n_instances": len(feats),
             "n_rows": len(joined),

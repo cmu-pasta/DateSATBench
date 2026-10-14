@@ -7,9 +7,13 @@ solver outcomes, the feature x speedup heatmap and the router all measure the sa
   * An instance's **cost** on an encoding is the median time over its runs, with a
     timed-out run counting at the timeout. An instance is one measurement, however many
     runs it has.
-  * The **usable** instances are those every encoding ran without an error, less those on
-    which every encoding timed out. No encoding is faster than another on those, so they
-    are counted on their own (`dropped["all_timeout"]`) rather than as ties.
+  * The **complete** instances are those every encoding ran without an error. The solver
+    outcomes count all of them, so an instance on which every encoding timed out counts as
+    a timeout for every encoding.
+  * The **usable** instances are the complete ones less those on which every encoding timed
+    out. No encoding is faster than another on those, so the speedup heatmap and the router
+    leave them out and count them on their own (`dropped["all_timeout"]`) rather than as
+    ties.
   * An encoding **solves** an instance when its cost is below the timeout.
   * A **speedup** over the baseline is the baseline's cost divided by the encoding's cost
     on the same instance, timeouts included at the timeout.
@@ -35,6 +39,14 @@ def all_timeout_ids(joined):
     return set(timed_out.index[timed_out])
 
 
+def complete_costs(joined, timeout_cost):
+    """The cost table of the complete instances, and how many have an errored or missing
+    run on some encoding and were dropped."""
+    costs = cost_table(joined, timeout_cost)
+    incomplete = costs.isna().any(axis=1)
+    return costs[~incomplete], int(incomplete.sum())
+
+
 def usable_costs(joined, timeout_cost):
     """The cost table of the usable instances, and how many instances were dropped.
 
@@ -42,11 +54,9 @@ def usable_costs(joined, timeout_cost):
     every encoding timed out. Returns (costs, dropped), where dropped counts each kind:
     {"errored_or_missing": n, "all_timeout": n}.
     """
-    costs = cost_table(joined, timeout_cost)
-    incomplete = costs.isna().any(axis=1)
-    costs = costs[~incomplete]
+    costs, incomplete = complete_costs(joined, timeout_cost)
     all_timeout = costs.index.isin(all_timeout_ids(joined))
-    return costs[~all_timeout], {"errored_or_missing": int(incomplete.sum()),
+    return costs[~all_timeout], {"errored_or_missing": incomplete,
                                  "all_timeout": int(all_timeout.sum())}
 
 
