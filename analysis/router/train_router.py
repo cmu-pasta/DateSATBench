@@ -28,9 +28,9 @@ Instances on which only some encodings time out are kept: they are the examples 
 teach the router which choices are dangerous.
 
 Overfitting. With leaves allowed to rest on one instance, the forests memorize the
-training constraints. --min-samples-leaf keeps every leaf on several. Its default, with
-the depth, margin and tree defaults (DEFAULT_SETTINGS, DEFAULT_TREES), is the router's
-setting; crossval_router.py measures it by cross-validation, and does not change it.
+training constraints. --min-samples-leaf keeps every leaf on several. Every split chooses
+among a random share of the features (--max-features). Their defaults, with the depth,
+margin and tree defaults (DEFAULT_SETTINGS, DEFAULT_TREES), are the router's setting; crossval_router.py measures it by cross-validation, and does not change it.
 
 Examples. For the A-vs-B forest, every instance on which A and B cost different amounts
 is one example. The input is its features (every feature column, but not corpus, so the
@@ -81,9 +81,10 @@ FORMAT_VERSION = 1                 # of router.json
 EXPORT_TOLERANCE = 1e-9
 # The router's setting. crossval_router.py measures it; ROUTER.md says why it was chosen.
 # train_timeout_cost_s is what a timed-out run counts as in the training examples only;
-# totals, the fallback and every score count it at the timeout.
-DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "margin": 0.0,
-                    "train_timeout_cost_s": 80.0}
+# totals, the fallback and every score count it at the timeout. max_features is the share
+# of the feature columns each split chooses among (or "sqrt" or "log2" of their number).
+DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "max_features": 0.5,
+                    "margin": 0.0, "train_timeout_cost_s": 80.0}
 DEFAULT_TREES = 50                 # trees per forest
 
 # The columns join_results.py writes ahead of the feature columns.
@@ -113,15 +114,28 @@ def pair_examples(costs, a, b):
     return gap.index, label, gap.abs()
 
 
-def fit_forests(costs, feats, trees, max_depth, min_samples_leaf, n_jobs=None):
+def max_features_arg(text):
+    """--max-features: a share of the features in (0, 1], or "sqrt" or "log2"."""
+    if text in ("sqrt", "log2"):
+        return text
+    share = float(text)
+    if not 0 < share <= 1:
+        raise argparse.ArgumentTypeError(f"must be in (0, 1], sqrt or log2, got {text}")
+    return share
+
+
+def fit_forests(costs, feats, trees, max_depth, min_samples_leaf,
+                max_features=DEFAULT_SETTINGS["max_features"], n_jobs=None):
     """One forest per pair of encodings (A, B), keyed by (A, B), trained on the pair's
     examples from a cost table with no NaNs and the instances' features. No leaf rests on
-    fewer than `min_samples_leaf` instances."""
+    fewer than `min_samples_leaf` instances, and every split chooses among `max_features`
+    of the features."""
     forests = {}
     for a, b in combinations(sorted(costs.columns), 2):
         ids, label, weight = pair_examples(costs, a, b)
         forest = RandomForestClassifier(n_estimators=trees, max_depth=max_depth,
                                         min_samples_leaf=min_samples_leaf,
+                                        max_features=max_features,
                                         random_state=RANDOM_STATE, n_jobs=n_jobs)
         forest.fit(feats.loc[ids].to_numpy(), label.to_numpy(), sample_weight=weight.to_numpy())
         forests[(a, b)] = forest
@@ -247,6 +261,9 @@ def main():
                     help="maximum depth of each tree")
     ap.add_argument("--min-samples-leaf", type=int, default=DEFAULT_SETTINGS["min_samples_leaf"],
                     help="fewest training instances a leaf may rest on")
+    ap.add_argument("--max-features", type=max_features_arg,
+                    default=DEFAULT_SETTINGS["max_features"],
+                    help="share of the features each split chooses among, or sqrt or log2")
     ap.add_argument("--fallback", help="encoding the router uses when the vote is close "
                                        "(default: the best performing encoding)")
     ap.add_argument("--margin", type=float, default=DEFAULT_SETTINGS["margin"],
@@ -286,8 +303,10 @@ def main():
 
     pairs = {}
     print(f"\n{len(encodings) * (len(encodings) - 1) // 2} forests of {args.trees} trees, "
-          f"depth <= {args.max_depth}, at least {args.min_samples_leaf} instances per leaf:")
-    forests = fit_forests(train_costs, feats, args.trees, args.max_depth, args.min_samples_leaf)
+          f"depth <= {args.max_depth}, at least {args.min_samples_leaf} instances per leaf, "
+          f"{args.max_features} of the features per split:")
+    forests = fit_forests(train_costs, feats, args.trees, args.max_depth, args.min_samples_leaf,
+                          args.max_features)
     for (a, b), forest in forests.items():
         _, label, weight = pair_examples(train_costs, a, b)
         wins = {e: int((label == e).sum()) for e in (a, b)}
@@ -329,6 +348,7 @@ def main():
         "trees": args.trees,
         "max_depth": args.max_depth,
         "min_samples_leaf": args.min_samples_leaf,
+        "max_features": args.max_features,
         "random_state": RANDOM_STATE,
         "instances": {"total": n_total,
                       "dropped_errored_or_missing": dropped["errored_or_missing"],

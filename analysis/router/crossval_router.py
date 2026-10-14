@@ -5,10 +5,10 @@ instance.
     python -m analysis.router.crossval_router --timeout 20000     # or set DATESAT_TIMEOUT_MS
 
 It measures one fixed setting: by default the one train_router.py trains (its
-DEFAULT_SETTINGS and DEFAULT_TREES: leaf size, depth, margin, what a timeout counts as in
-training, and trees per forest), so the figures describe the model DateSat uses. It does
-not search for a better setting; --min-samples-leaf, --max-depth, --margin,
---train-timeout-cost and --trees measure another one. Scores always count a timeout at
+DEFAULT_SETTINGS and DEFAULT_TREES: leaf size, depth, features per split, margin, what a
+timeout counts as in training, and trees per forest), so the figures describe the model
+DateSat uses. It does not search for a better setting; --min-samples-leaf, --max-depth,
+--max-features, --margin, --train-timeout-cost and --trees measure another one. Scores always count a timeout at
 --timeout-cost (default: the timeout), whatever it counts as in training.
 
 Features. By default the router sees every feature column. With --selected it sees only
@@ -52,7 +52,7 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 from analysis.paths import CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, OUTPUTS, REPO
 from analysis.router.train_router import (DEFAULT_SETTINGS, DEFAULT_TREES, ROUTER,
                                           feature_columns, fit_forests, instance_features,
-                                          route, training_set)
+                                          max_features_arg, route, training_set)
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 from analysis.stats.select_features import selected_columns
 
@@ -147,7 +147,8 @@ def summary_json(s, encodings):
 
 
 def out_of_fold_picks(costs, feats, strata, min_samples_leaf, max_depth, margin, n_splits,
-                      repeats, trees, train_costs=None):
+                      repeats, trees, train_costs=None,
+                      max_features=DEFAULT_SETTINGS["max_features"]):
     """Route every instance of `costs` with routers trained on the other folds, with one
     setting. The forests learn from `train_costs` (default: `costs`), the same instances
     with timeouts counted at the training cost; the fallback comes from `costs`.
@@ -165,7 +166,7 @@ def out_of_fold_picks(costs, feats, strata, min_samples_leaf, max_depth, margin,
         c_train, c_test = costs.iloc[train], costs.iloc[test]
         fallback = c_train.sum().idxmin()
         forests = fit_forests(train_costs.loc[c_train.index], feats.loc[c_train.index], trees,
-                              max_depth, min_samples_leaf, n_jobs=-1)
+                              max_depth, min_samples_leaf, max_features, n_jobs=-1)
         picks, fell_back, _ = route(forests, encodings, feats.loc[c_test.index], fallback, margin)
         rows += [{"repeat": repeat, "fold": fold, "id": iid, "pick": picks[iid],
                   "fell_back": bool(fell_back[iid]), "fallback": fallback,
@@ -206,6 +207,9 @@ def main():
                     help="maximum depth of each tree")
     ap.add_argument("--min-samples-leaf", type=int, default=DEFAULT_SETTINGS["min_samples_leaf"],
                     help="fewest training instances a leaf may rest on")
+    ap.add_argument("--max-features", type=max_features_arg,
+                    default=DEFAULT_SETTINGS["max_features"],
+                    help="share of the features each split chooses among, or sqrt or log2")
     ap.add_argument("--margin", type=float, default=DEFAULT_SETTINGS["margin"],
                     help="how far above 0.5 a pick must beat the fallback to be kept")
     ap.add_argument("--folds", type=int, default=5)
@@ -228,6 +232,7 @@ def main():
     if not 0 <= args.margin < 0.5:
         ap.error(f"--margin must be in [0, 0.5), got {args.margin:g}")
     leaf, depth, margin = args.min_samples_leaf, args.max_depth, args.margin
+    max_features = args.max_features
 
     joined = pd.read_csv(args.joined)
     joined = joined[joined["encoding"] != ROUTER]
@@ -253,11 +258,11 @@ def main():
           + f"; timeouts count as {timeout_cost:g} s")
     print(f"features: {len(cols)} columns" + (" (selected_features.json)" if args.selected else ""))
     print(f"setting: {args.trees} trees, depth <= {depth}, at least {leaf} instances per leaf, "
-          f"margin {margin:g}, timeouts count as {train_timeout_cost:g} s in training; "
+          f"{max_features} of the features per split, margin {margin:g}, timeouts count as {train_timeout_cost:g} s in training; "
           f"{args.folds}-fold cross-validation stratified by corpus, "
           f"repeated {args.repeats} times ...")
     oof = out_of_fold_picks(costs, feats, corpus, leaf, depth, margin, args.folds, args.repeats,
-                            args.trees, train_costs).drop(columns="trained_on")
+                            args.trees, train_costs, max_features).drop(columns="trained_on")
 
     overall, by_corpus, logs = [], {c: [] for c in sorted(corpus.unique())}, []
     for repeat, g in oof.groupby("repeat"):
@@ -303,8 +308,8 @@ def main():
         "folds": args.folds,
         "repeats": args.repeats,
         "trees": args.trees,
-        "setting": {"min_samples_leaf": leaf, "max_depth": depth, "margin": margin,
-                    "train_timeout_cost_s": train_timeout_cost},
+        "setting": {"min_samples_leaf": leaf, "max_depth": depth, "max_features": max_features,
+                    "margin": margin, "train_timeout_cost_s": train_timeout_cost},
         "feature_columns": cols,
         "fallbacks": fallbacks,
         "baseline": args.baseline,
