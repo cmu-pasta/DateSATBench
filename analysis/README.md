@@ -101,11 +101,7 @@ header names them.
 
 To analyse other results without overwriting `outputs/`, point `--results` (stages 2 and 5)
 at them and set `DATESAT_ANALYSIS_OUTPUTS` to another directory, which every stage then
-reads and writes instead. Create the directory first. For example,
-`outputs-combined-6496e/` is the pipeline run on
-`results/combined-2runs-bounded-datesat6496e` with
-`DATESAT_ANALYSIS_OUTPUTS=analysis/outputs-combined-6496e` and
-`extract_features --dataset-root datesatbench --bounds keep`.
+reads and writes instead. Create the directory first.
 
 The report's *Specialized router* section reads the outputs of stages 6 and 7
 (`model_cross_validation/router_eval.json` and `model/router_meta.json`), so rebuild the
