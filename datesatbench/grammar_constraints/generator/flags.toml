@@ -15,10 +15,11 @@ seed = 0
 [flags]
 # SIZE
 num_constraints = [5, 6, 7, 8, 9, 10]
-num_date_vars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 # SEARCH SPACE
+num_date_vars = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 anchor_frac = { min = 0.0, max = 0.25 }
+
 
 # PERIODS
 multi_field_periods = [true, false]
@@ -32,5 +33,5 @@ max_chain_len = [0, 1, 2, 3, 4, 5]
 disjunctions = [true, false]
 
 # DATE LITERALS
-literal_spread = [30, 365, 3650, 36500, 3652059]   # days; 3652059 is all of 0001-01-01 .. 9999-12-31
 near_month_end_prob = { min = 0.0, max = 1.0 }
+literal_spread = [30, 365, 3650, 36500, 3652059]   # days; 3652059 is all of 0001-01-01 .. 9999-12-31
