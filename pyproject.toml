@@ -20,6 +20,16 @@ llm = [
   "openai>=1.0",
   "anthropic>=0.30",
 ]
+# analysis/ also needs DateSat itself, which is not on PyPI: pip install -e <path to DateSat>
+analysis = [
+  "matplotlib>=3.5",
+  "numpy>=1.21",
+  "pandas",
+  "scipy",
+  "scikit-learn",
+  "joblib",
+  "pytest>=7.0",
+]
 
 [tool.setuptools]
 include-package-data = true
@@ -35,3 +45,8 @@ datesatbench = [
   "**/*.md",
 ]
 
+[tool.pytest.ini_options]
+# The repo root on sys.path lets tests import analysis.*; the other analysis tests run as
+# modules (see analysis/README.md)
+pythonpath = ["."]
+testpaths = ["analysis/run"]

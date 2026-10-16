@@ -1,98 +1,172 @@
 ##################################################
 # Library imports
 ##################################################
-import re
+import random
 import datetime
 
 
 ##################################################
-# Generator grammar
+# Flags
 ##################################################
 
-<start> ::= <constraint_list>
+# The swarm-testing flags, which flags.toml defines and flag.md explains. Before every
+# batch, generate_constraints.py draws a value for every flag and copies them all into
+# this dict; the generator functions below read the ones they need. The dict is empty
+# until then, so the grammar can only be sampled through generate_constraints.py.
+FLAGS = {}
 
-# NOTE: Manually unrolled on purpose to generate more constraints!
-<constraint_list> ::= <ten_constraints> | <nine_constraints> | <eight_constraints> | <seven_constraints> | <six_constraints> | <five_constraints>
-
-<ten_constraints> ::= <nine_constraints> " ; " <constraint>
-<nine_constraints> ::= <eight_constraints> " ; " <constraint>
-<eight_constraints> ::= <seven_constraints> " ; " <constraint>
-<seven_constraints> ::= <six_constraints> " ; " <constraint>
-<six_constraints> ::= <five_constraints> " ; " <constraint>
-<five_constraints> ::= <four_constraints> " ; " <constraint>
-<four_constraints> ::= <three_constraints> " ; " <constraint>
-<three_constraints> ::= <two_constraints> " ; " <constraint>
-<two_constraints> ::= <constraint> " ; " <constraint>
+# What generate_constraints.py draws anew before every instance. "literal_window" is the
+# stretch of literal_spread days, as the ordinals (first, last), that every date literal
+# of the instance is drawn from.
+INSTANCE = {}
 
 
+##################################################
+# Structure
+##################################################
+
+# An entry is one or more constraints separated by " ; ". The sampler generates each
+# constraint on its own and decides how many there are, so this rule only fixes the
+# syntax.
+<start> ::= <constraint> | <constraint> " ; " <start>
+
+# A constraint is a disjunction of comparisons, each with a date variable on the left.
 <constraint> ::= <unit_constraint> | <unit_constraint> " || " <constraint>
+<unit_constraint> ::= <date_var> <cmp_op> <expr>
 
-<unit_constraint> ::= <date_var> <cmp_op> <expr> 
 
-<expr> ::= <date_var_expr> | <date_expr>
+##################################################
+# Expressions
+##################################################
 
-<date_var_expr> ::= <date_var> | "(" <date_var_expr> <add_sub_op> <period_expr> ")"
+# The right-hand side is a date literal, or a date variable followed by a chain of
+# offsets. The generator draws the chain's length uniformly from 0 .. max_chain_len;
+# left to fandango, each extra offset would be half as likely as the one before.
+<expr> ::= <date_var_expr> | <date_ctor>
+<date_var_expr> ::= <date_var> | "(" <date_var_expr> <add_sub_op> <period_ctor> ")" := random_date_var_expr()
 
-# Cannot have recursive date_expr since we do not have add_sub operations on date.
-<date_expr> ::= <date_ctor> | "(" <date_ctor> <add_sub_op> <period_expr> ")"
+# Every offset is a single Period literal. Period sums and multiples, and offsets on
+# a literal date, all fold to one constant before the solver encodes anything, so a
+# single literal already covers each of them.
 
-<period_expr> ::= <period_ctor> | "(" <period_ctor> <add_sub_op> <period_expr> ")" | "(" <period_expr> " * " <digit> ")"
-
-<date_ctor> ::= "Date(" <date_year> ", " <date_month> ", " <date_day> ")"
-<period_ctor> ::= "Period(" <period_year> ", " <period_month> ", " <period_day> ")"
-
-<cmp_op> ::= " == " | " != " | " < " | " <= " | " > " | " >= "
+<cmp_op> ::= " == " | " != " | " < " | " <= " | " > " | " >= " := random_cmp_op()
 <add_sub_op> ::= " + " | " - "
 
-<date_var> ::= "D"<digit>
-
-<date_year> ::= "19"<digit><digit> | "20"<digit><digit> | "21"<digit><digit>
-<date_month> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12"
-<date_day> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "25" | "26" | "27" | "28" | "29" | "30" | "31"
-
-# Note: Set to small numbers on purpose
-<period_year> ::= <digit>
-<period_month> ::= <digit>
-<period_day> ::= <digit>
 
 ##################################################
-# Post-processing
+# Literals and variables
 ##################################################
 
-where is_valid_date_ctor(str(<date_ctor>)) 
+# A rule ending in `:= <python expr>` takes its value from that expression instead of
+# from fandango's own choice among the alternatives, which is not uniform. The value
+# must still parse against the rule, so each rule spells out everything its
+# generator can return.
 
-def is_valid_date_ctor(date_ctor: str) -> bool:
-    """Return True iff `date_ctor` represents a valid date between
-    1900-03-01 and 2100-02-28 inclusive.
+# D0 .. D(k-1), where k is num_date_vars.
+<date_var> ::= "D" ("0" | <nonzero_digit> <digit>*) := random_date_var()
 
-    Examples of valid:
-      Date(1900, 3, 1)
-      Date(2000, 2, 29)    # leap year
-      Date(2099, 12, 31)
+# Drawn from the instance's literal window, which lies within 0001-01-01 .. 9999-12-31:
+# the range the solver represents, matching the positive_years bounded variant. With
+# probability near_month_end_prob, the day is 28 or later. The sub-rules only describe
+# the syntax (no leading zeros); they do not rule out dates such as Feb 30.
+<date_ctor> ::= "Date(" <date_year> ", " <date_month> ", " <date_day> ")" := random_date_ctor()
+<date_year> ::= <nonzero_digit><digit>{0,3}
+<date_month> ::= <nonzero_digit> | "1" ("0" | "1" | "2")
+<date_day> ::= <nonzero_digit> | ("1" | "2") <digit> | "3" ("0" | "1")
 
-    Examples of invalid:
-      Date(1900, 2, 28)    # before lower bound
-      Date(2023, 2, 29)    # invalid day
+# Period(years, months, days), with each field bounded by its max_period_* flag and
+# drawn on a log scale.
+<period_ctor> ::= "Period(" <period_field> ", " <period_field> ", " <period_field> ")" := random_period_ctor()
+<period_field> ::= "0" | "-"? <nonzero_digit> <digit>*
+
+# <digit> is fandango's built-in "0" .. "9".
+<nonzero_digit> ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+
+##################################################
+# Generator functions
+##################################################
+
+def random_date_var() -> str:
+    """Return one of D0 .. D(k-1), where k is num_date_vars."""
+    return "D%d" % random.randrange(FLAGS["num_date_vars"])
+
+
+def random_date_var_expr() -> str:
+    """Return a date variable with a chain of offsets, such as ((D1 + Period(0, 0, 3)) - Period(1, 0, 0)).
+
+    The number of offsets is drawn uniformly from 0 .. max_chain_len, and each one is
+    added or subtracted with equal probability.
     """
+    expr = random_date_var()
+    for _ in range(random.randint(0, FLAGS["max_chain_len"])):
+        expr = "(%s%s%s)" % (expr, random.choice([" + ", " - "]), random_period_ctor())
+    return expr
 
-    # Match Date(YYYY, M, D)
-    m = re.fullmatch(r"Date\((\d{4}),\s*(\d{1,2}),\s*(\d{1,2})\)", date_ctor.strip())
-    if not m:
-        return False
 
-    year, month, day = map(int, m.groups())
+def random_cmp_op() -> str:
+    """Return a comparison operator; `!=` only when disjunctions is on."""
+    ops = [" == ", " < ", " <= ", " > ", " >= "]
+    if FLAGS["disjunctions"]:
+        ops.append(" != ")
+    return random.choice(ops)
 
-    # Ensure year is within representable grammar bounds
-    if not (1900 <= year <= 2100):
-        return False
 
-    try:
-        d = datetime.date(year, month, day)
-    except ValueError:
-        # invalid month/day combination
-        return False
+def random_date_ctor() -> str:
+    """Return a Date(Y, M, D) from the instance's literal window.
 
-    # Range check: 1900-03-01 ≤ d ≤ 2100-02-28
-    lower = datetime.date(1900, 3, 1)
-    upper = datetime.date(2100, 2, 28)
-    return lower <= d <= upper
+    With probability near_month_end_prob, the date is drawn uniformly from the days in
+    the window that are the 28th or later of their month. Otherwise it is drawn
+    uniformly from the whole window, as it also is when the window holds no such day.
+    """
+    first, last = INSTANCE["literal_window"]
+    near_month_end = random.random() < FLAGS["near_month_end_prob"]
+    # Any 28 days in a row include a 28th or later, so only a shorter window can lack one.
+    if near_month_end and last - first < 27:
+        near_month_end = any(datetime.date.fromordinal(o).day >= 28 for o in range(first, last + 1))
+    while True:
+        d = datetime.date.fromordinal(random.randint(first, last))
+        if d.day >= 28 or not near_month_end:
+            return "Date(%d, %d, %d)" % (d.year, d.month, d.day)
+
+
+def random_period_field(cap: int, allow_zero: bool) -> int:
+    """Return a number from 0 .. cap, or from 1 .. cap without allow_zero, on a log scale.
+
+    The number of digits is drawn uniformly first, with 0 as the one number of no
+    digits, and then the number uniformly among those up to cap with that many digits.
+    With a cap of 365, 0, 1 .. 9, 10 .. 99 and 100 .. 365 each come up a quarter of the
+    time.
+    """
+    if cap == 0:
+        return 0
+    digits = random.randint(0 if allow_zero else 1, len(str(cap)))
+    if digits == 0:
+        return 0
+    return random.randint(10 ** (digits - 1), min(10 ** digits - 1, cap))
+
+
+def random_period_ctor() -> str:
+    """Return a Period(Y, M, D) that respects the max_period_* caps.
+
+    Every field is drawn with random_period_field. With multi_field_periods on, each
+    field is drawn from [0, cap], and when mixed_sign_periods is on it also gets its
+    own sign, so that fields can have opposite signs, such as Period(1, -2, 0). With
+    it off, one field among those whose cap is above 0 is drawn from [1, cap] and the
+    others are 0. The + or - in front of the Period gives the direction. An all-zero
+    Period is a no-op, so it is never returned.
+    """
+    caps = (FLAGS["max_period_years"], FLAGS["max_period_months"], FLAGS["max_period_days"])
+    if not any(caps):
+        raise ValueError("at least one of the max_period_* caps must be above 0")
+    if FLAGS["multi_field_periods"]:
+        while True:
+            fields = [random_period_field(cap, allow_zero=True) for cap in caps]
+            if FLAGS["mixed_sign_periods"]:
+                fields = [random.choice([-1, 1]) * field for field in fields]
+            if any(fields):
+                return "Period(%d, %d, %d)" % tuple(fields)
+    fields = [0, 0, 0]
+    i = random.choice([i for i, cap in enumerate(caps) if cap > 0])
+    fields[i] = random_period_field(caps[i], allow_zero=False)
+    return "Period(%d, %d, %d)" % tuple(fields)

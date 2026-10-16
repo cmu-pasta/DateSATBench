@@ -1,0 +1,372 @@
+{
+ "joined": "analysis/outputs/joined.csv",
+ "evaluated_on": "every instance, out of fold: 5-fold cross-validation stratified by corpus, repeated 5 times",
+ "instances": 768,
+ "dropped": {
+  "errored_or_missing": 0,
+  "all_timeout": 32
+ },
+ "timeout_cost_s": 20.0,
+ "folds": 5,
+ "repeats": 5,
+ "trees": 50,
+ "setting": {
+  "min_samples_leaf": 10,
+  "max_depth": 16,
+  "max_features": 0.5,
+  "margin": 0.0,
+  "train_timeout_cost_s": 80.0
+ },
+ "feature_columns": [
+  "n_free_date_vars",
+  "n_free_int_vars",
+  "n_free_bool_vars",
+  "pinned_var_frac",
+  "pinned_date_frac",
+  "pinned_int_frac",
+  "pinned_bool_frac",
+  "n_date_subexprs",
+  "n_atoms",
+  "n_date_comparisons",
+  "n_int_comparisons",
+  "ordering_cmp_frac",
+  "n_case_splits",
+  "max_disjunction_width",
+  "bool_alternation_depth",
+  "implication_atom_frac",
+  "neg_ordering_frac",
+  "n_unit_constraints",
+  "n_date_period_ops",
+  "ground_arith_frac",
+  "max_abs_years",
+  "max_abs_months",
+  "max_abs_days",
+  "mixed_frac",
+  "max_date_chain_len",
+  "n_dot_year",
+  "n_dot_month",
+  "n_dot_day",
+  "property_access_frac",
+  "n_symbolic_date_ctors",
+  "uses_feb29",
+  "uses_leap_year",
+  "near_month_end_frac",
+  "n_components",
+  "largest_component_frac",
+  "graph_density",
+  "mixed_sort_coupling",
+  "n_self_ops",
+  "n_cross_ops",
+  "n_const_ops",
+  "self_op_frac",
+  "n_year_ops",
+  "n_month_ops",
+  "n_day_ops",
+  "n_mixed_ops",
+  "n_day_steps_ge28",
+  "sum_abs_days",
+  "sum_abs_months",
+  "max_abs_days_nonself",
+  "max_abs_months_nonself",
+  "n_arith_unit",
+  "n_arith_in_disj",
+  "n_arith_neq",
+  "n_date_eq",
+  "n_date_neq",
+  "arith_graph_diameter",
+  "n_arith_vars",
+  "lit_year_span",
+  "sum_abs_days_all",
+  "n_day_steps",
+  "n_ymd_needs",
+  "form_balance",
+  "n_unavoidable_conversions"
+ ],
+ "fallbacks": [
+  "hybrid_init_ymd"
+ ],
+ "baseline": "simple",
+ "best_performing_encoding": "hybrid_init_ymd",
+ "overall": {
+  "instances": 768,
+  "table": {
+   "always alpha_beta": {
+    "total_s": 2111.651,
+    "timeouts": 83,
+    "speedup_total": 1.2778,
+    "speedup_median": 1.1478,
+    "speedup_geomean": 2.0542
+   },
+   "always epoch_days": {
+    "total_s": 2143.408,
+    "timeouts": 83,
+    "speedup_total": 1.2588,
+    "speedup_median": 2.5402,
+    "speedup_geomean": 3.0695
+   },
+   "always hybrid_init_epoch": {
+    "total_s": 1788.136,
+    "timeouts": 57,
+    "speedup_total": 1.5089,
+    "speedup_median": 2.7078,
+    "speedup_geomean": 3.0994
+   },
+   "always hybrid_init_ymd": {
+    "total_s": 672.422,
+    "timeouts": 18,
+    "speedup_total": 4.0127,
+    "speedup_median": 1.2993,
+    "speedup_geomean": 4.2688
+   },
+   "always simple": {
+    "total_s": 2698.198,
+    "timeouts": 109,
+    "speedup_total": 1.0,
+    "speedup_median": 1.0,
+    "speedup_geomean": 1.0
+   },
+   "router": {
+    "total_s": 457.085,
+    "timeouts": 9.8,
+    "speedup_total": 5.9051,
+    "speedup_median": 3.4495,
+    "speedup_geomean": 7.0052
+   },
+   "oracle": {
+    "total_s": 216.03,
+    "timeouts": 0,
+    "speedup_total": 12.4899,
+    "speedup_median": 4.0796,
+    "speedup_geomean": 9.4727
+   }
+  },
+  "router_picks": {
+   "alpha_beta": 76.4,
+   "epoch_days": 242.4,
+   "hybrid_init_epoch": 121.8,
+   "hybrid_init_ymd": 243.4,
+   "simple": 84
+  },
+  "router_fell_back": 52.2,
+  "router_picks_fastest": 0.4854,
+  "gap_closed_to_oracle": {
+   "router": {
+    "always simple": 0.9029,
+    "always hybrid_init_ymd": 0.4718
+   }
+  },
+  "router_total_sd_s": 9.724
+ },
+ "by_corpus": {
+  "grammar": {
+   "instances": 468,
+   "table": {
+    "always alpha_beta": {
+     "total_s": 1416.015,
+     "timeouts": 58,
+     "speedup_total": 1.6934,
+     "speedup_median": 1.2179,
+     "speedup_geomean": 3.3028
+    },
+    "always epoch_days": {
+     "total_s": 1560.609,
+     "timeouts": 68,
+     "speedup_total": 1.5365,
+     "speedup_median": 3.9869,
+     "speedup_geomean": 5.8572
+    },
+    "always hybrid_init_epoch": {
+     "total_s": 806.371,
+     "timeouts": 23,
+     "speedup_total": 2.9736,
+     "speedup_median": 4.1439,
+     "speedup_geomean": 8.3153
+    },
+    "always hybrid_init_ymd": {
+     "total_s": 445.156,
+     "timeouts": 12,
+     "speedup_total": 5.3866,
+     "speedup_median": 2.5118,
+     "speedup_geomean": 7.0851
+    },
+    "always simple": {
+     "total_s": 2397.864,
+     "timeouts": 104,
+     "speedup_total": 1.0,
+     "speedup_median": 1.0,
+     "speedup_geomean": 1.0
+    },
+    "router": {
+     "total_s": 346.621,
+     "timeouts": 8.2,
+     "speedup_total": 6.9294,
+     "speedup_median": 4.5896,
+     "speedup_geomean": 11.3763
+    },
+    "oracle": {
+     "total_s": 180.65,
+     "timeouts": 0,
+     "speedup_total": 13.2735,
+     "speedup_median": 5.3658,
+     "speedup_geomean": 14.7867
+    }
+   },
+   "router_picks": {
+    "alpha_beta": 50.6,
+    "epoch_days": 160,
+    "hybrid_init_epoch": 106.4,
+    "hybrid_init_ymd": 142.2,
+    "simple": 8.8
+   },
+   "router_fell_back": 33.4,
+   "router_picks_fastest": 0.4449,
+   "gap_closed_to_oracle": {
+    "router": {
+     "always simple": 0.9251,
+     "always hybrid_init_ymd": 0.3725
+    }
+   },
+   "router_total_sd_s": 15.796
+  },
+  "legal": {
+   "instances": 200,
+   "table": {
+    "always alpha_beta": {
+     "total_s": 691.761,
+     "timeouts": 25,
+     "speedup_total": 0.3489,
+     "speedup_median": 0.6058,
+     "speedup_geomean": 0.4601
+    },
+    "always epoch_days": {
+     "total_s": 559.465,
+     "timeouts": 15,
+     "speedup_total": 0.4314,
+     "speedup_median": 0.3546,
+     "speedup_geomean": 0.5381
+    },
+    "always hybrid_init_epoch": {
+     "total_s": 937.478,
+     "timeouts": 33,
+     "speedup_total": 0.2574,
+     "speedup_median": 0.1739,
+     "speedup_geomean": 0.2652
+    },
+    "always hybrid_init_ymd": {
+     "total_s": 224.426,
+     "timeouts": 6,
+     "speedup_total": 1.0754,
+     "speedup_median": 1.0824,
+     "speedup_geomean": 1.2412
+    },
+    "always simple": {
+     "total_s": 241.35,
+     "timeouts": 4,
+     "speedup_total": 1.0,
+     "speedup_median": 1.0,
+     "speedup_geomean": 1.0
+    },
+    "router": {
+     "total_s": 107.886,
+     "timeouts": 1.6,
+     "speedup_total": 2.269,
+     "speedup_median": 1.0,
+     "speedup_geomean": 2.2239
+    },
+    "oracle": {
+     "total_s": 33.37,
+     "timeouts": 0,
+     "speedup_total": 7.2325,
+     "speedup_median": 1.6606,
+     "speedup_geomean": 3.7383
+    }
+   },
+   "router_picks": {
+    "alpha_beta": 24.8,
+    "epoch_days": 37.6,
+    "hybrid_init_epoch": 12,
+    "hybrid_init_ymd": 53,
+    "simple": 72.6
+   },
+   "router_fell_back": 12.2,
+   "router_picks_fastest": 0.421,
+   "gap_closed_to_oracle": {
+    "router": {
+     "always simple": 0.6417,
+     "always hybrid_init_ymd": 0.61
+    }
+   },
+   "router_total_sd_s": 13.848
+  },
+  "llm": {
+   "instances": 100,
+   "table": {
+    "always alpha_beta": {
+     "total_s": 3.876,
+     "timeouts": 0,
+     "speedup_total": 15.2176,
+     "speedup_median": 1.0202,
+     "speedup_geomean": 4.4351
+    },
+    "always epoch_days": {
+     "total_s": 23.334,
+     "timeouts": 0,
+     "speedup_total": 2.5278,
+     "speedup_median": 1.3474,
+     "speedup_geomean": 4.8549
+    },
+    "always hybrid_init_epoch": {
+     "total_s": 44.287,
+     "timeouts": 1,
+     "speedup_total": 1.3319,
+     "speedup_median": 1.2593,
+     "speedup_geomean": 4.1765
+    },
+    "always hybrid_init_ymd": {
+     "total_s": 2.84,
+     "timeouts": 0,
+     "speedup_total": 20.7694,
+     "speedup_median": 1.1084,
+     "speedup_geomean": 4.7145
+    },
+    "always simple": {
+     "total_s": 58.985,
+     "timeouts": 1,
+     "speedup_total": 1.0,
+     "speedup_median": 1.0,
+     "speedup_geomean": 1.0
+    },
+    "router": {
+     "total_s": 2.578,
+     "timeouts": 0,
+     "speedup_total": 23.6941,
+     "speedup_median": 1.3131,
+     "speedup_geomean": 7.2084
+    },
+    "oracle": {
+     "total_s": 2.01,
+     "timeouts": 0,
+     "speedup_total": 29.3498,
+     "speedup_median": 1.5099,
+     "speedup_geomean": 7.5677
+    }
+   },
+   "router_picks": {
+    "alpha_beta": 1,
+    "epoch_days": 44.8,
+    "hybrid_init_epoch": 3.4,
+    "hybrid_init_ymd": 48.2,
+    "simple": 2.6
+   },
+   "router_fell_back": 6.6,
+   "router_picks_fastest": 0.804,
+   "gap_closed_to_oracle": {
+    "router": {
+     "always simple": 0.99,
+     "always hybrid_init_ymd": 0.3154
+    }
+   },
+   "router_total_sd_s": 0.614
+  }
+ }
+}
