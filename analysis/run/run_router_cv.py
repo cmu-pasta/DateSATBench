@@ -6,7 +6,9 @@ router's live evaluation.
 
 crossval_router.py cuts the instances into 5 folds --repeats times (default 10), each time
 at random and stratified by corpus, and writes, for every fold, the model trained on the
-other folds (fold_models.json lists them). Run N of this script uses repeat N - 1: DateSat's
+other folds (fold_models.json lists them). The fold models are committed; when they are
+missing, this script runs crossval_router.py first to train them, which needs pandas and
+scikit-learn in the Python that runs it. Run N of this script uses repeat N - 1: DateSat's
 router approach solves every instance with the model of the fold that holds it, so no
 instance is solved by a model trained on it, and every run uses another cut.
 
@@ -36,9 +38,11 @@ execution, as run_benchmarks.py does (--no-analysis skips it).
 """
 
 import argparse
+import importlib.util
 import json
 import platform
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -52,6 +56,31 @@ from analysis.run.run_benchmarks import (HARD_TIMEOUT_MS, TIMEOUT_MS, _load_cons
                                          run_constraint_with_approach)
 
 APPROACH = "router"
+MANIFEST = "fold_models.json"      # crossval_router.py's list of the fold models it writes
+
+
+def missing_models(manifest_path):
+    """The fold models that manifest_path lists but are not there, or [manifest_path] when it
+    is not there itself."""
+    if not manifest_path.exists():
+        return [manifest_path]
+    models = json.loads(manifest_path.read_text())["models"]
+    return [manifest_path.parent / m["model"] for folds in models for m in folds
+            if not (manifest_path.parent / m["model"]).exists()]
+
+
+def train_fold_models(out_dir):
+    """Run crossval_router.py with this Python, which trains the fold models and writes them
+    with their manifest into out_dir (with its router_eval.json and .csv)."""
+    absent = [m for m in ("pandas", "sklearn") if importlib.util.find_spec(m) is None]
+    if absent:
+        raise SystemExit(f"training the fold models needs pandas and scikit-learn, and "
+                         f"{sys.executable} lacks {' and '.join(absent)}: install them with "
+                         f"pip install -e \".[analysis]\" from {REPO}")
+    cmd = [sys.executable, "-m", "analysis.router.crossval_router", "--output-dir", str(out_dir)]
+    print(f"training the fold models: {' '.join(cmd)}\n")
+    if subprocess.run(cmd, cwd=REPO).returncode:
+        raise SystemExit("crossval_router.py failed; no fold models to run with")
 
 
 def datesat_commit():
@@ -131,6 +160,14 @@ def main():
     args = ap.parse_args()
 
     manifest_path = Path(args.manifest).resolve()
+    missing = missing_models(manifest_path)
+    if missing:
+        if manifest_path.name != MANIFEST:
+            ap.error(f"{missing[0]} is missing, and crossval_router.py only writes {MANIFEST}")
+        print(f"{missing[0]} is missing" + (f" ({len(missing)} fold models)" if len(missing) > 1 else ""))
+        train_fold_models(manifest_path.parent)
+        if missing_models(manifest_path):
+            raise SystemExit(f"crossval_router.py did not write every fold model {manifest_path} lists")
     manifest = json.loads(manifest_path.read_text())
     runs = args.runs or manifest["repeats"]
     if not 1 <= runs <= manifest["repeats"]:

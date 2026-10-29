@@ -134,7 +134,7 @@ charged the recorded time of the encoding it picks, without the time routing tak
 ## The router's live evaluation
 
 `crossval_router` also writes every fold's model for DateSat (`model_cross_validation/
-fold_models/`, not committed, listed in `fold_models.json` with every instance's fold and
+fold_models/`, committed, listed in `fold_models.json` with every instance's fold and
 predicted pick). `run_router_cv` runs DateSat's `router` approach with them, one run per
 repeat: in run N every instance is solved by the model of repeat N - 1 that was not trained
 on it. Everything else is `run_benchmarks`': the same timeouts, the runs one after another,
@@ -145,8 +145,6 @@ gives the same features and DateSat's router the predicted pick on every (repeat
 and stops on any difference.
 
 ```
-python -m analysis.router.crossval_router                     # writes the fold models
-python -m analysis.router.check_datesat_router                # optional: run_router_cv runs it too
 python -m analysis.run.run_router_cv --tag router-cv-10runs   # 10 runs; resumes if stopped
 python -m analysis.stats.join_results --exclude hybrid_both \
     --results results/all-10runs-bounded-datesat28d8186 results/router-cv-10runs
@@ -155,8 +153,13 @@ python -m analysis.report.build_report \
     --results results/all-10runs-bounded-datesat28d8186 results/router-cv-10runs
 ```
 
-The fold models must be the ones `run_router_cv` used: run it from the same checkout, or copy
-`model_cross_validation/` over with the folder `fold_models/`. Once `joined.csv` holds the
+`run_router_cv` uses the committed fold models. When they are missing, it runs
+`crossval_router` first to train them, which needs `pip install -e ".[analysis]"` in
+DateSat's environment. The same seed and scikit-learn version (pinned there) give the same
+models; if they differ from the committed ones, `git status` shows `fold_models.json`
+changed. The fold
+models must be the ones `run_router_cv` used, so commit the models a live evaluation ran
+with together with its results. Once `joined.csv` holds the
 router's results, `crossval_router` reports it as *measured*: every live run is summarized
 as its repeat's prediction is, with the router charged its time in that run (routing
 included), and the summaries are averaged over the runs. `router_eval.json`'s `live` block

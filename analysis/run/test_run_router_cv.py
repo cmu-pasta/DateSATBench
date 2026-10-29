@@ -1,6 +1,7 @@
 """Tests for run_router_cv.py and check_datesat_router.py; they need DateSat installed."""
 
 import hashlib
+import importlib.util
 import json
 import sys
 
@@ -86,6 +87,37 @@ def test_nothing_runs_when_datesat_routes_otherwise(tmp_path, monkeypatch):
     with pytest.raises(SystemExit, match="does not route"):
         run(monkeypatch, root, manifest, tmp_path / "results")
     assert not (tmp_path / "results" / "t").exists()
+
+
+@pytest.mark.parametrize("gone", ["fold_models.json", "fold_models/repeat_0_fold_1.json"])
+def test_missing_fold_models_are_trained_first(tmp_path, monkeypatch, gone):
+    root, manifest = make(tmp_path)
+    path = manifest.parent / gone
+    text = path.read_text()
+    path.unlink()
+    trained = []
+
+    def train(out_dir):            # stands in for crossval_router.py, which writes it back
+        trained.append(out_dir)
+        path.write_text(text)
+
+    monkeypatch.setattr(run_router_cv, "train_fold_models", train)
+    run(monkeypatch, root, manifest, tmp_path / "results")
+    assert trained == [manifest.parent]
+    assert (tmp_path / "results" / "t" / "llm" / "run_1" / "router_int.json").exists()
+
+
+def test_fold_models_that_are_there_are_not_retrained(tmp_path, monkeypatch):
+    root, manifest = make(tmp_path)
+    monkeypatch.setattr(run_router_cv, "train_fold_models", lambda out_dir: pytest.fail("retrained"))
+    run(monkeypatch, root, manifest, tmp_path / "results")
+
+
+@pytest.mark.skipif(all(importlib.util.find_spec(m) for m in ("pandas", "sklearn")),
+                    reason="this Python can train the fold models")
+def test_training_without_pandas_or_scikit_learn_says_so(tmp_path):
+    with pytest.raises(SystemExit, match="needs pandas and scikit-learn"):
+        run_router_cv.train_fold_models(tmp_path)
 
 
 def test_results_from_other_fold_models_are_refused(tmp_path, monkeypatch):

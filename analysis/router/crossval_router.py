@@ -72,8 +72,8 @@ model_cross_validation_selected/):
                        its fold's model picks for it; run_router_cv.py and
                        check_datesat_router.py read it
     fold_models/       repeat_<r>_fold_<k>.json, the model trained on every fold of repeat
-                       r but k, in train_router.py's router.json form; ~0.8 MB each, not
-                       committed (rerun this script to make them)
+                       r but k, in train_router.py's router.json form; ~0.6 MB each,
+                       committed with the rest
 """
 
 import argparse

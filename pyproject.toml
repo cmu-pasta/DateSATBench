@@ -26,7 +26,9 @@ analysis = [
   "numpy>=1.21",
   "pandas",
   "scipy",
-  "scikit-learn",
+  # the version that trained the committed router and fold models; another may train
+  # different forests from the same seed
+  "scikit-learn==1.5.2",
   "joblib",
   "pytest>=7.0",
 ]
