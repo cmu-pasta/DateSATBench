@@ -460,7 +460,7 @@ document.querySelectorAll(".n-feat").forEach((el) => { el.textContent = N_FEAT; 
     `<span><b>${ENC.length}</b> encodings vs <b>${esc(M.baseline)}</b>${(M.left_out || []).length ? ` (left out: <b>${M.left_out.map(esc).join(", ")}</b>)` : ""}</span>`,
     `<span><b>${M.runs}</b> run${M.runs === 1 ? "" : "s"} per instance${M.timeout_s ? `, ${M.timeout_s} s timeout` : ""}</span>`,
     `<span>injected bounds <b>${esc(M.bounds === "strip" ? "stripped" : M.bounds === "keep" ? "kept" : M.bounds)}</b></span>`,
-    `<span>results <b>${esc(M.results)}</b></span>`,
+    `<span>results <b>${M.results.map(esc).join(" + ")}</b></span>`,
     `<span>generated <b>${esc(M.generated)}</b></span>`,
   ];
   $("#prov").innerHTML = parts.join("");
@@ -569,7 +569,7 @@ function fmtTime(t) {
   if (t < 1) return (t * 1000).toFixed(t < 0.01 ? 2 : 1) + " ms";
   return t.toFixed(2) + " s";
 }
-const OUT_ENCS = [M.baseline, ...ENC];
+const OUT_ENCS = [M.baseline, ...ENC, ...M.strategies];   // the router's live runs, if joined, last
 const OSTATUS = [["sat", "sat"], ["unsat", "unsat"], ["timeout", "timed out"]];
 $("#seg-oenc").innerHTML = ["all", ...OUT_ENCS].map((e) =>
   `<button id="oenc-${esc(e)}" data-v="${esc(e)}" aria-pressed="${e === state.oenc}">${e === "all" ? "All" : esc(e)}</button>`).join("");
@@ -609,7 +609,7 @@ function renderOutcomes() {
       const segs = OSTATUS.filter(([k]) => o[k] > 0);
       const bar = `<span class="obar" aria-hidden="true">${segs.map(([k]) => `<i class="o-${k}" style="flex-grow:${o[k]}"></i>`).join("")}</span>`;
       const solvedPct = pct(o.solved / N, 1);
-      const solvedTip = head + segs.map(([k, label]) => `${label} ${numf(o[k])}`).join(" · ") + `<br>${numf(o.solved)} of ${N} instances solved within ${T} s (${solvedPct}%): each run's count, averaged over the ${M.runs} runs`;
+      const solvedTip = head + segs.map(([k, label]) => `${label} ${numf(o[k])}`).join(" · ") + `<br>${numf(o.solved)} of ${N} instances solved within ${T} s (${solvedPct}%): each run's count, averaged over the ${M.runs_of[e]} runs`;
 
       let beats = '<span class="dim">baseline</span>', beatsTip = "";
       let ms = '<span class="dim">1.00×</span>', msTip = "";
@@ -618,10 +618,10 @@ function renderOutcomes() {
         beats = `<span class="bar-cell">${o.wins} / ${N}<span class="minibar"><i style="width:${w}%"></i></span>${pct(o.wins / N, 0)}%</span>`;
         beatsTip = tipAttr(head + `Faster than ${B} on ${o.wins} of the ${N} instances, timeouts counted at ${T} s.`);
         ms = runCell(o, "median_speedup", { k: 1, d: 2, u: "×" });
-        msTip = tipAttr(head + `Median over the ${M.runs} runs of each run's median over the ${N} instances of ${B}'s time divided by ${esc(e)}'s, run against run, timeouts at ${T} s. Below: the lowest and highest run.`);
+        msTip = tipAttr(head + `Median over the ${M.runs_of[e]} runs of each run's median over the ${N} instances of ${B}'s time divided by ${esc(e)}'s, run against run, timeouts at ${T} s. Below: the lowest and highest run.`);
       }
-      const totTip = tipAttr(head + `Median over the ${M.runs} runs of each run's sum over the ${N} instances; a timeout counts as ${T} s. Below: the lowest and highest run.`);
-      const medTip = tipAttr(head + `Median over the ${M.runs} runs of each run's median over the ${N} instances, timeouts at ${T} s. Below: the lowest and highest run. Every encoding of a corpus is timed on the same instances.`);
+      const totTip = tipAttr(head + `Median over the ${M.runs_of[e]} runs of each run's sum over the ${N} instances; a timeout counts as ${T} s. Below: the lowest and highest run.`);
+      const medTip = tipAttr(head + `Median over the ${M.runs_of[e]} runs of each run's median over the ${N} instances, timeouts at ${T} s. Below: the lowest and highest run. Every encoding of a corpus is timed on the same instances.`);
 
       h += `<tr class="${i === 0 ? "first" : ""}"><td class="corp l">${corp}</td><td class="enc l">${esc(e)}</td>
         <td class="l"${tipAttr(solvedTip)}><span class="bar-cell">${bar}${numf(o.solved)} / ${N} <span class="dim">${solvedPct}%</span></span></td>
@@ -633,14 +633,15 @@ function renderOutcomes() {
   $("#out").innerHTML = h + "</tbody>";
   renderCactus(scopes, encs);
   const all = DATA.outcomes.all[M.baseline];
-  $("#out-note").innerHTML = `Every section of this report measures time the same way, except the total time, median instance and median speedup here. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Those three are instead computed on every run separately (an encoding's run against the same run of ${B}) and shown as the median over the ${M.runs} runs, with the lowest and highest run below it. The solved, sat, unsat and timed-out counts are also taken in every run separately, and shown as the mean over the ${M.runs} runs, so they can be fractional. Every instance counts here: the ${all.unsolvable} on which every encoding timed out count as a timeout for every encoding, and are shown under each corpus. So does every other section: none leaves out timeouts.${all.incomplete ? ` The ${all.incomplete} with an errored or missing run are left out everywhere.` : ""} Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`;
+  $("#out-note").innerHTML = `Every section of this report measures time the same way, except the total time, median instance and median speedup here. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Those three are instead computed on every run separately (an encoding's run against the same run of ${B}) and shown as the median over the ${M.runs} runs, with the lowest and highest run below it. The solved, sat, unsat and timed-out counts are also taken in every run separately, and shown as the mean over the ${M.runs} runs, so they can be fractional. Every instance counts here: the ${all.unsolvable} on which every encoding timed out count as a timeout for every encoding, and are shown under each corpus. So does every other section: none leaves out timeouts.${all.incomplete ? ` The ${all.incomplete} with an errored or missing run are left out everywhere.` : ""} Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`
+    + (M.strategies.includes("router") ? ` The <span class="mono">router</span> row is not an encoding: it is DateSat's router approach, run ${M.runs_of.router === 1 ? "once" : `${M.runs_of.router} times`} on every instance with models that were not trained on it (see <a href="#router">Specialized router</a>), its time including the routing. It is measured like every encoding here, but it does not count towards the instances no encoding solves.` : "");
 }
 /* ---------- cactus plot ---------- */
 /* One line per encoding: how many instances it solves within the time on the x axis in a run,
    averaged over the runs, so a line climbs to the mean number of instances the encoding
    solves by the limit, the Solved column. The same plot as
    plot_cactus.py's for the paper, in the paper's encoding colours and order. */
-const encColor = (e) => PAPER.colours[e] || css("--e-other");
+const encColor = (e) => PAPER.colours[e] || (e === "router" ? PAPER.router : css("--e-other"));
 const paperOrder = (encs) => [...PAPER.encodings.filter((e) => encs.includes(e)),
                               ...encs.filter((e) => !PAPER.encodings.includes(e))];
 const plainTime = (t) => (t < 1 ? (t * 1000).toFixed(t < 0.01 ? 2 : 1) + " ms" : t.toFixed(2) + " s");
@@ -668,7 +669,7 @@ function renderCactus(scopes, encs) {
       const ts = DATA.cactus[c][e] || [];
       // a step up of 1 / runs at every solved run, then flat to the limit at the solved count
       const x = ts.length ? [ts[0], ...ts, T] : [lo, T];
-      const y = (ts.length ? [0, ...ts.map((_, i) => i + 1), ts.length] : [0, 0]).map((k) => k / M.runs);
+      const y = (ts.length ? [0, ...ts.map((_, i) => i + 1), ts.length] : [0, 0]).map((k) => k / M.runs_of[e]);
       const when = x.map((t, i) => [numf(y[i]), i === x.length - 1 ? `the ${T} s limit` : plainTime(t)]);
       return { type: "scatter", mode: "lines", name: e, x, y,
         line: { color: encColor(e), width: 2, shape: "hv" },
@@ -688,7 +689,7 @@ function renderCactus(scopes, encs) {
     };
     const el = document.getElementById(`cactus-${c}`);
     el.setAttribute("aria-label", `Cactus plot, ${CNAME[c]}: instances solved out of ${N} within the ${T} s limit, ` +
-      all.map((e) => `${e} ${numf((DATA.cactus[c][e] || []).length / M.runs)}`).join("; "));
+      all.map((e) => `${e} ${numf((DATA.cactus[c][e] || []).length / M.runs_of[e])}`).join("; "));
     Plotly.newPlot(el, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
   }
 }
@@ -704,7 +705,7 @@ const RT = DATA.router;
 const xf = (v) => v.toFixed(2) + "×";
 const pctf = (v) => (v == null ? "—" : (100 * v).toFixed(0) + "%");
 function rtLabel(name) {
-  if (name === "router") return "router (cross-validated)";
+  if (name === "router") return RT.cv.measured ? "router (measured)" : "router (cross-validated)";
   if (name === "oracle") return "oracle (ideal)";
   return `always <span class="mono">${esc(name.replace(/^always /, ""))}</span>`;
 }
@@ -831,7 +832,7 @@ function rtSolveTable(S) {
     const v = S.solve[name];
     const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
     const colour = name === "router" ? PAPER.router : name === "oracle" ? null : encColor(name.slice(7));
-    const avg = name === "router" ? `, averaged over the ${M.runs} runs and ${cv.repeats} repeats` : `, averaged over the ${M.runs} runs`;
+    const avg = name === "router" ? (cv.measured ? (cv.live.runs > 1 ? `, counted in each of its ${cv.live.runs} live runs and averaged over them` : ", in its one live run") : `, averaged over the ${M.runs} runs and ${cv.repeats} repeats`) : `, averaged over the ${M.runs} runs`;
     const share = pct(v.solved / S.solve_of, 1);
     h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>`
       + `<td class="l"${tipAttr(`${rtLabel(name)}, ${CNAME[state.rscope]}<br>Solves ${numf(v.solved)} of ${S.solve_of} instances within the ${cv.timeout_cost_s} s timeout${avg}; ${numf(S.solve_of - v.solved)} time out.`)}>`
@@ -879,7 +880,7 @@ function renderRouter() {
   for (const name of names) {
     const t = T[name], share = t.speedup_total / o.speedup_total;
     const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
-    const avg = name === "router" ? `, averaged over ${cv.repeats} repeats` : "";
+    const avg = name === "router" ? (cv.measured ? (cv.live.runs > 1 ? `, averaged over its ${cv.live.runs} live runs, routing included` : ", in its one live run, routing included") : `, averaged over ${cv.repeats} repeats`) : "";
     h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>
       <td${tipAttr(`${rtLabel(name)}<br>Sum over the ${S.instances} instances${avg}; a timeout counts as ${cv.timeout_cost_s} s.`)}>${t.total_s.toFixed(1)} s</td>
       <td>${t.timeouts ? numf(t.timeouts) : zero(0)}</td>
@@ -889,7 +890,7 @@ function renderRouter() {
   $("#rt-table").innerHTML = h + "</tbody>";
   document.querySelectorAll(".rt-base").forEach((el) => { el.textContent = cv.baseline; });
   const ties = DATA.outcomes[state.rscope][M.baseline].unsolvable;
-  $("#rt-picks-cap").innerHTML = `Out of the ${rtOutOf(S)}, averaged over ${cv.repeats} repeats`
+  $("#rt-picks-cap").innerHTML = `Out of the ${rtOutOf(S)}, averaged over ${cv.measured ? (cv.live.runs > 1 ? `the ${cv.live.runs} repeats the live runs used` : "the repeat the live run used") : `${cv.repeats} repeats`}`
     + (S.fastest ? `; the tick is how many each is fastest on${ties ? ` (none is, on the ${ties} that every encoding times out on)` : ""}.` : ".");
   rtSolveTable(S);
   rtPicksTable(S);
@@ -914,7 +915,15 @@ function renderRouter() {
     : "";
   $("#rt-notes").innerHTML = [
     modelBlk,
-    `<h3>How it is measured</h3><p>${cv.folds}-fold cross-validation over all ${cv.instances} instances${cv.all_timeout ? `, the ${cv.all_timeout} on which every encoding timed out included: every pair of encodings ties on them, so they give the router no training examples, and they count as a timeout for every strategy` : ""}. Every fold holds the same share of every corpus. Each instance is routed by a router trained on the other folds, so no router routes an instance it was trained on. The whole procedure runs ${cv.repeats} times with different folds and the results are averaged. Timeouts are counted in every one of the ${M.runs} runs and averaged over them, as in <a href="#outcomes">Solver outcomes</a>, which is why they can be fractional. A timeout counts as ${cv.timeout_cost_s} s, and the router's own run time is not included.</p>`,
+    `<h3>How it is measured</h3><p>${cv.folds}-fold cross-validation over all ${cv.instances} instances${cv.all_timeout ? `, the ${cv.all_timeout} on which every encoding timed out included: every pair of encodings ties on them, so they give the router no training examples, and they count as a timeout for every strategy` : ""}. Every fold holds the same share of every corpus. Each instance is routed by a router trained on the other folds, so no router routes an instance it was trained on. The whole procedure runs ${cv.repeats} times with different folds.`
+      + (cv.measured
+        ? ` The router is measured: DateSat's router approach solved every instance in ${cv.live.runs > 1 ? `each of ${cv.live.runs} live runs, run N with the models of the N-th set of folds` : "one live run, with the models of the first set of folds"}. Each live run is summarized as its set of folds is in the prediction, with the router charged its time in that run, which includes the routing: extracting the features from the constraint text and walking the forests. Loading a model, once per process, is not counted. The summaries are averaged over the runs; each run routes with other models, so the spread over the runs covers the folds as well as timing noise. Every other strategy comes from the encodings' recorded runs. Timeouts are counted in every run and averaged over the runs, as in <a href="#outcomes">Solver outcomes</a>, which is why they can be fractional. A timeout counts as ${cv.timeout_cost_s} s.</p>`
+        : ` The router is predicted, not run: it is charged the recorded time of the encoding it picks, so its own run time is not included, and the results are averaged over the ${cv.repeats} sets of folds. Timeouts are counted in every one of the ${M.runs} runs and averaged over them, as in <a href="#outcomes">Solver outcomes</a>, which is why they can be fractional. A timeout counts as ${cv.timeout_cost_s} s. <span class="mono">run_router_cv.py</span> measures it.</p>`),
+    cv.measured ? (() => {
+      const L = cv.live, ms = (t) => (1000 * t).toFixed(2) + " ms";
+      const P = state.rscope === "all" ? L.predicted_total_s : L.predicted_total_by_corpus_s[state.rscope];
+      return `<h3>Measured against predicted</h3><p>Of the ${L.results} live runs of an instance${state.rscope === "all" ? "" : " (every corpus)"}, ${L.picks_known} reported the encoding they picked${L.results > L.picks_known ? ` (the other ${L.results - L.picks_known} were killed at the hard timeout first)` : ""}, and ${L.picks_agree} of those picked the encoding the cross-validation predicted. Routing took ${ms(L.routing_time_s.median)} per instance in the median and ${ms(L.routing_time_s.max)} at most, ${(100 * L.routing_share).toFixed(2)}% of the router's time. Where the router finished, its time less the routing was ${L.time_vs_recorded_median == null ? "—" : L.time_vs_recorded_median.toFixed(3) + "×"} the recorded time of the encoding it picked, in the median over ${L.time_vs_recorded_n} runs; far from 1, the machine ran faster or slower than when the encodings were recorded. Charged the recorded time of its picks instead (the prediction, over the same sets of folds), the router would total ${P.toFixed(1)} s${state.rscope === "all" ? "" : ` on ${CNAME[state.rscope]}`}, against the ${T.router.total_s.toFixed(1)} s measured${L.runs > 1 ? `; a run's total varies by ${S.total_sd.toFixed(1)} s (standard deviation over the ${L.runs} runs)` : ""}.</p>`;
+    })() : "",
     `<h3>The ideal maximum</h3><p>The oracle picks, for every instance, the encoding that turned out fastest; for its timeouts and solve rate, the fastest in each run. That is only known after running all ${md ? md.encodings.length : "the"} encodings, so no router that picks once, before solving, can do better. Its speedup is the ceiling, the dashed line in both speedup charts.</p>`,
     `<h3>A caveat</h3><p>The cross-validation measures one fixed setting: leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth}, margin ${cv.setting.margin}${cv.setting.train_timeout_cost_s !== undefined ? ` and timeouts counted as ${cv.setting.train_timeout_cost_s} s in training` : ""}. No router routes an instance it was trained on, but if that setting was picked by comparing settings on these same instances, the figures are slightly optimistic. Testing on new constraints gives an unbiased figure.</p>`,
     pairsBlk,

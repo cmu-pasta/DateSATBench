@@ -70,12 +70,11 @@ import sklearn
 from sklearn.ensemble import RandomForestClassifier
 
 from analysis.paths import MODEL, OUTPUTS, REPO
-from analysis.stats.instance_costs import all_timeout_ids, complete_costs, cost_table  # noqa: F401 (re-exported)
-from analysis.stats.join_results import add_timeout_arg, timeout_seconds
+from analysis.stats.instance_costs import ROUTER, all_timeout_ids, complete_costs, cost_table  # noqa: F401 (re-exported)
+from analysis.stats.join_results import RESULT_COLUMNS, add_timeout_arg, timeout_seconds
 
 RANDOM_STATE = 0
 TOP_FEATURES = 5
-ROUTER = "router"                  # the encoding name the router's own results carry
 FORMAT_VERSION = 1                 # of router.json
 EXPORT_TOLERANCE = 1e-9
 # The router's setting. crossval_router.py measures it; ROUTER.md says why it was chosen.
@@ -86,14 +85,10 @@ DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "max_features": 0.5
                     "margin": 0.0, "train_timeout_cost_s": 80.0}
 DEFAULT_TREES = 50                 # trees per forest
 
-# The columns join_results.py writes ahead of the feature columns.
-RESULT_COLS = {"id", "corpus", "encoding", "run", "time", "status", "solved",
-               "baseline_time", "baseline_status", "speedup", "speedup_bound"}
-
 
 def feature_columns(joined):
     """The router's inputs: the feature columns of joined.csv, in order."""
-    return [c for c in joined.columns if c not in RESULT_COLS and not c.startswith("label_")]
+    return [c for c in joined.columns if c not in RESULT_COLUMNS and not c.startswith("label_")]
 
 
 def training_set(joined, timeout_cost):
@@ -199,6 +194,23 @@ def export_error(forest, trees, a, X):
     X32 = X.astype(np.float32).astype(np.float64)
     walked = np.array([walk_forest(trees, x) for x in X32.tolist()])
     return float(np.abs(walked - expected).max())
+
+
+def router_json(forests, encodings, features, X, fallback, margin, bounds, trained_on):
+    """The model for DateSat's router approach in router.json's form, from pairwise forests
+    over the feature columns `features`. Every forest is first walked on every row of X and
+    checked against scikit-learn's predict_proba; a difference above EXPORT_TOLERANCE raises
+    ValueError."""
+    pairs = []
+    for (a, b), forest in forests.items():
+        trees = forest_arrays(forest, a)
+        err = export_error(forest, trees, a, X)
+        if err > EXPORT_TOLERANCE:
+            raise ValueError(f"{a} vs {b}: the exported trees differ from scikit-learn by {err:g}")
+        pairs.append({"a": a, "b": b, "trees": trees})
+    return {"format_version": FORMAT_VERSION, "bounds": bounds, "encodings": list(encodings),
+            "features": list(features), "fallback": fallback, "margin": margin,
+            "trained_on": trained_on, "pairs": pairs}
 
 
 def pair_probability(forest, X, a):
@@ -335,21 +347,19 @@ def main():
         ap.error(f"--fallback {fallback!r} is not one of {encodings}")
 
     print(f"\nchecking the exported trees against scikit-learn on {len(costs)} instances ...")
-    X = feats.to_numpy(dtype=float)
-    exported = []
-    for (a, b), forest in forests.items():
-        trees = forest_arrays(forest, a)
-        err = export_error(forest, trees, a, X)
-        if err > EXPORT_TOLERANCE:
-            raise SystemExit(f"{a} vs {b}: the exported trees differ from scikit-learn by "
-                             f"{err:g}; router.json not written")
-        exported.append({"a": a, "b": b, "trees": trees})
+    joined_rel = os.path.relpath(args.joined, REPO)
+    try:
+        model = router_json(forests, encodings, cols, feats.to_numpy(dtype=float), fallback,
+                            args.margin, bounds, {"joined": joined_rel, "instances": len(costs),
+                                                  "timeout_s": timeout})
+    except ValueError as e:
+        raise SystemExit(f"{e}; router.json not written")
     if bounds != "keep":
         print("WARNING: the features were extracted with the injected bounds stripped; "
               "DateSat's router refuses such a model (extract them with --bounds keep)")
 
     meta = {
-        "joined": os.path.relpath(args.joined, REPO),
+        "joined": joined_rel,
         "sklearn_version": sklearn.__version__,
         "timeout_s": timeout,
         "timeout_cost_s": timeout_cost,
@@ -372,21 +382,11 @@ def main():
         "margin": args.margin,
         "pairs": pairs,
     }
-    router_json = {
-        "format_version": FORMAT_VERSION,
-        "bounds": bounds,
-        "encodings": encodings,
-        "features": cols,
-        "fallback": fallback,
-        "margin": args.margin,
-        "trained_on": {"joined": meta["joined"], "instances": len(costs), "timeout_s": timeout},
-        "pairs": exported,
-    }
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
     joblib.dump(dict(meta, forests=forests), out / "router.joblib")
     (out / "router_meta.json").write_text(json.dumps(meta, indent=1))
-    (out / "router.json").write_text(json.dumps(router_json, separators=(",", ":")))
+    (out / "router.json").write_text(json.dumps(model, separators=(",", ":")))
     print(f"best single encoding on the training data: {meta['best_single_encoding']}; "
           f"fallback {fallback}, margin {args.margin:g}")
     print(f"Wrote {out / 'router.joblib'}, {out / 'router_meta.json'} and {out / 'router.json'}")

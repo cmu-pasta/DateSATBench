@@ -20,3 +20,6 @@ env/
 
 # SMT-LIB dumps written by older runs of the benchmark runner (then eval/run_benchmarks.py)
 results/**/*.smt2
+
+# The cross-validation's fold models (crossval_router.py rewrites them; ~40 MB)
+analysis/outputs/*/fold_models/

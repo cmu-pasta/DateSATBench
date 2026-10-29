@@ -21,9 +21,13 @@ solver outcomes, the feature x speedup heatmap and the router all measure the sa
     taken per run, not from the costs: each is computed on every run separately (run k of
     one encoding against run k of the baseline, timeouts at the timeout) and reported as
     the median of those per-run values, with their range.
+  * The router's own results (`ROUTER`, from analysis/run/run_router_cv.py) are measured
+    the same way, but the router is a strategy, not an encoding: an instance is unsolvable
+    when every *encoding* timed out on it, and stages that compare encodings (the oracle,
+    the router's training, the speedup heatmap) leave it out with `encodings_only`.
 """
 
-from analysis.stats.join_results import FINISHED
+from analysis.stats.join_results import FINISHED, ROUTER
 
 
 def cost_table(joined, timeout_cost):
@@ -58,8 +62,14 @@ def run_outcomes(joined, timeout_cost, ids):
             .set_index(["run", "id", "encoding"])["outcome"].unstack("encoding"))
 
 
+def encodings_only(joined):
+    """The rows of joined.csv that are an encoding's, without the router's own results."""
+    return joined[joined["encoding"] != ROUTER]
+
+
 def all_timeout_ids(joined):
-    """Instances on which every encoding timed out in every run."""
+    """Instances on which every encoding (not the router) timed out in every run."""
+    joined = encodings_only(joined)
     timed_out = joined["status"].eq("timeout").groupby(joined["id"]).all()
     return set(timed_out.index[timed_out])
 

@@ -25,8 +25,11 @@ def _solve_task(
     implementation: str,
     timeout_ms: int,
     use_maxsat: bool,
+    router_model: str | None = None,
 ) -> dict:
     """Solve one instance and keep only the result fields the runner records."""
+    # Only the router approach takes a model file (run_router_cv.py passes one per fold).
+    router_kwargs = {"router_model": router_model} if router_model else {}
     solve_result = datesat.solve(
         constraints=constraint_data,
         approach=approach,
@@ -34,6 +37,7 @@ def _solve_task(
         timeout_ms=timeout_ms,
         verbose=False,  # Suppress verbose output during benchmarking
         use_maxsat=use_maxsat,
+        **router_kwargs,
     )
 
     # Merge solution from all variable types
@@ -131,6 +135,7 @@ def run_constraint_with_approach(
     timeout_ms: int = TIMEOUT_MS,
     use_maxsat: bool = False,
     hard_timeout_ms: int | None = None,
+    router_model: str | None = None,
 ) -> dict:
     """
     Run a single constraint with a specific solver approach and implementation.
@@ -138,6 +143,8 @@ def run_constraint_with_approach(
     The work runs in `worker`. If it exceeds hard_timeout_ms of wall-clock
     time (default: HARD_TIMEOUT_MS), the worker is killed and
     the instance is recorded as a timeout with "hard_timeout": True.
+    For the router approach, router_model is the model file it routes by
+    (default: DateSat's).
 
     Returns a dict containing the constraint ID, status, execution time and
     solution (if SAT).
@@ -166,7 +173,7 @@ def run_constraint_with_approach(
 
     limit_s = (hard_timeout_ms or HARD_TIMEOUT_MS) / 1000
     start_time = time.time()
-    worker.send((constraint_data, approach, implementation, timeout_ms, use_maxsat))
+    worker.send((constraint_data, approach, implementation, timeout_ms, use_maxsat, router_model))
 
     message = worker.recv(limit_s)
     if message is None:
@@ -374,6 +381,55 @@ def run_constraints_file(
 
     return all_results
 
+
+
+def check_run_dir(results_dir: Path) -> None:
+    """Check every solution in one run_N/ directory by executing the constraints on it
+    (validation.py), and write checked_summary_with_baseline.json (and, for constraints the
+    enumeration baseline does not support, checked_summary_without_baseline.json) there."""
+    if not results_dir.exists() or not results_dir.is_dir():
+        print(f"❌ Error: Results directory not found: {results_dir}")
+        return
+
+    summary_supported = check_results_dir(
+        results_dir, enumeration_filter="supported"
+    )
+
+    analysis_output = results_dir / "checked_summary_with_baseline.json"
+    analysis_output.write_text(
+        json.dumps(summary_supported, indent=2, sort_keys=False)
+    )
+
+    print(
+        f"\n✅ Analyzed {summary_supported['constraints_checked']} constraints "
+        "(enumeration supported)"
+    )
+    print(f"Analysis saved to: {analysis_output}")
+
+    enum_support = summary_supported.get("enumeration_support", {})
+    not_supported_count = enum_support.get("not_supported_count", 0)
+    if not_supported_count > 0:
+        unsupported_summary = check_results_dir(
+            results_dir, enumeration_filter="not_supported"
+        )
+        unsupported_output = (
+            results_dir / "checked_summary_without_baseline.json"
+        )
+        unsupported_output.write_text(
+            json.dumps(unsupported_summary, indent=2, sort_keys=False)
+        )
+        print(
+            f"⚠️ {not_supported_count} constraints without enumeration support "
+            f"(saved to: {unsupported_output})"
+        )
+
+    counts = summary_supported["counts_by_approach"]
+    print(f"\nSummary by approach (enumeration supported):")
+    for approach, counts_dict in counts.items():
+        total = sum(counts_dict.values())
+        correct = counts_dict.get("correct", 0)
+        percentage = correct / total * 100 if total > 0 else 0
+        print(f"  {approach}: {correct}/{total} correct ({percentage:.1f}%)")
 
 
 def main():
@@ -648,55 +704,10 @@ def main():
         print(f"{'#'*70}")
 
         for run_idx, name, results_dir in completed_runs:
-            run_label = f" (run {run_idx})"
             print(f"\n{'='*60}")
-            print(f"Analyzing: {name}{run_label}")
+            print(f"Analyzing: {name} (run {run_idx})")
             print(f"{'='*60}")
-
-            if not results_dir.exists() or not results_dir.is_dir():
-                print(f"❌ Error: Results directory not found: {results_dir}")
-                continue
-
-            summary_supported = check_results_dir(
-                results_dir, enumeration_filter="supported"
-            )
-
-            analysis_output = results_dir / "checked_summary_with_baseline.json"
-            analysis_output.write_text(
-                json.dumps(summary_supported, indent=2, sort_keys=False)
-            )
-
-            print(
-                f"\n✅ Analyzed {summary_supported['constraints_checked']} constraints "
-                "(enumeration supported)"
-            )
-            print(f"Analysis saved to: {analysis_output}")
-
-            enum_support = summary_supported.get("enumeration_support", {})
-            not_supported_count = enum_support.get("not_supported_count", 0)
-            if not_supported_count > 0:
-                unsupported_summary = check_results_dir(
-                    results_dir, enumeration_filter="not_supported"
-                )
-                unsupported_output = (
-                    results_dir / "checked_summary_without_baseline.json"
-                )
-                unsupported_output.write_text(
-                    json.dumps(unsupported_summary, indent=2, sort_keys=False)
-                )
-                print(
-                    f"⚠️ {not_supported_count} constraints without enumeration support "
-                    f"(saved to: {unsupported_output})"
-                )
-
-            counts = summary_supported["counts_by_approach"]
-            print(f"\nSummary by approach (enumeration supported):")
-            for approach, counts_dict in counts.items():
-                total = sum(counts_dict.values())
-                correct = counts_dict.get("correct", 0)
-                percentage = correct / total * 100 if total > 0 else 0
-                print(f"  {approach}: {correct}/{total} correct ({percentage:.1f}%)")
-
+            check_run_dir(results_dir)
 
 if __name__ == "__main__":
     main()

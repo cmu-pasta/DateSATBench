@@ -4,7 +4,8 @@ import numpy as np
 import pandas as pd
 
 from analysis.router.train_router import (all_timeout_ids, cost_table, feature_columns,
-                                          fit_forests, pair_examples, route)
+                                          fit_forests, pair_examples, pair_probability, route,
+                                          router_json, walk_forest)
 
 TIMEOUT = 20.0
 
@@ -15,7 +16,8 @@ def rows(iid, encoding, *runs):
         {"id": iid, "corpus": "grammar", "encoding": encoding, "run": f"run_{i}",
          "time": time, "status": status, "solved": int(status in ("sat", "unsat")),
          "baseline_time": None, "baseline_status": None, "speedup": None,
-         "speedup_bound": None, "n_atoms": 3, "label_status": "sat"}
+         "speedup_bound": None, "routed_to": None, "routing_time": None, "n_atoms": 3,
+         "label_status": "sat"}
         for i, (time, status) in enumerate(runs, 1)
     ]
 
@@ -50,6 +52,11 @@ def test_all_timeout_instances():
     assert all_timeout_ids(JOINED) == {"all-timeout"}
 
 
+def test_the_routers_own_results_do_not_make_an_instance_solvable():
+    router = pd.DataFrame(rows("all-timeout", "router", (19.9, "sat"), (20.007, "timeout")))
+    assert all_timeout_ids(pd.concat([JOINED, router])) == {"all-timeout"}
+
+
 def test_pair_examples_keep_one_sided_timeouts_and_skip_ties():
     costs = cost_table(JOINED, TIMEOUT).drop(index=["all-timeout", "error"])
     ids, label, weight = pair_examples(costs, "a", "b")
@@ -71,6 +78,19 @@ def random_instances(n, seed=0):
     feats = pd.DataFrame({"n_atoms": rng.integers(0, 50, n), "depth": rng.uniform(size=n)},
                          index=ids)
     return costs, feats
+
+
+def test_router_json_walks_to_scikit_learns_probabilities():
+    costs, feats = random_instances(60)
+    forests = fit_forests(costs, feats, trees=5, max_depth=8, min_samples_leaf=2)
+    X = feats.to_numpy(dtype=float)
+    model = router_json(forests, ["a", "b"], list(feats.columns), X, "b", 0.0, "keep",
+                        {"instances": 60})
+    assert (model["encodings"], model["features"], model["fallback"]) == (["a", "b"], ["n_atoms", "depth"], "b")
+    [pair] = model["pairs"]
+    expected = pair_probability(forests[("a", "b")], X, "a")
+    walked = [walk_forest(pair["trees"], x) for x in X.astype(np.float32).astype(float).tolist()]
+    assert np.allclose(walked, expected, atol=1e-12)
 
 
 def test_every_leaf_rests_on_at_least_min_samples_leaf_instances():
@@ -126,8 +146,10 @@ if __name__ == "__main__":
     test_runs_combine_by_median_and_timeouts_cost_the_timeout()
     test_an_errored_run_leaves_no_cost()
     test_all_timeout_instances()
+    test_the_routers_own_results_do_not_make_an_instance_solvable()
     test_pair_examples_keep_one_sided_timeouts_and_skip_ties()
     test_features_leave_out_corpus_results_and_labels()
+    test_router_json_walks_to_scikit_learns_probabilities()
     test_every_leaf_rests_on_at_least_min_samples_leaf_instances()
     test_the_encoding_with_most_wins_is_picked()
     test_a_tie_at_the_top_falls_back()

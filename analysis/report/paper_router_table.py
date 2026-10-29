@@ -5,8 +5,9 @@ Write the router's solve rate as a one-row LaTeX tabular for the paper.
 
 Reads crossval_router.py's router_eval.json, as the report's Specialized router section
 does, and gives every strategy's share of solved instances over all corpora: always one
-encoding, the router (out of fold, averaged over the repeats) and the oracle (the fastest
-encoding in each run). Every count is taken in every run and averaged over the runs, as in
+encoding, the router (out of fold: measured in its live runs by run_router_cv.py when
+joined.csv held them, else predicted and averaged over the repeats) and the oracle (the
+fastest encoding in each run). Every count is taken in every run and averaged over the runs, as in
 the outcomes table. The share is out of every instance, the ones no encoding solves
 included, so the always-one-encoding columns match the outcomes table (paper_table.py).
 The best strategy short of the oracle is in bold.
@@ -41,9 +42,11 @@ def router_table(cv):
             pct = rf"\textbf{{{pct}}}"
         cells.append(pct)
     heads = [ENCODINGS[e] for e in always] + ["Router", "Oracle"]
+    how = (f"the router measured on {cv['live']['runs']} live runs" if cv.get("router_measured")
+           else "the router predicted")
     lines = [f"% Written by python -m analysis.report.paper_router_table from {cv['folds']}-fold "
-             f"cross-validation repeated {cv['repeats']} times, timeout {cv['timeout_cost_s']:g} s. "
-             "Do not edit by hand.",
+             f"cross-validation repeated {cv['repeats']} times, {how}, timeout "
+             f"{cv['timeout_cost_s']:g} s. Do not edit by hand.",
              *(rf"\definecolor{{{k}}}{{HTML}}{{{v}}}" for k, v in COLOURS.items()),
              rf"\begin{{tabular}}{{@{{}}l *{{{len(always)}}}{{r}} @{{\hspace{{14pt}}}} r r@{{}}}}",
              r"\toprule",

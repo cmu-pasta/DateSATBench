@@ -20,7 +20,11 @@ and reported as the median over the runs, with the fastest and slowest run as it
 _max. The wins compare instance costs, the median over an instance's runs. An instance on
 which every encoding timed out counts as a timeout for every encoding. The router's
 cross-validation counts the same way, so its always-<encoding> rows have this table's
-timeouts and total time.
+timeouts and total time. The router's live runs (run_router_cv.py), when joined, are a row
+of their own, on the same instances: which instances count is decided by the encodings
+alone, and every run of the router must have a result without an error on every one of
+them. Every per-run figure of a row is taken over that row's own runs, as the router can
+have fewer runs than the encodings.
 
 Columns
   instances            instances in the scope with no errored or missing run; the same
@@ -51,7 +55,8 @@ import math
 import pandas as pd
 
 from analysis.paths import OUTPUTS
-from analysis.stats.instance_costs import all_timeout_ids, complete_costs, run_costs, run_outcomes
+from analysis.stats.instance_costs import (ROUTER, all_timeout_ids, complete_costs, cost_table,
+                                           encodings_only, run_costs, run_outcomes)
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 
 CORPORA = ["llm", "legal", "grammar"]
@@ -61,15 +66,32 @@ PER_RUN = ["total_time", "median_time", "median_speedup"]
 FLOATS = OUTCOMES + ["solved", "solve_rate"] + [f"{c}{s}" for c in PER_RUN for s in ("", "_min", "_max")]
 
 
+def scope_costs(df, timeout_cost):
+    """complete_costs of the encodings, with the router's costs as one more column when df
+    holds its results. Raises ValueError unless every run of the router has a result without
+    an error on every instance every encoding completed (a live evaluation joined half-way
+    has runs that cover only some corpora)."""
+    costs, incomplete = complete_costs(encodings_only(df), timeout_cost)
+    router = df[df["encoding"] == ROUTER]
+    if len(router):
+        times = run_costs(router, timeout_cost, costs.index)[ROUTER].dropna()
+        expected = router["run"].nunique() * len(costs)
+        if len(times) != expected:
+            raise ValueError(f"the router's runs miss, or have an error on, {expected - len(times)} "
+                             f"of {expected} (run, instance) pairs over the instances every "
+                             f"encoding completed")
+        costs = costs.join(cost_table(router, timeout_cost)[ROUTER])
+    return costs, incomplete
+
+
 def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
     """One row per encoding (baseline first) for one scope; corpus None or 'all' pools."""
     if corpus and corpus != "all":
         df = df[df["corpus"] == corpus]
-    costs, incomplete = complete_costs(df, timeout_cost)
+    costs, incomplete = scope_costs(df, timeout_cost)
     unsolvable = int(costs.index.isin(all_timeout_ids(df)).sum())
     outcome = run_outcomes(df, timeout_cost, costs.index)
-    by_run = run_costs(df, timeout_cost, costs.index).groupby(level="run")
-    totals, medians = by_run.sum(), by_run.median()
+    runs = run_costs(df, timeout_cost, costs.index)
     encodings = [baseline] + sorted(e for e in costs.columns if e != baseline)
     n = len(costs)
 
@@ -77,13 +99,14 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
     for e in encodings:
         c = costs[e]
         # each outcome's count in every run, then the mean over the runs
-        counts = {k: outcome[e].eq(k).groupby(level="run").sum().mean() if n else None
+        counts = {k: outcome[e].dropna().eq(k).groupby(level="run").sum().mean() if n else None
                   for k in OUTCOMES}
         speedup = costs[baseline] / c
         compared = e != baseline
-        per_run = {"total_time": totals[e], "median_time": medians[e]} if n else {}
+        own = runs[e].dropna().groupby(level="run")                    # the row's own runs
+        per_run = {"total_time": own.sum(), "median_time": own.median()} if n else {}
         if compared and n:
-            per_run["median_speedup"] = by_run.apply(lambda r: (r[baseline] / r[e]).median())
+            per_run["median_speedup"] = (runs[baseline] / runs[e]).dropna().groupby(level="run").median()
         rows.append({
             "encoding": e,
             "instances": n,
@@ -100,13 +123,18 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
     return out.astype({c: "Int64" for c in COUNTS}).astype({c: "float64" for c in FLOATS})
 
 
+def run_counts(df):
+    """How many runs each encoding (and the router, if joined) has."""
+    return {e: int(n) for e, n in df.groupby("encoding")["run"].nunique().items()}
+
+
 def solved_times(df, timeout_cost, corpus=None):
     """For a cactus plot: each encoding's times on the runs it solved, over every run,
     fastest first, on the same instances as solver_outcomes(). Each run counts 1 / runs, so
-    a list's length divided by the number of runs is its `solved`."""
+    a list's length divided by the encoding's number of runs (run_counts) is its `solved`."""
     if corpus and corpus != "all":
         df = df[df["corpus"] == corpus]
-    costs, _ = complete_costs(df, timeout_cost)
+    costs, _ = scope_costs(df, timeout_cost)
     times = run_costs(df, timeout_cost, costs.index)
     return {e: sorted(t[t < timeout_cost].tolist()) for e, t in times.items()}
 

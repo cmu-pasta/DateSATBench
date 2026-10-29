@@ -21,15 +21,35 @@ example per pair, its cost the median over its runs), are cut into --folds folds
 every fold holds the same share of every corpus. For every fold, the router is trained on
 the other folds and routes the fold, so every instance is routed once by a router that
 has not seen it; the fallback is the best performing encoding on the other folds. The
-whole is repeated --repeats times (default 5), each time with a different cut into folds,
-and the results are averaged over the repeats. The cuts come from a fixed seed and the
-forests use train_router.py's, so a run of this script always gives the same results.
+whole is repeated --repeats times (default 10, one per run of the live evaluation below),
+each time with a different cut into folds. The cuts come from a fixed seed and the forests
+use train_router.py's, so a run of this script always gives the same results.
+
+Predicted and measured. Every fold's model is written for DateSat's router approach
+(fold_models/), and analysis/run/run_router_cv.py runs DateSat's router with them: its run
+N solves every instance with the model of repeat N - 1 that was not trained on it. Until
+joined.csv holds those results (encoding `router`), the router is *predicted*: on every
+instance it is charged the recorded cost of the encoding it picks (the median over that
+encoding's runs), which leaves out the time routing takes, and the results are averaged
+over the repeats. Once joined.csv holds them, the router's row is *measured*: every live
+run is summarized as its repeat's prediction is, with the router costing on each instance
+its time in that run, routing included, and the summaries are averaged over the live runs,
+as the predicted ones are over the repeats. (Each run routes with other models, so a median
+over the runs of an instance would mix the models' picks.) Its picks and fallbacks are the
+predicted ones of the repeats the live runs used, and the `live` block says how far the live
+runs agree with them: the share of live picks that are the predicted pick (crossval stops
+if any is not: the live runs used other models), the time routing took, and the live time
+less the routing against the recorded cost of the encoding picked, which shows whether the
+machine ran as fast as when the encodings were recorded. Every encoding's figures and the oracle's always come from the
+encodings' recorded runs. With --selected the router is always predicted: the live runs
+used every feature.
 
 Writes to analysis/outputs/model_cross_validation/ (with --selected,
 model_cross_validation_selected/):
-    router_eval.json   the setting, the feature columns, and averaged over the repeats,
-                       overall and for each
-                       corpus: a table of always each encoding, the router and the
+    router_eval.json   the setting, the feature columns, whether the router is measured,
+                       and, overall and for each corpus, averaged over the repeats (or the
+                       repeats the live runs used): a table of always each encoding, the
+                       router and the
                        oracle (total time, timeouts, and speedups over always
                        --baseline: of the totals, and the median and geometric mean of
                        the per-instance speedup; the timeouts are counted in every run
@@ -37,16 +57,30 @@ model_cross_validation_selected/):
                        oracle taking the fastest encoding in each run), the router's
                        picks and fallbacks, how often it picks
                        the fastest encoding, how much of the gap to the oracle it closes,
-                       and the spread of the router's total over the repeats
+                       and the spread of the router's total over the repeats (measured:
+                       over the live runs); the same with the router predicted, averaged
+                       over every repeat, under `predicted`; and, measured, the `live` block,
+                       with the predicted totals of the repeats the live runs used
     router_eval.csv    one row per repeat and instance: its fold and corpus, its cost on
                        every encoding, the best encoding ("none" where every encoding
                        costs the same) and its cost, the router's pick,
-                       whether it fell back, the fold's fallback and the router's cost
+                       whether it fell back, the fold's fallback and the router's predicted
+                       cost, and, measured, the time and pick of the live run that used
+                       the repeat
+    fold_models.json   the setting and, for every repeat, every fold's model file (with its
+                       SHA-256 and fallback), the fold of every instance and the encoding
+                       its fold's model picks for it; run_router_cv.py and
+                       check_datesat_router.py read it
+    fold_models/       repeat_<r>_fold_<k>.json, the model trained on every fold of repeat
+                       r but k, in train_router.py's router.json form; ~0.8 MB each, not
+                       committed (rerun this script to make them)
 """
 
 import argparse
+import hashlib
 import json
 import os
+import re
 from pathlib import Path
 
 import numpy as np
@@ -54,14 +88,17 @@ import pandas as pd
 from sklearn.model_selection import RepeatedStratifiedKFold
 
 from analysis.paths import CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, OUTPUTS, REPO
-from analysis.router.train_router import (DEFAULT_SETTINGS, DEFAULT_TREES, ROUTER,
-                                          feature_columns, fit_forests, instance_features,
-                                          max_features_arg, route, training_set)
-from analysis.stats.instance_costs import run_costs
-from analysis.stats.join_results import add_timeout_arg, timeout_seconds
+from analysis.router.train_router import (DEFAULT_SETTINGS, DEFAULT_TREES, feature_columns,
+                                          fit_forests, instance_features, max_features_arg,
+                                          route, router_json, training_set)
+from analysis.stats.instance_costs import ROUTER, encodings_only, run_costs
+from analysis.stats.join_results import FINISHED, add_timeout_arg, timeout_seconds
 from analysis.stats.select_features import selected_columns
 
 SEED = 0
+DEFAULT_REPEATS = 10           # one cut into folds per run of run_router_cv.py
+DRIFT_TOLERANCE = 0.05         # how far from 1 the live runs' speed may drift before a warning
+FOLD_MODELS = "fold_models"    # the fold models' directory; with .json, their manifest
 
 
 def strategy_costs(costs, picks):
@@ -84,16 +121,37 @@ def strategy_run_costs(runs, picks):
     return pd.DataFrame(out)
 
 
+def measured_strategy_costs(costs, router):
+    """strategy_costs with the router measured: its cost on every instance is `router`'s,
+    the median over its live runs."""
+    out = {f"always {e}": costs[e] for e in costs.columns}
+    out["router"] = router.loc[costs.index]
+    out["oracle"] = costs.min(axis=1)
+    return pd.DataFrame(out)
+
+
+def measured_run_costs(runs, router_runs):
+    """strategy_run_costs with the router measured: its time in each of its live runs,
+    `router_runs`, one value per (run, id). A strategy has no value in a run it was not run
+    in."""
+    out = {f"always {e}": runs[e] for e in runs.columns}
+    out["router"] = router_runs
+    out["oracle"] = runs.min(axis=1)
+    return pd.DataFrame(out)
+
+
 def summary_table(strategies, run_strategies, baseline, timeout_cost):
     """Total time, timeouts and speedup over always-`baseline`, one row per strategy of
     strategy_costs: of the totals, and the median and geometric mean over instances of the
     per-instance speedup (as in solver_outcomes.py, timeouts at the timeout). The timeouts
-    are counted in every run, from strategy_run_costs, and averaged over the runs."""
+    are counted in every run of a strategy, from strategy_run_costs, and averaged over its
+    runs."""
     base = strategies[f"always {baseline}"]
     per_instance = strategies.rdiv(base, axis=0)
     return pd.DataFrame({
         "total_s": strategies.sum(),
-        "timeouts": (run_strategies >= timeout_cost).groupby(level="run").sum().mean(),
+        "timeouts": pd.Series({name: (r.dropna() >= timeout_cost).groupby(level="run").sum().mean()
+                               for name, r in run_strategies.items()}),
         "speedup_total": base.sum() / strategies.sum(),
         "speedup_median": per_instance.median(),
         "speedup_geomean": np.exp(np.log(per_instance).mean()),
@@ -165,10 +223,12 @@ def summary_json(s, encodings):
 
 def out_of_fold_picks(costs, feats, strata, min_samples_leaf, max_depth, margin, n_splits,
                       repeats, trees, train_costs=None,
-                      max_features=DEFAULT_SETTINGS["max_features"]):
+                      max_features=DEFAULT_SETTINGS["max_features"], on_fold=None):
     """Route every instance of `costs` with routers trained on the other folds, with one
     setting. The forests learn from `train_costs` (default: `costs`), the same instances
-    with timeouts counted at the training cost; the fallback comes from `costs`.
+    with timeouts counted at the training cost; the fallback comes from `costs`. For every
+    fold, on_fold(repeat, fold, forests, fallback, train_ids, test_ids) is called, if given,
+    with the forests that route it.
 
     Returns one row per repeat and instance: the fold, the pick, whether it fell back, the
     fold's fallback, and the ids the router was trained on.
@@ -184,6 +244,8 @@ def out_of_fold_picks(costs, feats, strata, min_samples_leaf, max_depth, margin,
         fallback = c_train.sum().idxmin()
         forests = fit_forests(train_costs.loc[c_train.index], feats.loc[c_train.index], trees,
                               max_depth, min_samples_leaf, max_features, n_jobs=-1)
+        if on_fold is not None:
+            on_fold(repeat, fold, forests, fallback, c_train.index, c_test.index)
         picks, fell_back, _ = route(forests, encodings, feats.loc[c_test.index], fallback, margin)
         rows += [{"repeat": repeat, "fold": fold, "id": iid, "pick": picks[iid],
                   "fell_back": bool(fell_back[iid]), "fallback": fallback,
@@ -210,6 +272,82 @@ def average_summaries(summaries, baseline, best):
     }
 
 
+def run_number(label):
+    """N, from a run's label run_N."""
+    m = re.fullmatch(r"run_(\d+)", str(label))
+    if not m:
+        raise ValueError(f"the router's results have a run {label!r}, not run_N")
+    return int(m.group(1))
+
+
+def live_router(live, ids, timeout_cost, repeats):
+    """The router's live results on the instances `ids`: its time in every run (one value
+    per (run, id), a timeout at `timeout_cost`) and the repeat each run used (run_N used
+    repeat N - 1's models). Raises ValueError unless every instance has a result without an
+    error in every run, and every run has a repeat."""
+    repeat_of = {r: run_number(r) - 1 for r in sorted(live["run"].unique(), key=run_number)}
+    if max(repeat_of.values()) >= repeats:
+        raise ValueError(f"the router's results have {max(repeat_of, key=run_number)}, but the "
+                         f"cross-validation has only {repeats} repeats")
+    per_run = run_costs(live, timeout_cost, ids)[ROUTER].dropna()
+    expected = len(ids) * len(repeat_of)
+    if len(per_run) != expected:
+        raise ValueError(f"the router's results miss, or have an error on, "
+                         f"{expected - len(per_run)} of the {expected} runs of the "
+                         f"{len(ids)} instances")
+    return per_run, repeat_of
+
+
+def measured_summaries(per_repeat, costs, runs, router_runs, repeat_of, baseline, timeout_cost):
+    """One summary per live run, over the instances of `costs`: the summary of the repeat
+    the run used (`per_repeat`, one per repeat), with the table's router row taken from the
+    run's times (`router_runs`, one value per (run, id)). average_summaries of them is the
+    measured router, as average_summaries of the repeats' is the predicted one."""
+    out = []
+    for run, repeat in repeat_of.items():
+        times = router_runs.xs(run, level="run", drop_level=False)
+        table = summary_table(measured_strategy_costs(costs, times.droplevel("run")),
+                              measured_run_costs(runs, times), baseline, timeout_cost)
+        out.append(dict(per_repeat[repeat], table=table))
+    return out
+
+
+def live_agreement(live, ids, oof, repeat_of, costs, timeout_cost):
+    """How the router's live runs on the instances `ids` compare with the prediction
+    (`oof`, out_of_fold_picks' rows): how many live picks are known (a run killed at the hard
+    timeout does not report one) and how many are the predicted pick of their run's repeat;
+    the time routing took per run of an instance, and its share of the router's time; and
+    the median, over the runs in which the router finished and the encoding it picked has a
+    recorded cost under the timeout, of the live time less the routing over that recorded
+    cost: about 1 when the machine runs as fast as when the encodings were recorded."""
+    rows = live[live["id"].isin(ids)]
+    predicted = oof.set_index(["repeat", "id"])["pick"]
+    picked = rows[rows["routed_to"].notna()]
+    expected = predicted.loc[list(zip(picked["run"].map(repeat_of), picked["id"]))].to_numpy()
+    routing = picked["routing_time"].astype(float)
+    done = picked[picked["status"].isin(FINISHED) & (picked["time"] < timeout_cost)]
+    recorded = np.array([costs.at[i, e] for i, e in zip(done["id"], done["routed_to"])])
+    under = recorded < timeout_cost
+    ratio = (done["time"] - done["routing_time"].astype(float)).to_numpy()[under] / recorded[under]
+    return {
+        "runs": len(repeat_of),
+        "repeats_used": sorted(repeat_of.values()),
+        "results": len(rows),
+        "picks_known": len(picked),
+        "picks_agree": int((picked["routed_to"].to_numpy() == expected).sum()),
+        "routing_time_s": {"median": round(float(routing.median()), 6),
+                           "mean": round(float(routing.mean()), 6),
+                           "max": round(float(routing.max()), 6)},
+        "routing_share": round(float(routing.sum() / picked["time"].sum()), 6),
+        "time_vs_recorded_median": round(float(np.median(ratio)), 4) if len(ratio) else None,
+        "time_vs_recorded_n": len(ratio),
+    }
+
+
+def sha256(text):
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
@@ -230,7 +368,10 @@ def main():
     ap.add_argument("--margin", type=float, default=DEFAULT_SETTINGS["margin"],
                     help="how far above 0.5 a pick must beat the fallback to be kept")
     ap.add_argument("--folds", type=int, default=5)
-    ap.add_argument("--repeats", type=int, default=5)
+    ap.add_argument("--repeats", type=int, default=DEFAULT_REPEATS,
+                    help="cuts into folds, one per run of run_router_cv.py")
+    ap.add_argument("--features-meta", default=str(OUTPUTS / "features_meta.json"),
+                    help="records whether the features kept the injected bounds")
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
     ap.add_argument("--selected", action="store_true",
                     help="use only the features in selected_features.json (select_features.py)")
@@ -252,7 +393,12 @@ def main():
     max_features = args.max_features
 
     joined = pd.read_csv(args.joined)
-    joined = joined[joined["encoding"] != ROUTER]
+    live = joined[joined["encoding"] == ROUTER]
+    joined = encodings_only(joined)
+    if args.selected and len(live):
+        print("the router's live results are left out: they used every feature")
+        live = live.iloc[:0]
+    bounds = json.loads(Path(args.features_meta).read_text())["bounds"]
     costs, dropped, all_timeout = training_set(joined, timeout_cost)
     train_costs, _, _ = training_set(joined, train_timeout_cost)    # the same instances
     runs = run_costs(joined, timeout_cost, costs.index)[costs.columns]   # for the timeouts
@@ -280,21 +426,51 @@ def main():
           f"{max_features} of the features per split, margin {margin:g}, timeouts count as {train_timeout_cost:g} s in training; "
           f"{args.folds}-fold cross-validation stratified by corpus, "
           f"repeated {args.repeats} times ...")
-    oof = out_of_fold_picks(costs, feats, corpus, leaf, depth, margin, args.folds, args.repeats,
-                            args.trees, train_costs, max_features).drop(columns="trained_on")
+    measured = len(live) > 0
+    if measured:
+        try:
+            live_runs, repeat_of = live_router(live, costs.index, timeout_cost, args.repeats)
+        except ValueError as e:
+            raise SystemExit(f"{e}; rerun run_router_cv.py, or join without its results")
+        run_of = {r: run for run, r in repeat_of.items()}
+        live_picks = live.set_index(["run", "id"])["routed_to"]
+    out = Path(args.output_dir)
+    models_dir = out / FOLD_MODELS
+    joined_rel = os.path.relpath(args.joined, REPO)
+    fold_models, fold_texts = {}, {}         # written only once every check has passed
 
-    overall, by_corpus, logs = [], {c: [] for c in sorted(corpus.unique())}, []
+    def save_fold_model(repeat, fold, forests, fallback, train_ids, test_ids):
+        """Write the fold's forests for DateSat, checked on the instances they route."""
+        try:
+            model = router_json(forests, encodings, cols, feats.loc[test_ids].to_numpy(dtype=float),
+                                fallback, margin, bounds,
+                                {"joined": joined_rel, "instances": len(train_ids),
+                                 "timeout_s": timeout, "repeat": repeat, "fold": fold})
+        except ValueError as e:
+            raise SystemExit(f"repeat {repeat}, fold {fold}: {e}; fold models not written")
+        text = json.dumps(model, separators=(",", ":"))
+        name = f"repeat_{repeat}_fold_{fold}.json"
+        fold_texts[name] = text
+        fold_models[(repeat, fold)] = {"model": f"{FOLD_MODELS}/{name}", "sha256": sha256(text),
+                                       "fallback": fallback}
+
+    oof = out_of_fold_picks(costs, feats, corpus, leaf, depth, margin, args.folds, args.repeats,
+                            args.trees, train_costs, max_features,
+                            on_fold=save_fold_model).drop(columns="trained_on")
+
+    # the predicted router's summary of every repeat, overall and for each corpus
+    per_repeat, per_repeat_by_corpus, logs = [], {c: [] for c in sorted(corpus.unique())}, []
     for repeat, g in oof.groupby("repeat"):
         g = g.set_index("id").loc[costs.index]
         strategies = strategy_costs(costs, g["pick"])
         run_strategies = strategy_run_costs(runs, g["pick"])
-        overall.append(summarize(strategies, run_strategies, g["pick"], g["fell_back"],
-                                 args.baseline, best, timeout_cost))
-        for c in by_corpus:
+        per_repeat.append(summarize(strategies, run_strategies, g["pick"], g["fell_back"],
+                                    args.baseline, best, timeout_cost))
+        for c, summaries in per_repeat_by_corpus.items():
             m = corpus == c
             in_c = run_ids.isin(corpus.index[m])
-            by_corpus[c].append(summarize(strategies[m], run_strategies[in_c], g["pick"][m],
-                                          g["fell_back"][m], args.baseline, best, timeout_cost))
+            summaries.append(summarize(strategies[m], run_strategies[in_c], g["pick"][m],
+                                       g["fell_back"][m], args.baseline, best, timeout_cost))
         log = pd.DataFrame({"repeat": repeat, "fold": g["fold"], "corpus": corpus})
         for e in encodings:
             log[f"cost_{e}"] = costs[e]
@@ -304,25 +480,88 @@ def main():
         log["fell_back"] = g["fell_back"]
         log["fallback"] = g["fallback"]
         log["router_cost"] = strategies["router"]
+        if measured:
+            run = run_of.get(repeat)
+            in_run = live_runs.xs(run, level="run") if run else pd.Series(dtype=float)
+            log["live_time"] = in_run.reindex(costs.index)
+            log["live_routed_to"] = (live_picks.xs(run, level="run").reindex(costs.index)
+                                     if run else None)
         logs.append(log)
-    overall = average_summaries(overall, args.baseline, best)
-    by_corpus = {c: average_summaries(s, args.baseline, best) for c, s in by_corpus.items()}
+    predicted = average_summaries(per_repeat, args.baseline, best)
+    predicted_by_corpus = {c: average_summaries(s, args.baseline, best)
+                           for c, s in per_repeat_by_corpus.items()}
+    if measured:
+        used = sorted(repeat_of.values())
+
+        def predicted_total(summaries):
+            """The predicted router's total, averaged over the repeats the live runs used."""
+            return round(float(average_summaries([summaries[r] for r in used], args.baseline, best)
+                               ["table"].at["router", "total_s"]), 3)
+
+        live_ids = live_runs.index.get_level_values("id")
+
+        def measured_scope(summaries, m):
+            in_scope = corpus.index[m]
+            return average_summaries(
+                measured_summaries(summaries, costs[m], runs[run_ids.isin(in_scope)],
+                                   live_runs[live_ids.isin(in_scope)], repeat_of,
+                                   args.baseline, timeout_cost), args.baseline, best)
+
+        overall = measured_scope(per_repeat, pd.Series(True, index=corpus.index))
+        by_corpus = {c: measured_scope(s, corpus == c) for c, s in per_repeat_by_corpus.items()}
+        agreement = live_agreement(live, costs.index, oof, repeat_of, costs, timeout_cost)
+        agreement["predicted_total_s"] = predicted_total(per_repeat)
+        agreement["predicted_total_by_corpus_s"] = {c: predicted_total(s)
+                                                    for c, s in per_repeat_by_corpus.items()}
+        if agreement["picks_agree"] != agreement["picks_known"]:
+            raise SystemExit(f"{agreement['picks_known'] - agreement['picks_agree']} of the "
+                             f"router's live picks differ from this cross-validation's: the live "
+                             f"runs used other fold models than these; nothing written")
+        drift = agreement["time_vs_recorded_median"]
+        if drift is not None and abs(drift - 1) > DRIFT_TOLERANCE:
+            print(f"WARNING: the router's live time less routing is {drift}x the recorded time of "
+                  f"the encoding it picked (median): the live runs ran on a faster or slower "
+                  f"machine than the encodings, so the measured router is not comparable with them")
+    else:
+        overall, by_corpus = predicted, predicted_by_corpus
 
     fallbacks = sorted(oof["fallback"].unique())
-    print(f"\n===== out-of-fold, averaged over {args.repeats} repeats =====")
-    print(f"router total over the repeats: {overall['table'].at['router', 'total_s']:.1f} s "
-          f"+/- {overall['router_total_sd']:.1f} s (standard deviation)")
+    if measured:
+        print(f"\n===== the router measured on {len(used)} live runs (repeats "
+              f"{', '.join(map(str, used))}); every other strategy as recorded =====")
+        print(f"router total, averaged over the live runs: {overall['table'].at['router', 'total_s']:.1f} s "
+              f"+/- {overall['router_total_sd']:.1f} s (standard deviation of a run's total); "
+              f"predicted {agreement['predicted_total_s']:.1f} s")
+        print(f"live picks known on {agreement['picks_known']} of {agreement['results']} runs, "
+              f"{agreement['picks_agree']} of them the predicted pick; routing took "
+              f"{1000 * agreement['routing_time_s']['median']:.2f} ms per instance (median), "
+              f"{agreement['routing_share']:.2%} of the router's time; live time less routing over "
+              f"the picked encoding's recorded time: {agreement['time_vs_recorded_median']} (median)")
+    else:
+        print(f"\n===== out-of-fold, averaged over {args.repeats} repeats (predicted) =====")
+        print(f"router total over the repeats: {overall['table'].at['router', 'total_s']:.1f} s "
+              f"+/- {overall['router_total_sd']:.1f} s (standard deviation)")
     print_summary("all corpora", overall, args.baseline, encodings, "/".join(fallbacks), margin)
     for c, s in by_corpus.items():
         print_summary(c, s, args.baseline, encodings, "/".join(fallbacks), margin)
 
-    out = Path(args.output_dir)
-    out.mkdir(parents=True, exist_ok=True)
+    # Every check has passed: write the fold models, each replaced in one step, so a
+    # run_router_cv.py running meanwhile never finds a model missing; then the rest.
+    models_dir.mkdir(parents=True, exist_ok=True)
+    for name, text in fold_texts.items():
+        tmp = models_dir / f"{name}.tmp"
+        tmp.write_text(text)
+        os.replace(tmp, models_dir / name)
+    for stale in models_dir.glob("repeat_*_fold_*.json"):
+        if stale.name not in fold_texts:
+            stale.unlink()
     pd.concat(logs).to_csv(out / "router_eval.csv", index_label="id", float_format="%.6g")
     summary = {
         "joined": os.path.relpath(args.joined, REPO),
         "evaluated_on": f"every instance, out of fold: {args.folds}-fold cross-validation "
-                        f"stratified by corpus, repeated {args.repeats} times",
+                        f"stratified by corpus, repeated {args.repeats} times"
+                        + (f"; the router measured on {len(used)} live runs" if measured else ""),
+        "router_measured": measured,
         "instances": len(costs),
         "dropped": dropped,
         "all_timeout": all_timeout,
@@ -338,13 +577,37 @@ def main():
         "best_performing_encoding": best,
         "overall": summary_json(overall, encodings),
         "by_corpus": {c: summary_json(s, encodings) for c, s in by_corpus.items()},
+        "predicted": {"overall": summary_json(predicted, encodings),
+                      "by_corpus": {c: summary_json(s, encodings)
+                                    for c, s in predicted_by_corpus.items()}},
+        "live": agreement if measured else None,
+        "fold_models": f"{FOLD_MODELS}.json",
     }
     (out / "router_eval.json").write_text(json.dumps(summary, indent=1))
+    by_repeat = {r: g.set_index("id") for r, g in oof.groupby("repeat")}
+    manifest = {
+        "joined": joined_rel,
+        "seed": SEED,
+        "folds": args.folds,
+        "repeats": args.repeats,
+        "trees": args.trees,
+        "setting": summary["setting"],
+        "features": cols,
+        "bounds": bounds,
+        "timeout_s": timeout,
+        "models": [[fold_models[(r, k)] for k in range(args.folds)] for r in range(args.repeats)],
+        "fold_of": [{i: int(k) for i, k in by_repeat[r]["fold"].items()} for r in range(args.repeats)],
+        "pick": [by_repeat[r]["pick"].to_dict() for r in range(args.repeats)],
+    }
+    tmp = out / f"{FOLD_MODELS}.json.tmp"
+    tmp.write_text(json.dumps(manifest, indent=1))
+    os.replace(tmp, out / f"{FOLD_MODELS}.json")
 
     if summary["setting"] != DEFAULT_SETTINGS or args.trees != DEFAULT_TREES:
         print(f"\nNOTE: this is not the setting train_router.py trains by default "
               f"({DEFAULT_SETTINGS}, {DEFAULT_TREES} trees)")
-    print(f"\nWrote {out / 'router_eval.json'} and {out / 'router_eval.csv'}")
+    print(f"\nWrote {out / 'router_eval.json'}, {out / 'router_eval.csv'}, "
+          f"{out / FOLD_MODELS}.json and {len(fold_models)} models in {models_dir}")
 
 
 if __name__ == "__main__":

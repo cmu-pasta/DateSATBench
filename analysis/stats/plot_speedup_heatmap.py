@@ -33,12 +33,9 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 from analysis.paths import OUTPUTS, PLOTS
-from analysis.stats.instance_costs import complete_costs
-from analysis.stats.join_results import add_timeout_arg, timeout_seconds
+from analysis.stats.instance_costs import complete_costs, encodings_only
+from analysis.stats.join_results import RESULT_COLUMNS as NON_FEATURES, add_timeout_arg, timeout_seconds
 from analysis.stats.plot_feature_correlation import CMAP, INK, INK_2, SURFACE, ink_on
-
-NON_FEATURES = {"id", "corpus", "encoding", "run", "time", "status", "solved",
-                "baseline_time", "baseline_status", "speedup", "speedup_bound"}
 
 
 def bh_qvalues(p):
@@ -61,8 +58,10 @@ def speedup_correlations(df, timeout_cost, baseline="simple", corpus=None):
     complete instances, timeouts at the timeout.
 
     Returns (rho, q, n): two DataFrames indexed by feature with one column per
-    encoding, and a dict encoding -> number of instances used.
+    encoding, and a dict encoding -> number of instances used. The router's own results
+    are left out: it is not an encoding.
     """
+    df = encodings_only(df)
     if corpus:
         df = df[df["corpus"] == corpus]
     costs, _ = complete_costs(df, timeout_cost)

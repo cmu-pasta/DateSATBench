@@ -2,12 +2,20 @@
 Join solver timings to the feature matrix.
 
     python -m analysis.stats.join_results --results results/all-10runs-bounded-datesat28d8186 --timeout 20000
+    python -m analysis.stats.join_results --results results/all-10runs-bounded-datesat28d8186 \
+        results/router-cv-10runs --timeout 20000         # the encodings and the router's live runs
 
 Reads every <corpus>/run_N/<approach>_<impl>.json (or, for a single-run eval,
-<corpus>/<approach>_<impl>.json) under the results root and joins each record to
-features.csv on id. Encodings given with --exclude are left out, and so are left out of
-every later stage. Nothing is aggregated: every timing measurement becomes its own
-row, so an instance solved by 4 encodings over 3 runs contributes 12 rows.
+<corpus>/<approach>_<impl>.json) under each results root given to --results and joins each
+record to features.csv on id. Two roots may not hold the same (instance, encoding, run).
+Encodings given with --exclude are left out, and so are left out of every later stage.
+Nothing is aggregated: every timing measurement becomes its own row, so an instance solved
+by 4 encodings over 3 runs contributes 12 rows.
+
+The router's own results (encoding `router`, from analysis/run/run_router_cv.py) are joined
+like an encoding's, with the encoding it picked and the time picking took in `routed_to`
+and `routing_time` (empty for every other encoding, and for a router run killed at the hard
+timeout). Later stages keep the router apart from the encodings (instance_costs.ROUTER).
 
 Speedup is relative to the baseline encoding (--baseline, default `simple`) on the
 same instance in the same run:
@@ -43,6 +51,12 @@ from analysis.paths import OUTPUTS, REPO
 
 FINISHED = {"sat", "unsat"}
 TIMEOUT_ENV = "DATESAT_TIMEOUT_MS"
+ROUTER = "router"                  # the encoding name the router's own results carry
+# The columns this script writes ahead of the feature columns; every other column of
+# joined.csv but the label_ ones is a feature.
+RESULT_COLUMNS = ["id", "corpus", "encoding", "run", "time", "status", "solved",
+                  "baseline_time", "baseline_status", "speedup", "speedup_bound",
+                  "routed_to", "routing_time"]
 
 
 def add_timeout_arg(ap):
@@ -92,8 +106,8 @@ def speedup_and_bound(time, status, base_time, base_status, timeout):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--results", default=str(REPO / "results/all-10runs-bounded-datesat28d8186"),
-                    help="results directory (multi-run <corpus>/run_N/ or single-run <corpus>/)")
+    ap.add_argument("--results", nargs="+", default=[str(REPO / "results/all-10runs-bounded-datesat28d8186")],
+                    help="results directories (multi-run <corpus>/run_N/ or single-run <corpus>/)")
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
     ap.add_argument("--exclude", nargs="+", default=[], metavar="ENCODING",
@@ -102,26 +116,31 @@ def main():
     ap.add_argument("--output", default=str(OUTPUTS / "joined.csv"))
     args = ap.parse_args()
     timeout = timeout_seconds(ap, args)
-    check_run_config(args.results, timeout)
+    for results in args.results:
+        check_run_config(results, timeout)
 
-    root = Path(args.results)
-    obs = {}                          # (id, encoding, run) -> (time, status)
+    obs = {}                          # (id, encoding, run) -> (time, status, routed_to, routing_time)
     corpora, encodings, run_ids, excluded = set(), set(), set(), set()
 
-    multi = sorted(root.glob("*/run_*/*_int.json"))
-    files = [(f, f.parts[-3], f.parts[-2]) for f in multi] or \
-            [(f, f.parts[-2], "run_1") for f in sorted(root.glob("*/*_int.json"))]
-    for f, corpus_dir, run_id in files:
-        encoding = f.stem.replace("_int", "")
-        if encoding in args.exclude:
-            excluded.add(encoding)
-            continue
-        corpora.add(corpus_dir)
-        encodings.add(encoding)
-        run_ids.add(run_id)
-        for rec in json.loads(f.read_text()):
-            iid = rec["constraint_id"] if "constraint_id" in rec else rec["id"]
-            obs[(iid, encoding, run_id)] = (rec["execution_time"], rec["status"])
+    for root in map(Path, args.results):
+        multi = sorted(root.glob("*/run_*/*_int.json"))
+        files = [(f, f.parts[-3], f.parts[-2]) for f in multi] or \
+                [(f, f.parts[-2], "run_1") for f in sorted(root.glob("*/*_int.json"))]
+        for f, corpus_dir, run_id in files:
+            encoding = f.stem.replace("_int", "")
+            if encoding in args.exclude:
+                excluded.add(encoding)
+                continue
+            corpora.add(corpus_dir)
+            encodings.add(encoding)
+            run_ids.add(run_id)
+            for rec in json.loads(f.read_text()):
+                iid = rec["constraint_id"] if "constraint_id" in rec else rec["id"]
+                if (iid, encoding, run_id) in obs:
+                    raise SystemExit(f"{iid} on {encoding} in {run_id} is in more than one of "
+                                     f"the results directories ({f})")
+                obs[(iid, encoding, run_id)] = (rec["execution_time"], rec["status"],
+                                                rec.get("routed_to"), rec.get("routing_time"))
 
     print(f"corpora: {sorted(corpora)}")
     print(f"encodings: {sorted(encodings)}")
@@ -142,14 +161,14 @@ def main():
 
     rows = []
     missing, no_baseline = set(), 0
-    for (iid, encoding, run_id), (time, status) in sorted(obs.items()):
+    for (iid, encoding, run_id), (time, status, routed_to, routing_time) in sorted(obs.items()):
         if iid not in feats:
             missing.add(iid)
             continue
         base = obs.get((iid, args.baseline, run_id))
         if base is None:
             no_baseline += 1
-        base_time, base_status = base if base else (None, None)
+        base_time, base_status = base[:2] if base else (None, None)
 
         speedup, bound = speedup_and_bound(time, status, base_time, base_status, timeout)
 
@@ -165,6 +184,8 @@ def main():
             "baseline_status": base_status,
             "speedup": speedup,
             "speedup_bound": bound,
+            "routed_to": routed_to,
+            "routing_time": routing_time,
         }
         for c in feature_cols:
             row[c] = feats[iid][c]
@@ -174,9 +195,19 @@ def main():
         print(f"WARNING: {len(missing)} result ids had no matching feature row")
     if no_baseline:
         print(f"WARNING: {no_baseline} rows had no {args.baseline} measurement in the same run")
+    # Every run of the router must cover the instances the encodings ran on; it may have
+    # fewer runs than they do.
+    base_ids = {i for i, e, _ in obs if e == args.baseline}
+    router_runs = {}
+    for i, e, r in obs:
+        if e == ROUTER:
+            router_runs.setdefault(r, set()).add(i)
+    partial = sorted(r for r, ids in router_runs.items() if ids != base_ids)
+    if partial:
+        print(f"WARNING: the router's {', '.join(partial)} do not cover the instances "
+              f"{args.baseline} ran on; later stages refuse such runs")
 
-    cols = ["id", "corpus", "encoding", "run", "time", "status", "solved",
-            "baseline_time", "baseline_status", "speedup", "speedup_bound"] + feature_cols
+    cols = RESULT_COLUMNS + feature_cols
     out = Path(args.output)
     with out.open("w", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=cols)

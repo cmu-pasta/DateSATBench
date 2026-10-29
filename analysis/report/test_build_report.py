@@ -65,6 +65,25 @@ def test_router_section_has_solve_rates_and_how_often_each_encoding_is_fastest()
     assert r["scopes"]["llm"]["fastest"] == {"x": 1}
 
 
+LIVE = {"runs": 2, "repeats_used": [0, 1], "results": 4, "picks_known": 4, "picks_agree": 4,
+        "routing_time_s": {"median": 0.001, "mean": 0.001, "max": 0.002}, "routing_share": 0.01,
+        "time_vs_recorded_median": 1.02, "time_vs_recorded_n": 4, "predicted_total_s": 3.0,
+        "predicted_total_by_corpus_s": {"llm": 2.5}}
+
+
+def test_a_measured_router_brings_its_live_block():
+    measured = dict(CV, router_measured=True, live=LIVE, overall=summary(3.4, 2.0),
+                    by_corpus={"llm": summary(2.6, 2.0)},
+                    predicted={"overall": summary(3.0, 2.0), "by_corpus": {"llm": summary(2.5, 2.0)}})
+    with tempfile.TemporaryDirectory() as d:
+        r = router_section(*write(d, measured, META), TOTALS)
+        unmeasured = router_section(*write(d, CV, META), TOTALS)
+    assert r["cv"]["measured"] and r["cv"]["live"] == LIVE
+    assert r["scopes"]["all"]["table"]["router"]["total_s"] == 3.4
+    assert r["scopes"]["llm"]["total_sd"] == 0.5
+    assert not unmeasured["cv"]["measured"] and unmeasured["cv"]["live"] is None
+
+
 def test_a_model_trained_with_other_settings_is_flagged():
     with tempfile.TemporaryDirectory() as d:
         r = router_section(*write(d, CV, dict(META, min_samples_leaf=5)), TOTALS)
@@ -104,6 +123,18 @@ def test_reduction_section_compares_the_two_cross_validations():
     assert r["router"]["same_setting"] and r["router"]["matches_selection"]
 
 
+def test_feature_reduction_compares_the_predicted_routers_when_one_is_measured():
+    cv_all = dict(CV, feature_columns=["f", "g", "h"], router_measured=True, live=LIVE,
+                  overall=summary(9.0, 2.0),
+                  predicted={"overall": summary(3.0, 2.0), "by_corpus": {"llm": summary(2.5, 2.0)}})
+    cv_sel = dict(CV, feature_columns=["f", "h"], overall=summary(3.5, 2.0))
+    with tempfile.TemporaryDirectory() as d:
+        sel, a, s = write_reduction(d, SELECTION, cv_all, cv_sel)
+        r = reduction_section(sel, FEATS, a, s)
+    assert r["router"]["scopes"]["all"]["all"]["router"]["total_s"] == 3.0
+    assert r["router"]["same_setting"]
+
+
 def test_a_stale_selection_or_other_setting_is_flagged():
     cv_all = dict(CV, feature_columns=["f", "g", "h"])
     cv_sel = dict(CV, feature_columns=["f"], repeats=5)
@@ -127,9 +158,11 @@ def test_no_selection_means_no_section_and_no_cross_validation_means_no_comparis
 if __name__ == "__main__":
     test_router_section_has_every_scope_and_the_models_settings()
     test_router_section_has_solve_rates_and_how_often_each_encoding_is_fastest()
+    test_a_measured_router_brings_its_live_block()
     test_a_model_trained_with_other_settings_is_flagged()
     test_no_cross_validation_means_no_section()
     test_reduction_section_compares_the_two_cross_validations()
+    test_feature_reduction_compares_the_predicted_routers_when_one_is_measured()
     test_a_stale_selection_or_other_setting_is_flagged()
     test_no_selection_means_no_section_and_no_cross_validation_means_no_comparison()
     print("all build_report tests passed")

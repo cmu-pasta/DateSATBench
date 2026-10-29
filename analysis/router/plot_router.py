@@ -10,7 +10,8 @@ instances each encoding is the fastest on. The rows of (a) and (b) keep one orde
 two panels can be read across: no single encoding leads in both.
 
 Reads crossval_router.py's router_eval.json and router_eval.csv, as the report's
-Specialized router section does, so the numbers are the report's.
+Specialized router section does, so the numbers are the report's: the router measured in its
+live runs (run_router_cv.py) when joined.csv held them, else predicted.
 
 Writes analysis/outputs/plots/router.pdf (for the paper) and .png (to look at).
 """
