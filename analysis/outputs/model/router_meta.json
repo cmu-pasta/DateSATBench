@@ -12,8 +12,8 @@
  "instances": {
   "total": 800,
   "dropped_errored_or_missing": 0,
-  "dropped_all_timeout": 32,
-  "trained_on": 768
+  "all_timeout": 32,
+  "trained_on": 800
  },
  "encodings": [
   "alpha_beta",
@@ -89,11 +89,11 @@
  ],
  "bounds": "keep",
  "total_cost_s": {
-  "alpha_beta": 2111.651,
-  "epoch_days": 2143.408,
-  "hybrid_init_epoch": 1788.136,
-  "hybrid_init_ymd": 672.422,
-  "simple": 2698.198
+  "alpha_beta": 2751.651,
+  "epoch_days": 2783.408,
+  "hybrid_init_epoch": 2428.136,
+  "hybrid_init_ymd": 1312.422,
+  "simple": 3338.198
  },
  "best_single_encoding": "hybrid_init_ymd",
  "fallback": "hybrid_init_ymd",

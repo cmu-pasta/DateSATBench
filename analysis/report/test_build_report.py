@@ -16,7 +16,7 @@ def summary(total, oracle):
             "gap_closed_to_oracle": {"router": {"always x": 0.5}}, "router_total_sd_s": 0.5}
 
 
-CV = {"instances": 2, "dropped": {"errored_or_missing": 0, "all_timeout": 1}, "folds": 5,
+CV = {"instances": 2, "dropped": {"errored_or_missing": 0}, "all_timeout": 1, "folds": 5,
       "repeats": 3, "trees": 50, "setting": {"min_samples_leaf": 10, "max_depth": 16, "margin": 0.0},
       "fallbacks": ["x"], "baseline": "x", "best_performing_encoding": "x", "timeout_cost_s": 20.0,
       "overall": summary(3.0, 2.0), "by_corpus": {"llm": summary(2.5, 2.0)}}
@@ -25,6 +25,8 @@ META = {"encodings": ["x", "y"], "trees": 50, "max_depth": 16, "min_samples_leaf
         "pairs": {"x vs y": {"top_features": [{"feature": "f", "importance": 0.6},
                                               {"feature": "g", "importance": 0.3},
                                               {"feature": "h", "importance": 0.1}]}}}
+
+TOTALS = {"all": 3, "llm": 2}   # every instance per scope: the 2 cross-validated and the 1 left out
 
 
 def write(d, cv, meta):
@@ -35,7 +37,7 @@ def write(d, cv, meta):
 
 def test_router_section_has_every_scope_and_the_models_settings():
     with tempfile.TemporaryDirectory() as d:
-        r = router_section(*write(d, CV, META))
+        r = router_section(*write(d, CV, META), TOTALS)
     assert sorted(r["scopes"]) == ["all", "llm"]
     assert r["scopes"]["all"]["table"]["oracle"]["total_s"] == 2.0
     assert r["scopes"]["llm"]["gap_closed"] == 0.5
@@ -50,25 +52,28 @@ def test_router_section_has_solve_rates_and_how_often_each_encoding_is_fastest()
                         "corpus": ["llm", "legal", "llm", "legal"], "best": ["x", "y", "x", "y"]})
     with tempfile.TemporaryDirectory() as d:
         cv, meta = write(d, CV, META)
-        r = router_section(cv, meta)
+        r = router_section(cv, meta, TOTALS)
         assert r["scopes"]["all"]["fastest"] is None      # no router_eval.csv yet
         log.to_csv(Path(d) / "router_eval.csv", index=False)
-        r = router_section(cv, meta)
-    assert r["scopes"]["all"]["solve"]["router"] == {"solved": 1.5, "rate": 0.75}
-    assert r["scopes"]["all"]["solve"]["oracle"] == {"solved": 2.0, "rate": 1.0}
+        r = router_section(cv, meta, TOTALS)
+    # out of every instance: the one the cross-validation left out counts as unsolved
+    assert r["scopes"]["all"]["solve_of"] == 3
+    assert r["scopes"]["all"]["solve"]["router"] == {"solved": 1.5, "rate": 0.5}
+    assert r["scopes"]["all"]["solve"]["oracle"] == {"solved": 2.0, "rate": 0.6667}
+    assert r["scopes"]["llm"]["solve"]["oracle"] == {"solved": 2.0, "rate": 1.0}
     assert r["scopes"]["all"]["fastest"] == {"x": 1}      # one repeat counted, encodings of the table
     assert r["scopes"]["llm"]["fastest"] == {"x": 1}
 
 
 def test_a_model_trained_with_other_settings_is_flagged():
     with tempfile.TemporaryDirectory() as d:
-        r = router_section(*write(d, CV, dict(META, min_samples_leaf=5)))
+        r = router_section(*write(d, CV, dict(META, min_samples_leaf=5)), TOTALS)
     assert not r["model"]["matches_cv"]
 
 
 def test_no_cross_validation_means_no_section():
     with tempfile.TemporaryDirectory() as d:
-        assert router_section(Path(d) / "missing.json", Path(d) / "missing_meta.json") is None
+        assert router_section(Path(d) / "missing.json", Path(d) / "missing_meta.json", TOTALS) is None
 
 
 FEATS = pd.DataFrame({"id": ["i1", "i2", "i3"], "corpus": "llm",

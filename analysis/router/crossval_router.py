@@ -15,7 +15,7 @@ Features. By default the router sees every feature column. With --selected it se
 the features select_features.py kept (outputs/selected_features.json), and the results go
 to model_cross_validation_selected/ instead, so the two can be compared.
 
-How. The instances of joined.csv, dropped as in train_router.py (each one a single
+How. The instances of joined.csv, kept as in train_router.py (each one a single
 example per pair, its cost the median over its runs), are cut into --folds folds (default
 5), stratified by corpus: each corpus is shuffled and dealt evenly into the folds, so
 every fold holds the same share of every corpus. For every fold, the router is trained on
@@ -32,11 +32,15 @@ model_cross_validation_selected/):
                        corpus: a table of always each encoding, the router and the
                        oracle (total time, timeouts, and speedups over always
                        --baseline: of the totals, and the median and geometric mean of
-                       the per-instance speedup), the router's picks and fallbacks, how often it picks
+                       the per-instance speedup; the timeouts are counted in every run
+                       and averaged over the runs, as in solver_outcomes.py, the
+                       oracle taking the fastest encoding in each run), the router's
+                       picks and fallbacks, how often it picks
                        the fastest encoding, how much of the gap to the oracle it closes,
                        and the spread of the router's total over the repeats
     router_eval.csv    one row per repeat and instance: its fold and corpus, its cost on
-                       every encoding, the best encoding and its cost, the router's pick,
+                       every encoding, the best encoding ("none" where every encoding
+                       costs the same) and its cost, the router's pick,
                        whether it fell back, the fold's fallback and the router's cost
 """
 
@@ -53,6 +57,7 @@ from analysis.paths import CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, OUTPUTS,
 from analysis.router.train_router import (DEFAULT_SETTINGS, DEFAULT_TREES, ROUTER,
                                           feature_columns, fit_forests, instance_features,
                                           max_features_arg, route, training_set)
+from analysis.stats.instance_costs import run_costs
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 from analysis.stats.select_features import selected_columns
 
@@ -68,15 +73,27 @@ def strategy_costs(costs, picks):
     return pd.DataFrame(out)
 
 
-def summary_table(strategies, baseline, timeout_cost):
+def strategy_run_costs(runs, picks):
+    """strategy_costs in every run: one row per (run, instance) of `runs` (run_costs), each
+    strategy's time in that run. The router runs the encoding it picks for the instance, and
+    the oracle takes the fastest encoding in that run."""
+    pick = runs.columns.get_indexer(picks.loc[runs.index.get_level_values("id")])
+    out = {f"always {e}": runs[e] for e in runs.columns}
+    out["router"] = pd.Series(runs.to_numpy()[np.arange(len(runs)), pick], index=runs.index)
+    out["oracle"] = runs.min(axis=1)
+    return pd.DataFrame(out)
+
+
+def summary_table(strategies, run_strategies, baseline, timeout_cost):
     """Total time, timeouts and speedup over always-`baseline`, one row per strategy of
     strategy_costs: of the totals, and the median and geometric mean over instances of the
-    per-instance speedup (as in solver_outcomes.py, timeouts at the timeout)."""
+    per-instance speedup (as in solver_outcomes.py, timeouts at the timeout). The timeouts
+    are counted in every run, from strategy_run_costs, and averaged over the runs."""
     base = strategies[f"always {baseline}"]
     per_instance = strategies.rdiv(base, axis=0)
     return pd.DataFrame({
         "total_s": strategies.sum(),
-        "timeouts": (strategies >= timeout_cost).sum(),
+        "timeouts": (run_strategies >= timeout_cost).groupby(level="run").sum().mean(),
         "speedup_total": base.sum() / strategies.sum(),
         "speedup_median": per_instance.median(),
         "speedup_geomean": np.exp(np.log(per_instance).mean()),
@@ -91,11 +108,11 @@ def gap_closed(table, start, strategy="router"):
     return float((table.at[start, "total_s"] - table.at[strategy, "total_s"]) / gap)
 
 
-def summarize(strategies, picks, fell_back, baseline, best, timeout_cost):
+def summarize(strategies, run_strategies, picks, fell_back, baseline, best, timeout_cost):
     """The summary of one set of instances: summary_table, the router's picks and
     fallbacks, how often it picks the fastest encoding, and how much of the gap to the
     oracle it closes, from always `baseline` and from always `best`."""
-    table = summary_table(strategies, baseline, timeout_cost)
+    table = summary_table(strategies, run_strategies, baseline, timeout_cost)
     starts = dict.fromkeys([f"always {baseline}", f"always {best}"])   # one if they match
     return {
         "instances": len(strategies),
@@ -236,8 +253,10 @@ def main():
 
     joined = pd.read_csv(args.joined)
     joined = joined[joined["encoding"] != ROUTER]
-    costs, dropped = training_set(joined, timeout_cost)
-    train_costs, _ = training_set(joined, train_timeout_cost)    # the same instances
+    costs, dropped, all_timeout = training_set(joined, timeout_cost)
+    train_costs, _, _ = training_set(joined, train_timeout_cost)    # the same instances
+    runs = run_costs(joined, timeout_cost, costs.index)[costs.columns]   # for the timeouts
+    run_ids = runs.index.get_level_values("id")
     cols = feature_columns(joined)
     if args.selected:
         selected = selected_columns()
@@ -252,8 +271,8 @@ def main():
         ap.error(f"--baseline {args.baseline!r} is not one of {encodings}")
     best = costs.sum().idxmin()
 
-    print(f"{len(costs)} instances (dropped {dropped['errored_or_missing']} errored or missing "
-          f"and {dropped['all_timeout']} all-timeout): "
+    print(f"{len(costs)} instances (dropped {dropped['errored_or_missing']} errored or missing; "
+          f"kept {all_timeout} on which every encoding timed out): "
           + ", ".join(f"{c} {n}" for c, n in corpus.value_counts().sort_index().items())
           + f"; timeouts count as {timeout_cost:g} s")
     print(f"features: {len(cols)} columns" + (" (selected_features.json)" if args.selected else ""))
@@ -268,16 +287,18 @@ def main():
     for repeat, g in oof.groupby("repeat"):
         g = g.set_index("id").loc[costs.index]
         strategies = strategy_costs(costs, g["pick"])
-        overall.append(summarize(strategies, g["pick"], g["fell_back"], args.baseline, best,
-                                 timeout_cost))
+        run_strategies = strategy_run_costs(runs, g["pick"])
+        overall.append(summarize(strategies, run_strategies, g["pick"], g["fell_back"],
+                                 args.baseline, best, timeout_cost))
         for c in by_corpus:
             m = corpus == c
-            by_corpus[c].append(summarize(strategies[m], g["pick"][m], g["fell_back"][m],
-                                          args.baseline, best, timeout_cost))
+            in_c = run_ids.isin(corpus.index[m])
+            by_corpus[c].append(summarize(strategies[m], run_strategies[in_c], g["pick"][m],
+                                          g["fell_back"][m], args.baseline, best, timeout_cost))
         log = pd.DataFrame({"repeat": repeat, "fold": g["fold"], "corpus": corpus})
         for e in encodings:
             log[f"cost_{e}"] = costs[e]
-        log["best"] = costs.idxmin(axis=1)
+        log["best"] = costs.idxmin(axis=1).where(costs.nunique(axis=1) > 1, "none")   # no fastest where all tie
         log["best_cost"] = strategies["oracle"]
         log["router"] = g["pick"]
         log["fell_back"] = g["fell_back"]
@@ -304,6 +325,7 @@ def main():
                         f"stratified by corpus, repeated {args.repeats} times",
         "instances": len(costs),
         "dropped": dropped,
+        "all_timeout": all_timeout,
         "timeout_cost_s": timeout_cost,
         "folds": args.folds,
         "repeats": args.repeats,

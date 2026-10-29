@@ -5,7 +5,7 @@ Stage 5: build the standalone analysis report from the outputs of stages 2-4.
 
 Reads features.csv (+ features_meta.json), joined.csv and clusters.json (the PCA and
 t-SNE projections), computes the
-solver outcomes and speedup heatmaps for every corpus (and timeout mode), all from the one
+solver outcomes (with their cactus plot) and speedup heatmaps for every corpus (and timeout mode), all from the one
 measurement of instance_costs.py that the router uses too, and the
 feature-feature correlation (same functions as solver_outcomes.py and the PNG scripts,
 so the numbers match), and inlines everything into
@@ -30,14 +30,15 @@ import pandas as pd
 from analysis.features.extract_features import FEATURE_GROUPS
 from analysis.paths import (CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, MODEL, OUTPUTS, REPO,
                             SELECTED_FEATURES)
+from analysis.stats import paper_style as ps
 from analysis.stats.join_results import add_timeout_arg, check_run_config, timeout_seconds
 from analysis.stats.plot_feature_correlation import constant_features, feature_correlation
 from analysis.stats.plot_speedup_heatmap import speedup_correlations
 from analysis.stats.instance_costs import all_timeout_ids, cost_table
-from analysis.stats.solver_outcomes import COUNTS as OUTCOME_COUNTS, solver_outcomes
+from analysis.stats.solver_outcomes import COUNTS as OUTCOME_COUNTS, solved_times, solver_outcomes
 
 HERE = Path(__file__).parent
-CORPORA = ["llm", "legal", "grammar"]
+CORPORA = [c for c, *_ in ps.CORPORA]   # in the paper's order
 
 
 def clean(x, nd=4):
@@ -91,22 +92,24 @@ def fastest_counts(csv_path, encodings):
     return {c: {e: int((g["best"] == e).sum()) for e in encodings} for c, g in scopes.items()}
 
 
-def solve_rates(summary):
+def solve_rates(summary, total):
     """Instances each strategy of a crossval_router.py summary solves within the timeout,
-    and their share: the instances less its timeouts, which for the router are averaged
-    over the repeats."""
+    and their share of all `total` instances of the scope (the solver outcomes' count):
+    the cross-validated instances less its timeouts, which are averaged over the runs, and
+    for the router also over the repeats. Any instance the cross-validation left out counts
+    as unsolved."""
     n = summary["instances"]
     return {name: {"solved": clean(float(n - t["timeouts"])),
-                   "rate": clean(float((n - t["timeouts"]) / n))}
+                   "rate": clean(float((n - t["timeouts"]) / total))}
             for name, t in summary["table"].items()}
 
 
-def router_section(cv_path, meta_path):
+def router_section(cv_path, meta_path, totals):
     """The router's cross-validated results (crossval_router.py) and the settings of the
     model trained on every instance (train_router.py), or None when there are no
     cross-validated results. `matches_cv` says whether the model was trained with the
     setting the cross-validation measured. Each scope also gets every strategy's solve
-    rate and, from router_eval.csv beside the results, how many instances each encoding
+    rate out of all its instances (`totals`, per scope, the solver outcomes' count) and, from router_eval.csv beside the results, how many instances each encoding
     is the fastest on (None without that file)."""
     cv_path, meta_path = Path(cv_path), Path(meta_path)
     if not cv_path.exists():
@@ -116,11 +119,12 @@ def router_section(cv_path, meta_path):
     encodings = sorted(n[len("always "):] for n in cv["overall"]["table"] if n.startswith("always "))
     fastest = fastest_counts(cv_path.with_name("router_eval.csv"), encodings)
     out = {
-        "cv": {k: cv[k] for k in ("instances", "dropped", "folds", "repeats", "trees", "setting",
-                                  "fallbacks", "baseline", "best_performing_encoding",
-                                  "timeout_cost_s")},
+        "cv": {**{k: cv[k] for k in ("instances", "dropped", "folds", "repeats", "trees", "setting",
+                                     "fallbacks", "baseline", "best_performing_encoding",
+                                     "timeout_cost_s")},
+               "all_timeout": cv.get("all_timeout", 0)},     # kept, every encoding timed out
         "scopes": {c: {"instances": s["instances"], "table": s["table"],
-                       "solve": solve_rates(s),
+                       "solve": solve_rates(s, totals[c]), "solve_of": totals[c],
                        "picks": s["router_picks"], "fell_back": s["router_fell_back"],
                        "fastest": fastest.get(c) if fastest else None,
                        "picks_fastest": s["router_picks_fastest"],
@@ -238,13 +242,15 @@ def main():
             for e, row in t.to_dict(orient="index").items()
         }
 
-    # ---- speedup heatmaps: every scope x timeout mode -------------------
+    # ---- cactus plot: each encoding's solved instances, fastest first -----
+    cactus = {c: {e: [round(t, 5) for t in ts] for e, ts in solved_times(joined, timeout_s, c).items()}
+              for c in ["all"] + CORPORA}
+
+    # ---- speedup heatmaps: every scope -----------------------------------
     heat = {}
-    for mode in ("bound", "drop"):
-        heat[mode] = {}
-        for c in [None] + CORPORA:
-            rho, q, n = speedup_correlations(joined, timeout_s, args.baseline, c, mode)
-            heat[mode][c or "all"] = {"rho": frame(rho), "q": frame(q, 6), "n": n}
+    for c in [None] + CORPORA:
+        rho, q, n = speedup_correlations(joined, timeout_s, args.baseline, c)
+        heat[c or "all"] = {"rho": frame(rho), "q": frame(q, 6), "n": n}
 
     # ---- feature-feature correlation ------------------------------------
     rho, order, _ = feature_correlation(feats)      # order: related features sit together
@@ -282,13 +288,19 @@ def main():
             "corpora": {c: int((feats["corpus"] == c).sum()) for c in CORPORA},
             "n_instances": len(feats),
             "n_rows": len(joined),
+            # the paper figures' order and colours of the corpora and the encodings
+            "paper": {"corpora": CORPORA, "corpus_colours": {c: colour for c, _, colour, _ in ps.CORPORA},
+                      "encodings": [e for e, *_ in ps.ENCODINGS], "colours": ps.COLOURS,
+                      "router": ps.ROUTER},
         },
         "groups": FEATURE_GROUPS,
         "outcomes": outcomes,
+        "cactus": cactus,
         "heat": heat,
         "corr": corr,
         "clusters": cl,
-        "router": router_section(args.router_cv, args.router_model),
+        "router": router_section(args.router_cv, args.router_model,
+                                 {c: o[args.baseline]["instances"] for c, o in outcomes.items()}),
         "reduction": reduction_section(args.selected_features, feats, args.router_cv,
                                        args.router_cv_selected),
     }

@@ -21,11 +21,11 @@ analysis/stats/instance_costs.py's, which every other stage uses too. The forest
 trained on the same costs with a timed-out run counting at --train-timeout-cost instead
 (DEFAULT_SETTINGS' train_timeout_cost_s, 80 s), so a pick that times out weighs more than
 its 20 s and the router steers further away from timeouts; the totals and the fallback
-use --timeout-cost. Instances are dropped when
-    - any encoding has an errored or missing run on them, or
-    - every encoding timed out on them, so no encoding is faster than another.
-Instances on which only some encodings time out are kept: they are the examples that
-teach the router which choices are dangerous.
+use --timeout-cost. Instances are dropped only when any encoding has an errored or
+missing run on them. Instances on which some encodings time out are kept: they are the
+examples that teach the router which choices are dangerous. So are those on which every
+encoding timed out: every pair ties on them, so they give no training examples, but they
+count in the totals as a timeout for every strategy, as in every other stage.
 
 Overfitting. With leaves allowed to rest on one instance, the forests memorize the
 training constraints. --min-samples-leaf keeps every leaf on several. Every split chooses
@@ -70,8 +70,7 @@ import sklearn
 from sklearn.ensemble import RandomForestClassifier
 
 from analysis.paths import MODEL, OUTPUTS, REPO
-from analysis.stats.instance_costs import all_timeout_ids, cost_table  # noqa: F401 (re-exported)
-from analysis.stats.instance_costs import usable_costs as training_set
+from analysis.stats.instance_costs import all_timeout_ids, complete_costs, cost_table  # noqa: F401 (re-exported)
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 
 RANDOM_STATE = 0
@@ -95,6 +94,16 @@ RESULT_COLS = {"id", "corpus", "encoding", "run", "time", "status", "solved",
 def feature_columns(joined):
     """The router's inputs: the feature columns of joined.csv, in order."""
     return [c for c in joined.columns if c not in RESULT_COLS and not c.startswith("label_")]
+
+
+def training_set(joined, timeout_cost):
+    """The cost table the router is trained and evaluated on: every instance that every
+    encoding ran without an error. Returns (costs, dropped, all_timeout): dropped counts the
+    instances left out, {"errored_or_missing": n}, and all_timeout how many of those kept
+    every encoding timed out on."""
+    costs, incomplete = complete_costs(joined, timeout_cost)
+    return (costs, {"errored_or_missing": incomplete},
+            int(costs.index.isin(all_timeout_ids(joined)).sum()))
 
 
 def instance_features(joined, cols, ids):
@@ -286,8 +295,8 @@ def main():
     joined = joined[joined["encoding"] != ROUTER]
     cols = feature_columns(joined)
     n_total = joined["id"].nunique()
-    costs, dropped = training_set(joined, timeout_cost)
-    train_costs, _ = training_set(joined, train_timeout_cost)    # the same instances
+    costs, dropped, all_timeout = training_set(joined, timeout_cost)
+    train_costs, _, _ = training_set(joined, train_timeout_cost)    # the same instances
     feats = instance_features(joined, cols, costs.index)
     encodings = sorted(costs.columns)
 
@@ -298,8 +307,8 @@ def main():
     print(f"timeout: {timeout:g} s, counted as {timeout_cost:g} s "
           f"({train_timeout_cost:g} s in the training examples)")
     print(f"instances: {n_total}; dropped {dropped['errored_or_missing']} with an errored or "
-          f"missing run and {dropped['all_timeout']} on which every encoding timed out; "
-          f"training on {len(costs)}")
+          f"missing run; training on {len(costs)}, {all_timeout} of which every "
+          f"encoding timed out on (no examples, as every pair ties)")
 
     pairs = {}
     print(f"\n{len(encodings) * (len(encodings) - 1) // 2} forests of {args.trees} trees, "
@@ -352,7 +361,7 @@ def main():
         "random_state": RANDOM_STATE,
         "instances": {"total": n_total,
                       "dropped_errored_or_missing": dropped["errored_or_missing"],
-                      "dropped_all_timeout": dropped["all_timeout"],
+                      "all_timeout": all_timeout,
                       "trained_on": len(costs)},
         "encodings": encodings,
         "feature_columns": cols,

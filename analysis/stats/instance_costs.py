@@ -7,16 +7,20 @@ solver outcomes, the feature x speedup heatmap and the router all measure the sa
   * An instance's **cost** on an encoding is the median time over its runs, with a
     timed-out run counting at the timeout. An instance is one measurement, however many
     runs it has.
-  * The **complete** instances are those every encoding ran without an error. The solver
-    outcomes count all of them, so an instance on which every encoding timed out counts as
-    a timeout for every encoding.
-  * The **usable** instances are the complete ones less those on which every encoding timed
-    out. No encoding is faster than another on those, so the speedup heatmap and the router
-    leave them out and count them on their own (`dropped["all_timeout"]`) rather than as
-    ties.
-  * An encoding **solves** an instance when its cost is below the timeout.
+  * The **complete** instances are those every encoding ran without an error. Every stage
+    counts all of them; none leaves out timeouts. An instance on which every encoding timed
+    out counts as a timeout for every encoding, and as a speedup of 1 (`all_timeout_ids`
+    names them, for stages that report how many there are).
   * A **speedup** over the baseline is the baseline's cost divided by the encoding's cost
     on the same instance, timeouts included at the timeout.
+  * What an encoding **solves** is counted per run, not from the costs: in every run it
+    solves the instances it finished within the timeout, and the solved count (and the sat,
+    unsat and timed-out counts) is the mean of those per-run counts. The solve rate is that
+    mean over the instances, i.e. the mean over the runs of each run's share solved.
+  * The solver outcomes' **total time**, **median instance** and **median speedup** are
+    taken per run, not from the costs: each is computed on every run separately (run k of
+    one encoding against run k of the baseline, timeouts at the timeout) and reported as
+    the median of those per-run values, with their range.
 """
 
 from analysis.stats.join_results import FINISHED
@@ -26,11 +30,32 @@ def cost_table(joined, timeout_cost):
     """Cost in seconds of each encoding on each instance: one row per id, one column per
     encoding. A timed-out run counts at `timeout_cost`, and runs are combined by their
     median. A cell is NaN when any of its runs errored or it has no runs."""
+    runs = joined.assign(cost=run_cost(joined, timeout_cost)).groupby(["id", "encoding"])["cost"]
+    return runs.median().where(runs.count() == runs.size()).unstack("encoding")
+
+
+def run_cost(joined, timeout_cost):
+    """Each row's time in seconds, a timeout at `timeout_cost`, NaN for an errored run."""
     finished = joined["status"].isin(FINISHED)
     timed_out = joined["status"] == "timeout"
-    cost = joined["time"].where(finished, timeout_cost).where(finished | timed_out)
-    runs = joined.assign(cost=cost).groupby(["id", "encoding"])["cost"]
-    return runs.median().where(runs.count() == runs.size()).unstack("encoding")
+    return joined["time"].where(finished, timeout_cost).where(finished | timed_out)
+
+
+def run_costs(joined, timeout_cost, ids):
+    """Each run's time in seconds on the instances `ids`, a timeout at `timeout_cost`: one
+    row per (run, id), one column per encoding."""
+    rows = joined[joined["id"].isin(ids)]
+    return (rows.assign(cost=run_cost(rows, timeout_cost))
+            .set_index(["run", "id", "encoding"])["cost"].unstack("encoding"))
+
+
+def run_outcomes(joined, timeout_cost, ids):
+    """Each run's outcome on the instances `ids`: its answer (sat or unsat) where it finished
+    within the timeout, else "timeout". One row per (run, id), one column per encoding."""
+    rows = joined[joined["id"].isin(ids)]
+    solved = run_cost(rows, timeout_cost) < timeout_cost
+    return (rows.assign(outcome=rows["status"].where(solved, "timeout"))
+            .set_index(["run", "id", "encoding"])["outcome"].unstack("encoding"))
 
 
 def all_timeout_ids(joined):
@@ -45,23 +70,3 @@ def complete_costs(joined, timeout_cost):
     costs = cost_table(joined, timeout_cost)
     incomplete = costs.isna().any(axis=1)
     return costs[~incomplete], int(incomplete.sum())
-
-
-def usable_costs(joined, timeout_cost):
-    """The cost table of the usable instances, and how many instances were dropped.
-
-    Drops instances with an errored or missing run on any encoding, then those on which
-    every encoding timed out. Returns (costs, dropped), where dropped counts each kind:
-    {"errored_or_missing": n, "all_timeout": n}.
-    """
-    costs, incomplete = complete_costs(joined, timeout_cost)
-    all_timeout = costs.index.isin(all_timeout_ids(joined))
-    return costs[~all_timeout], {"errored_or_missing": incomplete,
-                                 "all_timeout": int(all_timeout.sum())}
-
-
-def answers(joined):
-    """The answer (sat or unsat) of each encoding on each instance, from its finished runs:
-    one row per id, one column per encoding, NaN where no run finished."""
-    done = joined[joined["status"].isin(FINISHED)]
-    return done.groupby(["id", "encoding"])["status"].first().unstack("encoding")

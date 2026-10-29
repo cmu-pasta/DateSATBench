@@ -16,7 +16,14 @@ file have no bounds.
 `bool`. Only the variables that appear are declared, unless an example adds one explicitly
 as `d: date`. `(same example)` reuses the constraints of the example just above.
 
-Sections follow the column order of `features.csv` and of the heatmaps.
+There is one section per feature group (`FEATURE_GROUPS` in `extract_features.py`), and the
+heatmap in `report.html` has one table per group. The first two groups describe an instance
+as they would any SMT problem, the next three describe what is specific to dates, and the
+last one estimates the work of each DateSat encoding. `features.csv` has the columns in this
+file's order with one exception: the coupling columns of SEARCH SPACE (`n_components` to
+`mixed_sort_coupling`) and the columns of DATE ARITHMETIC from `n_self_ops` on come after
+CALENDAR CORNERS, in that order. That order is older than the groups. It is kept because the
+router's forests draw features by column position, so a new order would change its results.
 
 ---
 
@@ -84,12 +91,20 @@ or set `DATESAT_TIMEOUT_MS`. Timed-out runs count at that timeout when computing
 
 ## SEARCH SPACE
 
+How many values the solver has to find, and how they are tied together. A variable that an
+equality fixes to a value, such as `a == Date(2024,1,31)`, leaves nothing to search for, and
+a group of variables that shares no atom with the rest is an independent subproblem.
+
 Several columns here depend on which variables are **pinned**. A variable `v` is pinned when
 some top-level conjunct is `v == e` (either side) and `e` is already known: a literal, or an
 expression whose variables are all pinned themselves. Pinning is closed transitively, so
 `a == Date(2020,1,1)` pins `a`, and then `b == a + Period(0,0,5)` pins `b`. Only a top-level
 `==` pins: `b > a`, `b <= Date(...)`, and an equality inside `||` or `->` leave the variable
 free. For every sort, pinned + free = declared.
+
+The last four columns, from `n_components` on, describe how the variables are **coupled**.
+The first three of them read a graph with one node per declared variable and an edge between
+any two variables that appear in the same atom.
 
 
 
@@ -180,11 +195,56 @@ a + Period(0,1,0) < b;  a + Period(0,1,0) != Date(2020,5,1)
                                                           →  4   (a, b, a+1mo, Date(2020,5,1))
 ```
 
+
+
+### n_components
+
+Number of connected groups of variables, i.e. independent subproblems.
+
+```
+a < b;  b < c;  d: date                                   →  2   ({a,b,c}, {d})
+```
+
+
+
+### largest_component_frac
+
+Size of the largest group / number of variables.
+
+```
+(same example)                                            →  0.75
+```
+
+
+
+### graph_density
+
+Edges / possible edges, where possible edges = n(n-1)/2.
+
+```
+(same example)                                            →  0.333   (2 of 6)
+```
+
+
+
+### mixed_sort_coupling
+
+Atoms that tie a date field to an `int` **variable** (not a literal).
+
+```
+a.year == y;  a.month == 2                                →  1   (only the first)
+```
+
 ---
 
 
 
 ## BOOLEAN SKELETON
+
+The logical shape of the instance, with every comparison read as a true/false atom: how many
+atoms there are, and how often the solver must choose between alternatives. Each `||` and
+each `->` is a **case split**: to satisfy `f -> a < b`, the solver either makes `f` false or
+makes `a < b` true.
 
 Four columns here were renamed so the name says what is measured; see RENAMED COLUMNS at
 the end for the old names.
@@ -326,6 +386,27 @@ f -> a < b;  a != b                                       →  1
 
 ## DATE ARITHMETIC
 
+The `date ± period` operations on variables: how many there are, how large their steps are,
+and what they connect. The encodings translate these operations very differently, because a
+month or a year has no fixed number of days. `b == a + Period(0,18,0)` is one
+operation, with a months part of 18, that ties `b` to `a`. An operation on a literal date
+folds to a constant and is left out of every column except `ground_arith_frac`.
+
+The first seven columns, up to `max_date_chain_len`, treat every operation alike. But two
+operations with the same period can cost a solver very different amounts: `a != a +
+Period(0,0,1000)` compares a date with itself and is decided almost for free, while `a != b
++ Period(0,0,1000)` ties two dates together. So the columns from `n_self_ops` on classify
+each operation by the date comparison it sits in, from the variables (of any sort) that each
+side of the comparison mentions:
+
+- **self-referential**: both sides mention the same single variable, `a < a + Period(0,1,0)`;
+- **constant**: one side mentions no variable, `a + Period(1,0,0) < Date(2020,1,1)`;
+- **cross**: anything else, `b < a + Period(0,1,0)`.
+
+Unless one of these columns says otherwise, it counts the cross and constant operations and
+leaves the self-referential ones out. A comparison on a field, such as
+`(a + Period(0,1,0)).year == 2020`, compares ints and holds no counted operation.
+
 
 
 ### n_date_period_ops
@@ -402,196 +483,6 @@ b == a                                                    →  0
 b == a + Period(0,1,1)                                    →  1
 b == (a + Period(0,1,0)) + Period(0,0,1)                  →  2
 ```
-
----
-
-
-
-## COMPONENT EXTRACTION
-
-
-
-### n_dot_year
-
-Number of `.year` accesses.
-
-```
-a.year == y;  a.month == 2;  a.day > 10                   →  1
-```
-
-
-
-### n_dot_month
-
-Number of `.month` accesses.
-
-```
-(same example)                                            →  1
-```
-
-
-
-### n_dot_day
-
-Number of `.day` accesses.
-
-```
-(same example)                                            →  1
-```
-
-
-
-### property_access_frac
-
-Field accesses / (field accesses + date comparisons). 1.0 means the instance works entirely
-on year/month/day numbers, 0.0 means it works entirely on whole dates.
-
-```
-a.year == y;  a.month == 2;  a.day > 10;  a < Date(2020,2,29)
-                                                          →  0.75   (3 / (3 + 1))
-```
-
-
-
-### n_symbolic_date_ctors
-
-`Date(...)` calls with a non-literal argument, which build a date from numbers (the reverse of
-a field access).
-
-```
-b == Date(a.year + 1, a.month, 1)                         →  1
-```
-
----
-
-
-
-## CALENDAR CORNERS
-
-All three columns look only at **literal** dates, `Date(y, m, d)` with three integer
-arguments. A symbolic constructor such as `Date(a.year, 2, 29)` is counted by
-`n_symbolic_date_ctors`, not here.
-
-
-
-### uses_feb29
-
-1 if any literal `Date(y, 2, 29)` appears, otherwise 0.
-
-```
-a < Date(2020,2,29)                                       →  1
-```
-
-
-
-### uses_leap_year
-
-1 if any literal date falls in a leap year, otherwise 0. A year is a leap year when it is
-divisible by 4, except century years, which must be divisible by 400. Arithmetic on such a
-date can land on or step over Feb 29, so the encoding's leap-year rule is exercised even
-when no `Date(y, 2, 29)` is written.
-
-```
-a < Date(2024,3,1)                                        →  1
-a < Date(2000,3,1)                                        →  1   (400-year rule)
-a < Date(1900,3,1)                                        →  0   (100-year rule)
-a < Date(2024,2,29) + Period(0,0,1);  b == Date(a.year, 2, 29)
-                                                          →  1   (the literal; the symbolic one is ignored)
-```
-
-
-
-### near_month_end_frac
-
-Literal dates whose day is 28 or later / all literal dates. Only the day number is checked,
-not the length of the month: the last day of every month counts, and so does day 28 of a
-31-day month. Month ends are where calendar arithmetic stops being uniform: a month or year
-step from day 29, 30 or 31 can run past the end of a shorter month and is clamped to its
-last day (Jan 31 + 1 month is Feb 28), and a day step from the last day of a month rolls
-over into the next month. The grammar generator's `near_month_end_prob` puts each literal on
-day 28 or later with that probability; with literals drawn uniformly over all dates, about
-1 in 9 lands there.
-
-```
-a >= Date(2020,1,5);  a <= Date(2020,1,31);  b == Date(2021,6,15)
-                                                          →  0.333   (day 31, of 3)
-a < Date(2023,2,28);  b > Date(2024,2,29)                 →  1   (both are the last day of February)
-a < Date(2023,3,28)                                       →  1   (day 28 counts, though March has 31)
-a < b + Period(0,1,0)                                     →  0   (no literal dates)
-a < Date(2024,1,5);  b == Date(a.year, 2, 29)             →  0   (the symbolic one is ignored)
-```
-
----
-
-
-
-## VARIABLE COUPLING
-
-The graph has one node per declared variable and an edge between any two variables that
-appear in the same atom.
-
-### n_components
-
-Number of connected groups of variables, i.e. independent subproblems.
-
-```
-a < b;  b < c;  d: date                                   →  2   ({a,b,c}, {d})
-```
-
-
-
-### largest_component_frac
-
-Size of the largest group / number of variables.
-
-```
-(same example)                                            →  0.75
-```
-
-
-
-### graph_density
-
-Edges / possible edges, where possible edges = n(n-1)/2.
-
-```
-(same example)                                            →  0.333   (2 of 6)
-```
-
-
-
-### mixed_sort_coupling
-
-Atoms that tie a date field to an `int` **variable** (not a literal).
-
-```
-a.year == y;  a.month == 2                                →  1   (only the first)
-```
-
----
-
-
-
-
-## ARITHMETIC STRUCTURE
-
-What the `date ± period` operations on variables connect, and how large their steps are.
-`n_date_period_ops` and the `max_abs_*` columns above treat every such operation alike, but
-two operations with the same period can cost a solver very different amounts: `a != a +
-Period(0,0,1000)` compares a date with itself and is decided almost for free, while `a != b
-+ Period(0,0,1000)` ties two dates together.
-
-Each operation is classified by the date comparison it sits in, from the variables (of any
-sort) that each side of the comparison mentions:
-
-- **self-referential**: both sides mention the same single variable, `a < a + Period(0,1,0)`;
-- **constant**: one side mentions no variable, `a + Period(1,0,0) < Date(2020,1,1)`;
-- **cross**: anything else, `b < a + Period(0,1,0)`.
-
-Only `date ± period` operations on a variable count, as in `n_date_period_ops`; operations
-on a literal date fold to a constant. Unless a column says otherwise, it counts the cross
-and constant operations and leaves the self-referential ones out. A comparison on a field,
-such as `(a + Period(0,1,0)).year == 2020`, compares ints and holds no counted operation.
 
 
 
@@ -828,9 +719,140 @@ a > Date(2010,5,1);  a < Date(2024,1,1);  b == Date(a.year,2,29);  a >= Date(1,1
 
 
 
+## COMPONENT EXTRACTION
+
+Where the instance takes a date apart into its year, month and day numbers, with `.year`,
+`.month` and `.day`, or puts one together from numbers, with a `Date(...)` that has a part
+that is not a literal. These link the dates to integer arithmetic: `a.month == 2` holds for
+every date in February. Reading a field is free for a date held as (year, month, day) and
+costs a conversion for a date held as a day count (see ENCODING COSTS).
+
+
+
+### n_dot_year
+
+Number of `.year` accesses.
+
+```
+a.year == y;  a.month == 2;  a.day > 10                   →  1
+```
+
+
+
+### n_dot_month
+
+Number of `.month` accesses.
+
+```
+(same example)                                            →  1
+```
+
+
+
+### n_dot_day
+
+Number of `.day` accesses.
+
+```
+(same example)                                            →  1
+```
+
+
+
+### property_access_frac
+
+Field accesses / (field accesses + date comparisons). 1.0 means the instance works entirely
+on year/month/day numbers, 0.0 means it works entirely on whole dates.
+
+```
+a.year == y;  a.month == 2;  a.day > 10;  a < Date(2020,2,29)
+                                                          →  0.75   (3 / (3 + 1))
+```
+
+
+
+### n_symbolic_date_ctors
+
+`Date(...)` calls with a non-literal argument, which build a date from numbers (the reverse of
+a field access).
+
+```
+b == Date(a.year + 1, a.month, 1)                         →  1
+```
+
+---
+
+
+
+## CALENDAR CORNERS
+
+Literal dates where the calendar is irregular: February 29, leap years, and the last days of
+a month. Arithmetic near them is where DateSat's rounding rule matters: adding a month or a
+year that lands past the end of a month rounds down to its last day, so
+`Date(2024,1,31) + Period(0,1,0)` is 2024-02-29 and `Date(2024,2,29) + Period(1,0,0)` is
+2025-02-28. An encoding that gets the rule wrong goes wrong only on dates like these.
+
+All three columns look only at **literal** dates, `Date(y, m, d)` with three integer
+arguments. A symbolic constructor such as `Date(a.year, 2, 29)` is counted by
+`n_symbolic_date_ctors`, not here.
+
+
+
+### uses_feb29
+
+1 if any literal `Date(y, 2, 29)` appears, otherwise 0.
+
+```
+a < Date(2020,2,29)                                       →  1
+```
+
+
+
+### uses_leap_year
+
+1 if any literal date falls in a leap year, otherwise 0. A year is a leap year when it is
+divisible by 4, except century years, which must be divisible by 400. Arithmetic on such a
+date can land on or step over Feb 29, so the encoding's leap-year rule is exercised even
+when no `Date(y, 2, 29)` is written.
+
+```
+a < Date(2024,3,1)                                        →  1
+a < Date(2000,3,1)                                        →  1   (400-year rule)
+a < Date(1900,3,1)                                        →  0   (100-year rule)
+a < Date(2024,2,29) + Period(0,0,1);  b == Date(a.year, 2, 29)
+                                                          →  1   (the literal; the symbolic one is ignored)
+```
+
+
+
+### near_month_end_frac
+
+Literal dates whose day is 28 or later / all literal dates. Only the day number is checked,
+not the length of the month: the last day of every month counts, and so does day 28 of a
+31-day month. Month ends are where calendar arithmetic stops being uniform: a month or year
+step from day 29, 30 or 31 can run past the end of a shorter month and is clamped to its
+last day (Jan 31 + 1 month is Feb 28), and a day step from the last day of a month rolls
+over into the next month. The grammar generator's `near_month_end_prob` puts each literal on
+day 28 or later with that probability; with literals drawn uniformly over all dates, about
+1 in 9 lands there.
+
+```
+a >= Date(2020,1,5);  a <= Date(2020,1,31);  b == Date(2021,6,15)
+                                                          →  0.333   (day 31, of 3)
+a < Date(2023,2,28);  b > Date(2024,2,29)                 →  1   (both are the last day of February)
+a < Date(2023,3,28)                                       →  1   (day 28 counts, though March has 31)
+a < b + Period(0,1,0)                                     →  0   (no literal dates)
+a < Date(2024,1,5);  b == Date(a.year, 2, 29)             →  0   (the symbolic one is ignored)
+```
+
+---
+
+
+
 ## ENCODING COSTS
 
-One column for each operation that a DateSat encoding pays heavily for. DateSat holds a date
+An estimate, read off the text, of the work each DateSat encoding does on the instance: one
+column for each operation that a DateSat encoding pays heavily for. DateSat holds a date
 in one of two **forms**: a **day count**, the number of days since its epoch 2000-03-01, or
 **(year, month, day)**. The encodings keep different forms, so each one is slow on a
 different operation:

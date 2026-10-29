@@ -12,23 +12,31 @@ same rows as CSV with a `scope` column (all, llm, legal, grammar). build_report.
 calls solver_outcomes() for every scope, so the report shows these exact numbers.
 
 Every number comes from instance_costs.py, the measurement the router is trained and
-cross-validated on: an instance's cost is the median over its runs, a timed-out run counts
-at the timeout (--timeout, or $DATESAT_TIMEOUT_MS), and every instance that every encoding
-ran without an error counts. An instance on which every encoding timed out counts as a
-timeout for every encoding. The router's cross-validation leaves those out, since no
-encoding is faster than another on them, so always-<encoding> there has `unsolvable` fewer
-timeouts and `unsolvable` x the timeout less total time than the encoding's row here.
+cross-validated on: a timed-out run counts at the timeout (--timeout, or
+$DATESAT_TIMEOUT_MS), and every instance that every encoding ran without an error counts.
+The solved counts are taken in every run and averaged over the runs, so they can be
+fractional. Total time, median time and median speedup are computed on every run separately
+and reported as the median over the runs, with the fastest and slowest run as its _min and
+_max. The wins compare instance costs, the median over an instance's runs. An instance on
+which every encoding timed out counts as a timeout for every encoding. The router's
+cross-validation counts the same way, so its always-<encoding> rows have this table's
+timeouts and total time.
 
 Columns
   instances            instances in the scope with no errored or missing run; the same
                        for every row
-  sat, unsat, timeout  instances this encoding answered sat, answered unsat, or timed out on
+  sat, unsat, timeout  mean over the runs of the instances this encoding answered sat,
+                       answered unsat, or timed out on in that run
   solved               sat + unsat
-  solve_rate           solved / instances
-  total_time           sum of the costs, timeouts at the timeout (seconds)
-  median_time          median cost over the instances, timeouts at the timeout
+  solve_rate           solved / instances: the mean over the runs of the run's share solved
+  total_time           median over the runs of the run's summed time on the instances,
+                       timeouts at the timeout (seconds)
+  median_time          median over the runs of the run's median time on the instances,
+                       timeouts at the timeout
   wins                 instances on which it costs less than the baseline
-  median_speedup       median over the instances of the baseline's cost / its cost
+  median_speedup       median over the runs of the run's median over the instances of the
+                       baseline's time / its time, run k against the baseline's run k
+  <column>_min/max     the lowest and highest run's value of each of those three
   unsolvable           of those instances, the ones on which every encoding timed out;
                        they count as a timeout in every row
   incomplete           instances with an errored or missing run, left out of every other
@@ -38,16 +46,19 @@ The baseline's win and speedup columns are empty: it is not compared with itself
 """
 
 import argparse
+import math
 
 import pandas as pd
 
 from analysis.paths import OUTPUTS
-from analysis.stats.instance_costs import all_timeout_ids, answers, complete_costs
+from analysis.stats.instance_costs import all_timeout_ids, complete_costs, run_costs, run_outcomes
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 
 CORPORA = ["llm", "legal", "grammar"]
-COUNTS = ["instances", "sat", "unsat", "timeout", "solved", "wins", "unsolvable", "incomplete"]
-FLOATS = ["solve_rate", "total_time", "median_time", "median_speedup"]
+COUNTS = ["instances", "wins", "unsolvable", "incomplete"]
+OUTCOMES = ["sat", "unsat", "timeout"]        # each the mean over the runs of a count
+PER_RUN = ["total_time", "median_time", "median_speedup"]
+FLOATS = OUTCOMES + ["solved", "solve_rate"] + [f"{c}{s}" for c in PER_RUN for s in ("", "_min", "_max")]
 
 
 def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
@@ -56,33 +67,67 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
         df = df[df["corpus"] == corpus]
     costs, incomplete = complete_costs(df, timeout_cost)
     unsolvable = int(costs.index.isin(all_timeout_ids(df)).sum())
-    answer = answers(df).reindex(index=costs.index, columns=costs.columns)
+    outcome = run_outcomes(df, timeout_cost, costs.index)
+    by_run = run_costs(df, timeout_cost, costs.index).groupby(level="run")
+    totals, medians = by_run.sum(), by_run.median()
     encodings = [baseline] + sorted(e for e in costs.columns if e != baseline)
     n = len(costs)
 
     rows = []
     for e in encodings:
         c = costs[e]
-        solved = c < timeout_cost
+        # each outcome's count in every run, then the mean over the runs
+        counts = {k: outcome[e].eq(k).groupby(level="run").sum().mean() if n else None
+                  for k in OUTCOMES}
         speedup = costs[baseline] / c
         compared = e != baseline
+        per_run = {"total_time": totals[e], "median_time": medians[e]} if n else {}
+        if compared and n:
+            per_run["median_speedup"] = by_run.apply(lambda r: (r[baseline] / r[e]).median())
         rows.append({
             "encoding": e,
             "instances": n,
-            "sat": int((solved & (answer[e] == "sat")).sum()),
-            "unsat": int((solved & (answer[e] == "unsat")).sum()),
-            "timeout": int((~solved).sum()),
-            "solved": int(solved.sum()),
-            "solve_rate": solved.mean() if n else None,
-            "total_time": c.sum(),
-            "median_time": c.median() if n else None,
+            **counts,
+            "solved": counts["sat"] + counts["unsat"] if n else None,
+            "solve_rate": (counts["sat"] + counts["unsat"]) / n if n else None,
             "wins": int((speedup > 1).sum()) if compared else None,
-            "median_speedup": speedup.median() if compared and n else None,
             "unsolvable": unsolvable,
             "incomplete": incomplete,
+            **{f"{k}{s}": getattr(per_run[k], f)() if k in per_run else None
+               for k in PER_RUN for s, f in (("", "median"), ("_min", "min"), ("_max", "max"))},
         })
     out = pd.DataFrame(rows).set_index("encoding")
     return out.astype({c: "Int64" for c in COUNTS}).astype({c: "float64" for c in FLOATS})
+
+
+def solved_times(df, timeout_cost, corpus=None):
+    """For a cactus plot: each encoding's times on the runs it solved, over every run,
+    fastest first, on the same instances as solver_outcomes(). Each run counts 1 / runs, so
+    a list's length divided by the number of runs is its `solved`."""
+    if corpus and corpus != "all":
+        df = df[df["corpus"] == corpus]
+    costs, _ = complete_costs(df, timeout_cost)
+    times = run_costs(df, timeout_cost, costs.index)
+    return {e: sorted(t[t < timeout_cost].tolist()) for e, t in times.items()}
+
+
+def fmt_count(x):
+    """A count, or a mean of counts over the runs to one decimal."""
+    return f"{x:.0f}" if float(x).is_integer() else f"{x:.1f}"
+
+
+def fmt_pct(share, digits=1):
+    """A share as a percentage to `digits` decimals, a half rounded up, as the report's pct()
+    does: 175.1 of 200 is 87.6%, where the float 0.8755, just under, rounds to 87.5%."""
+    scaled = float(f"{100 * share * 10 ** digits:.12g}")      # drop the float error first
+    return f"{math.floor(scaled + 0.5) / 10 ** digits:.{digits}f}"
+
+
+def fmt_range(r, col, fmt):
+    """A per-run column as 'median (min-max)'."""
+    if pd.isna(r[col]):
+        return "-"
+    return f"{fmt(r[col])} ({fmt(r[col + '_min'])}-{fmt(r[col + '_max'])})"
 
 
 def fmt_time(t):
@@ -98,13 +143,13 @@ def display(t, scope):
         base = pd.isna(r["wins"])
         rows.append({
             "encoding": e,
-            "solved": f"{r['solved']}/{r['instances']} ({100 * r['solve_rate']:.1f}%)",
-            "sat": r["sat"], "unsat": r["unsat"], "timeout": r["timeout"],
-            "total time": f"{r['total_time']:.1f} s",
-            "median time": fmt_time(r["median_time"]),
+            "solved": f"{fmt_count(r['solved'])}/{r['instances']} ({fmt_pct(r['solve_rate'])}%)",
+            **{k: fmt_count(r[k]) for k in OUTCOMES},
+            "total time": fmt_range(r, "total_time", lambda t: f"{t:.1f} s"),
+            "median time": fmt_range(r, "median_time", fmt_time),
             "beats baseline": "baseline" if base
-            else f"{r['wins']}/{r['instances']} ({100 * r['wins'] / r['instances']:.0f}%)",
-            "median speedup": "-" if pd.isna(r["median_speedup"]) else f"{r['median_speedup']:.2f}x",
+            else f"{r['wins']}/{r['instances']} ({fmt_pct(r['wins'] / r['instances'], 0)}%)",
+            "median speedup": fmt_range(r, "median_speedup", lambda x: f"{x:.2f}x"),
         })
     first = t.iloc[0]
     head = (f"{scope}: {int(first['instances'])} instances, {int(first['unsolvable'])} of which no "
