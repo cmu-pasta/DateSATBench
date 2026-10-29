@@ -44,6 +44,11 @@ machine ran as fast as when the encodings were recorded. Every encoding's figure
 encodings' recorded runs. With --selected the router is always predicted: the live runs
 used every feature.
 
+Without training. --from-fold-models trains nothing: it takes every pick from the fold
+models already written to the output directory (fold_models.json, and router_eval.csv for
+whether a pick fell back), with their setting, and leaves the models and fold_models.json
+as they are. Use it to add the live runs to the cross-validation that produced their models.
+
 Writes to analysis/outputs/model_cross_validation/ (with --selected,
 model_cross_validation_selected/):
     router_eval.json   the setting, the feature columns, whether the router is measured,
@@ -344,6 +349,35 @@ def live_agreement(live, ids, oof, repeat_of, costs, timeout_cost):
     }
 
 
+def written_picks(out, ids, cols, timeout):
+    """The picks of the fold models already written to `out`, as out_of_fold_picks gives
+    them (without the training ids), and their manifest: fold_models.json gives every
+    instance's fold and pick and every fold's fallback, router_eval.csv whether the pick fell
+    back. Raises ValueError unless the models used the feature columns `cols` and the
+    timeout, every repeat routes exactly the instances `ids`, and the two files agree."""
+    manifest = json.loads((out / f"{FOLD_MODELS}.json").read_text())
+    if manifest["features"] != cols:
+        raise ValueError("the fold models used other feature columns than joined.csv has")
+    if manifest["timeout_s"] != timeout:
+        raise ValueError(f"the fold models were trained with a {manifest['timeout_s']:g} s "
+                         f"timeout, not {timeout:g} s")
+    rows = []
+    for r, (fold_of, pick) in enumerate(zip(manifest["fold_of"], manifest["pick"])):
+        if set(fold_of) != set(ids):
+            raise ValueError(f"repeat {r} of the fold models routes other instances than joined.csv's")
+        rows += [{"repeat": r, "fold": fold_of[i], "id": i, "pick": pick[i],
+                  "fallback": manifest["models"][r][fold_of[i]]["fallback"]} for i in ids]
+    oof = pd.DataFrame(rows)
+    logged = (pd.read_csv(out / "router_eval.csv").set_index(["repeat", "id"])
+              .reindex(pd.MultiIndex.from_frame(oof[["repeat", "id"]])))
+    if (logged["fold"].to_numpy() != oof["fold"].to_numpy()).any() \
+            or (logged["router"].to_numpy() != oof["pick"].to_numpy()).any() \
+            or (logged["fallback"].to_numpy() != oof["fallback"].to_numpy()).any():
+        raise ValueError("router_eval.csv and fold_models.json disagree on a fold, pick or fallback")
+    oof["fell_back"] = logged["fell_back"].to_numpy(dtype=bool)
+    return manifest, oof
+
+
 def sha256(text):
     return hashlib.sha256(text.encode()).hexdigest()
 
@@ -377,6 +411,9 @@ def main():
                     help="use only the features in selected_features.json (select_features.py)")
     ap.add_argument("--output-dir", help="default: outputs/model_cross_validation/, or "
                                          "model_cross_validation_selected/ with --selected")
+    ap.add_argument("--from-fold-models", action="store_true",
+                    help="train nothing: take the picks and the setting from the fold models "
+                         "already in the output directory, e.g. to add the live runs")
     args = ap.parse_args()
     if args.output_dir is None:
         args.output_dir = str(CROSS_VALIDATION_SELECTED if args.selected else CROSS_VALIDATION)
@@ -416,6 +453,16 @@ def main():
     if args.baseline not in encodings:
         ap.error(f"--baseline {args.baseline!r} is not one of {encodings}")
     best = costs.sum().idxmin()
+    out = Path(args.output_dir)
+    if args.from_fold_models:
+        try:
+            manifest, oof = written_picks(out, costs.index, cols, timeout)
+        except (OSError, ValueError) as e:
+            raise SystemExit(f"{e}; run crossval_router.py without --from-fold-models")
+        args.folds, args.repeats, args.trees = manifest["folds"], manifest["repeats"], manifest["trees"]
+        s = manifest["setting"]
+        leaf, depth, max_features = s["min_samples_leaf"], s["max_depth"], s["max_features"]
+        margin, train_timeout_cost = s["margin"], s["train_timeout_cost_s"]
 
     print(f"{len(costs)} instances (dropped {dropped['errored_or_missing']} errored or missing; "
           f"kept {all_timeout} on which every encoding timed out): "
@@ -425,7 +472,9 @@ def main():
     print(f"setting: {args.trees} trees, depth <= {depth}, at least {leaf} instances per leaf, "
           f"{max_features} of the features per split, margin {margin:g}, timeouts count as {train_timeout_cost:g} s in training; "
           f"{args.folds}-fold cross-validation stratified by corpus, "
-          f"repeated {args.repeats} times ...")
+          f"repeated {args.repeats} times"
+          + (f"; picks from the fold models in {out}, not trained again" if args.from_fold_models
+             else " ..."))
     measured = len(live) > 0
     if measured:
         try:
@@ -434,7 +483,6 @@ def main():
             raise SystemExit(f"{e}; rerun run_router_cv.py, or join without its results")
         run_of = {r: run for run, r in repeat_of.items()}
         live_picks = live.set_index(["run", "id"])["routed_to"]
-    out = Path(args.output_dir)
     models_dir = out / FOLD_MODELS
     joined_rel = os.path.relpath(args.joined, REPO)
     fold_models, fold_texts = {}, {}         # written only once every check has passed
@@ -454,9 +502,10 @@ def main():
         fold_models[(repeat, fold)] = {"model": f"{FOLD_MODELS}/{name}", "sha256": sha256(text),
                                        "fallback": fallback}
 
-    oof = out_of_fold_picks(costs, feats, corpus, leaf, depth, margin, args.folds, args.repeats,
-                            args.trees, train_costs, max_features,
-                            on_fold=save_fold_model).drop(columns="trained_on")
+    if not args.from_fold_models:
+        oof = out_of_fold_picks(costs, feats, corpus, leaf, depth, margin, args.folds,
+                                args.repeats, args.trees, train_costs, max_features,
+                                on_fold=save_fold_model).drop(columns="trained_on")
 
     # the predicted router's summary of every repeat, overall and for each corpus
     per_repeat, per_repeat_by_corpus, logs = [], {c: [] for c in sorted(corpus.unique())}, []
@@ -547,14 +596,15 @@ def main():
 
     # Every check has passed: write the fold models, each replaced in one step, so a
     # run_router_cv.py running meanwhile never finds a model missing; then the rest.
-    models_dir.mkdir(parents=True, exist_ok=True)
-    for name, text in fold_texts.items():
-        tmp = models_dir / f"{name}.tmp"
-        tmp.write_text(text)
-        os.replace(tmp, models_dir / name)
-    for stale in models_dir.glob("repeat_*_fold_*.json"):
-        if stale.name not in fold_texts:
-            stale.unlink()
+    if not args.from_fold_models:
+        models_dir.mkdir(parents=True, exist_ok=True)
+        for name, text in fold_texts.items():
+            tmp = models_dir / f"{name}.tmp"
+            tmp.write_text(text)
+            os.replace(tmp, models_dir / name)
+        for stale in models_dir.glob("repeat_*_fold_*.json"):
+            if stale.name not in fold_texts:
+                stale.unlink()
     pd.concat(logs).to_csv(out / "router_eval.csv", index_label="id", float_format="%.6g")
     summary = {
         "joined": os.path.relpath(args.joined, REPO),
@@ -584,6 +634,10 @@ def main():
         "fold_models": f"{FOLD_MODELS}.json",
     }
     (out / "router_eval.json").write_text(json.dumps(summary, indent=1))
+    if args.from_fold_models:
+        print(f"\nWrote {out / 'router_eval.json'} and {out / 'router_eval.csv'}; "
+              f"the fold models are unchanged")
+        return
     by_repeat = {r: g.set_index("id") for r, g in oof.groupby("repeat")}
     manifest = {
         "joined": joined_rel,

@@ -38,6 +38,22 @@ def time_label(t):
     return f"{t * 1000:g} ms" if t < 1 else f"{t:g} s"
 
 
+def time_axis(times, encodings, timeout_s):
+    """The fastest solved run over every corpus, and the powers of ten from it up to the timeout."""
+    lo = min(times[c][e][0] for c in times for e in encodings if times[c].get(e))
+    ticks = [10.0 ** p for p in range(int(np.floor(np.log10(lo))), int(np.ceil(np.log10(timeout_s))))
+             if 10.0 ** p < timeout_s]
+    return lo, ticks
+
+
+def step_curve(ts, runs, lo, timeout_s):
+    """An encoding's line: a step up of 1 / runs at every solved run, then flat to the timeout
+    at the solved count."""
+    x = [ts[0]] + ts + [timeout_s] if ts else [lo, timeout_s]
+    y = [k / runs for k in [0, *range(1, len(ts) + 1), len(ts)]] if ts else [0, 0]
+    return x, y
+
+
 def plot(joined, timeout_s, out_dir, with_router=False):
     usetex = ps.apply()
     times = {c: solved_times(joined, timeout_s, c) for c, *_ in ps.CORPORA}
@@ -46,18 +62,13 @@ def plot(joined, timeout_s, out_dir, with_router=False):
     encodings = [e for e in shown if any(e in per for per in times.values())]
     colours = {**ps.COLOURS, ROUTER: ps.ROUTER}
     names = {**ps.NAMES, ROUTER: r"\textbf{Router}" if usetex else "Router"}
-    lo = min(times[c][e][0] for c in times for e in encodings if times[c].get(e))
-    ticks = [10.0 ** p for p in range(int(np.floor(np.log10(lo))), int(np.ceil(np.log10(timeout_s))))
-             if 10.0 ** p < timeout_s]
+    lo, ticks = time_axis(times, encodings, timeout_s)
 
     fig, axes = plt.subplots(1, len(ps.CORPORA), figsize=SIZE)
     for ax, (c, name, *_) in zip(axes, ps.CORPORA):
         n = len(joined.loc[joined["corpus"] == c, "id"].unique())
         for e in encodings:
-            ts = times[c].get(e, [])
-            # a step up of 1 / runs at every solved run, then flat to the timeout at the solved count
-            x = [ts[0]] + ts + [timeout_s] if ts else [lo, timeout_s]
-            y = [k / runs[e] for k in [0, *range(1, len(ts) + 1), len(ts)]] if ts else [0, 0]
+            x, y = step_curve(times[c].get(e, []), runs[e], lo, timeout_s)
             ax.step(x, y, where="post", color=colours[e], linewidth=1.2, solid_capstyle="butt")
         ax.axvline(timeout_s, color=ps.INK_3, linewidth=0.6, linestyle=(0, (1, 1.5)))   # the timeout
         ax.set_xscale("log")

@@ -148,7 +148,7 @@ and stops on any difference.
 python -m analysis.run.run_router_cv --tag router-cv-10runs   # 10 runs; resumes if stopped
 python -m analysis.stats.join_results --exclude hybrid_both \
     --results results/all-10runs-bounded-datesat28d8186 results/router-cv-10runs
-python -m analysis.router.crossval_router                     # the router now measured
+python -m analysis.router.crossval_router --from-fold-models  # the router now measured; trains nothing
 python -m analysis.report.build_report \
     --results results/all-10runs-bounded-datesat28d8186 results/router-cv-10runs
 ```
@@ -160,7 +160,8 @@ models; if they differ from the committed ones, `git status` shows `fold_models.
 changed. The fold
 models must be the ones `run_router_cv` used, so commit the models a live evaluation ran
 with together with its results. Once `joined.csv` holds the
-router's results, `crossval_router` reports it as *measured*: every live run is summarized
+router's results, `crossval_router --from-fold-models` reports it as *measured*, taking the picks
+from the fold models the live runs used instead of training them again: every live run is summarized
 as its repeat's prediction is, with the router charged its time in that run (routing
 included), and the summaries are averaged over the runs. `router_eval.json`'s `live` block
 says how the live runs compare with the prediction: pick agreement (a mismatch stops

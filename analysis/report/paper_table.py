@@ -1,21 +1,26 @@
 r"""
 Write the report's solver-outcomes table as a LaTeX tabular for the paper.
 
-    python -m analysis.report.paper_table --timeout 20000     # outputs/outcomes_table.tex
+    python -m analysis.report.paper_table --timeout 20000     # outputs/outcomes_table.tex, and its plots
     python -m analysis.report.paper_table --no-ranges         # without the lowest-highest run
     python -m analysis.report.paper_table --with-router       # the router's live runs as a last row
 
 The numbers are solver_outcomes()'s, the ones the report shows, one block per corpus. The
 file holds the colour definitions and the tabular only; the paper wraps it in its own float:
-\begin{table} \caption{...} \input{outcomes_table} \end{table}. It needs xcolor, booktabs
-and makecell, and the paper's encoding macros (\naive, \epoch, ...).
+\begin{table} \caption{...} \input{outcomes_table} \end{table}. It needs xcolor, booktabs,
+makecell and graphicx, and the paper's encoding macros (\naive, \epoch, ...). Each corpus's
+cactus plot is written beside it, as outcomes_table_cactus_<corpus>.pdf.
 
 Columns: the encoding; the instances it solves, as a bar of sat, unsat and timed-out
-instances with the solved count and share beside it and the three counts under it, each
-counted in every run and averaged over the runs (so it can be fractional); total
-time and median instance time, each the median over the runs; and, against the baseline,
-the instances it is faster on and the median speedup, also the median over the runs. Under
-each median over the runs, in grey, the lowest and highest run.
+instances with the three counts beside it, each in a column of its own and counted in every
+run and averaged over the runs (so it can be fractional); mean and median time per
+instance, each the median over the runs, with the lowest and highest run under each in grey
+and the standard deviation over the instances after the mean, as mean +- SD (solver_outcomes'
+sd_time); and, spanning the corpus's rows, its cactus plot as plot_cactus
+draws a panel, one line per encoding. Each line has its own colour and dash pattern, so it
+can be told apart in black and white; a sample before each encoding's name shows it. The
+best in each corpus is bold and underlined: the most instances solved, on the sat and unsat
+counts that add up to it, and the lowest mean and median time.
 
 The router is not an encoding, so its live runs (run_router_cv.py), when joined.csv holds
 them, are left out unless --with-router asks for them as a row of their own, measured like
@@ -25,12 +30,19 @@ every encoding.
 import argparse
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+from matplotlib.ticker import FixedLocator, NullLocator
 
 from analysis.paths import OUTPUTS
+from analysis.stats import paper_style as ps
 from analysis.stats.instance_costs import ROUTER, encodings_only
 from analysis.stats.join_results import add_timeout_arg, timeout_seconds
-from analysis.stats.solver_outcomes import fmt_count, fmt_pct, run_counts, solver_outcomes
+from analysis.stats.plot_cactus import step_curve, time_axis, time_label
+from analysis.stats.solver_outcomes import fmt_count, run_counts, solved_times, solver_outcomes
 
 # The paper's names and order: corpora as in the dataset section, encodings as in the
 # solver section.
@@ -38,13 +50,25 @@ CORPORA = {"llm": "LLM-Synthesized", "grammar": "Grammar-Sampled", "legal": "Leg
 ENCODINGS = {"simple": r"\naive", "epoch_days": r"\epoch", "hybrid_init_ymd": r"\hybridymd",
              "hybrid_init_epoch": r"\hybridepoch", "hybrid_both": r"\hybridboth",
              "alpha_beta": r"\ab"}
-# The report's colours: sat, unsat and timed out; the "faster on" bar and its track; grey text.
-COLOURS = {"dsSat": "2F9E55", "dsUnsat": "F0A030", "dsTimeout": "D43D3D",
-           "dsBar": "55544E", "dsTrack": "E2E0D9", "dsDim": "85837B"}
+# The report's colours: sat, unsat and timed out; grey text.
+COLOURS = {"dsSat": "2F9E55", "dsUnsat": "F0A030", "dsTimeout": "D43D3D", "dsDim": "85837B"}
+COUNT_GAP = r"@{\hspace{4pt}}"   # between the sat, unsat and timed-out columns
+PLUS_MINUS = r"@{{\scriptsize\color{dsDim}\ $\pm$\ }}"   # between the mean and its SD
+LINES = {**ps.COLOURS, ROUTER: ps.ROUTER}   # each encoding's line, as in the paper's figures
 BAR_CM = 1.25         # the solved bar, all instances
-MINIBAR_CM = 0.7      # the "faster on" bar, all instances
 GAP_PT = 0.6          # between the solved bar's segments
 MIN_CM = 0.04         # a segment that is not empty is at least this wide
+ROW_PT = 10.0         # a row before stretching: acmsmall's \footnotesize line
+STRETCH = 1.1         # \arraystretch, a little air between the rows
+CACTUS_W_IN = 1.665   # a corpus's plot: the width the table leaves; its height is its rows'
+CACTUS_PT = 7         # the plots' axis labels, as large as the table's grey text
+LINE_PT = 1.0         # an encoding's line, in the plots and in its samples
+SAMPLE_PT = 13        # a sample of an encoding's line, before its name
+# Each encoding's dash pattern (on, off, ... in pt; None is solid), so the lines stay apart
+# printed in black and white, where Simple and Hybrid init_ymd come out the same grey and the
+# two epoch encodings nearly so: solid, dashed, dotted, dash-dot and dash-dot-dot.
+DASHES = {"simple": (6, 2), "epoch_days": (1, 1.3), "hybrid_init_ymd": None,
+          "hybrid_init_epoch": (4, 1.3, 1, 1.3), "alpha_beta": (4, 1.3, 1, 1.3, 1, 1.3)}
 
 
 def dim(text):
@@ -64,10 +88,51 @@ def solved_bar(r):
         for c, n in segs)
 
 
-def minibar(frac):
-    return (rf"\rlap{{\textcolor{{dsTrack}}{{\rule{{{MINIBAR_CM}cm}}{{0.9ex}}}}}}"
-            rf"\rlap{{\textcolor{{dsBar}}{{\rule{{{MINIBAR_CM * frac:.3f}cm}}{{0.9ex}}}}}}"
-            rf"\hspace{{{MINIBAR_CM}cm}}")
+def line_sample(e):
+    """A short stretch of the encoding's line, in its colour and dash pattern, drawn with rules."""
+    colour = LINES.get(e, ps.INK_2).lstrip("#").upper()
+    pattern, parts, x, i = DASHES.get(e) or (SAMPLE_PT, 0), [], 0.0, 0
+    while x < SAMPLE_PT - 1e-6:
+        step = min(pattern[i % len(pattern)], SAMPLE_PT - x)
+        parts.append(rf"\rule[0.5ex]{{{step:g}pt}}{{{LINE_PT:g}pt}}" if i % 2 == 0
+                     else rf"\hspace{{{step:g}pt}}")
+        x, i = x + step, i + 1
+    return rf"\textcolor[HTML]{{{colour}}}{{{''.join(parts)}}}"
+
+
+def cactus(times, runs, encodings, n, lo, ticks, timeout_s, height_in, path):
+    """One corpus's cactus plot, drawn as plot_cactus draws a panel but sized to hang beside
+    the corpus's rows: no title or legend, since the table has them, and only 0 and every
+    instance labelled on the instance axis."""
+    w, h = CACTUS_W_IN * 72, height_in * 72              # in pt, as the margins are
+    left, bottom, right, top = 15, 11, 5, 2              # room for the labels
+    fig = plt.figure(figsize=(CACTUS_W_IN, height_in))
+    ax = fig.add_axes((left / w, bottom / h, 1 - (left + right) / w, 1 - (bottom + top) / h))
+    for e in encodings:
+        x, y = step_curve(times.get(e, []), runs[e], lo, timeout_s)
+        dashes = DASHES.get(e)                           # matplotlib scales a pattern by the width
+        ax.step(x, y, where="post", color=LINES.get(e, ps.INK_2), linewidth=LINE_PT,
+                linestyle=(0, [d / LINE_PT for d in dashes]) if dashes else "-",
+                solid_capstyle="butt")
+    ax.axhline(n, color=ps.RULE, linewidth=0.5, zorder=0)                          # every instance
+    ax.axvline(timeout_s, color=ps.INK_3, linewidth=0.5, linestyle=(0, (1, 1.5)))   # the timeout
+    ax.set_xscale("log")
+    ax.set_xlim(lo / 1.4, timeout_s * 1.25)
+    ax.set_ylim(0, n * 1.04)
+    ax.xaxis.set_major_locator(FixedLocator(ticks + [timeout_s]))
+    ax.xaxis.set_minor_locator(NullLocator())
+    # 1 ms, 1 s and the timeout are labelled; the powers of ten between them are not
+    ax.set_xticklabels([time_label(t) if t == timeout_s or round(np.log10(t)) % 3 == 0 else ""
+                        for t in ticks + [timeout_s]])
+    ax.yaxis.set_major_locator(FixedLocator([0, n / 2, n]))
+    ax.set_yticklabels(["0", "", f"{n}"])
+    ax.tick_params(labelsize=CACTUS_PT, length=2, pad=1.5, color=ps.INK_3, labelcolor=ps.INK_3)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    for side in ("bottom", "left"):
+        ax.spines[side].set_color(ps.INK_3)
+    fig.savefig(path)
+    plt.close(fig)
 
 
 def run_range(r, col, fmt, ranges):
@@ -83,71 +148,102 @@ def best(values, low):
     return {e for e, v in values.items() if v == target}
 
 
-def rows(t, baseline, ranges, ms):
-    tfmt = (lambda x: f"{1000 * x:.1f}") if ms else (lambda x: f"{x:.2f}")
-    totfmt, sfmt = (lambda x: f"{x:.1f}"), (lambda x: f"{x:.2f}")
-    encs = [e for e in ENCODINGS if e in t.index] + [e for e in t.index if e not in ENCODINGS]
-    others = [e for e in encs if e != baseline]
+def ordered(t):
+    return [e for e in ENCODINGS if e in t.index] + [e for e in t.index if e not in ENCODINGS]
+
+
+def encoding_name(e):
+    return "Router" if e == ROUTER else ENCODINGS.get(e, r"\texttt{" + e.replace("_", r"\_") + "}")
+
+
+def time_formats(ms):
+    """How the median time, and the mean time and its SD, are printed: in ms, or in s."""
+    if ms:
+        return (lambda x: f"{1000 * x:.1f}"), (lambda x: f"{1000 * x:.0f}")
+    return (lambda x: f"{x:.2f}"), (lambda x: f"{x:.2f}")
+
+
+def rows(t, ranges, ms, widest):
+    tfmt, mfmt = time_formats(ms)
+    encs = ordered(t)
     shown = lambda fmt, col, es: {e: float(fmt(t.loc[e, col])) for e in es}   # compared as printed
     top = {"solved": best(shown(fmt_count, "solved", encs), low=False),
-           "total": best(shown(totfmt, "total_time", encs), low=True),
-           "median": best(shown(tfmt, "median_time", encs), low=True),
-           "wins": best({e: int(t.loc[e, "wins"]) for e in others}, low=False),
-           "speedup": best(shown(sfmt, "median_speedup", others), low=False)}
-    bold = lambda text, col, e: rf"\textbf{{{text}}}" if e in top[col] else text
+           "mean": best(shown(mfmt, "mean_time", encs), low=True),
+           "median": best(shown(tfmt, "median_time", encs), low=True)}
+    # the best value in its corpus, bold and underlined
+    mark = lambda text, col, e: rf"\underline{{\textbf{{{text}}}}}" if e in top[col] else text
 
     out = []
     for e in encs:
         r = t.loc[e]
-        k = {c: fmt_count(r[c]) for c in ("sat", "unsat", "timeout", "solved")}
-        name = "Router" if e == ROUTER else ENCODINGS.get(e, r"\texttt{" + e.replace("_", r"\_") + "}")
-        pct = dim(f"({fmt_pct(r.solve_rate)}" + r"\%)")
-        solved = two_lines(rf"{solved_bar(r)}\ \ {bold(k['solved'], 'solved', e)}\ {pct}",
-                           f"{k['sat']} / {k['unsat']} / {k['timeout']}", "l")
-        total = two_lines(bold(totfmt(r.total_time), "total", e),
-                          run_range(r, "total_time", totfmt, ranges))
-        median = two_lines(bold(tfmt(r.median_time), "median", e),
+        k = {c: fmt_count(r[c]) for c in ("sat", "unsat", "timeout")}
+        name = rf"{line_sample(e)}\ {encoding_name(e)}"
+        # The bar and the sat, unsat and timed-out counts each in a column of their own, so the
+        # counts line up down the table; sat and unsat add up to the solved count.
+        solved = " & ".join([solved_bar(r), mark(k["sat"], "solved", e),
+                             mark(k["unsat"], "solved", e), k["timeout"]])
+        mean = two_lines(mark(mfmt(r.mean_time), "mean", e),
+                         run_range(r, "mean_time", mfmt, ranges))
+        # The time right-aligned in a slot as wide as the widest, so the times line up and the
+        # column can centre them under its heading, which the time heading above makes wide.
+        median = two_lines(rf"\hphantom{{\textbf{{{widest}}}}}\llap{{{mark(tfmt(r.median_time), 'median', e)}}}",
                            run_range(r, "median_time", tfmt, ranges))
-        if e == baseline:
-            faster, speedup = dim("baseline"), dim(r"$1.00\times$")
-        else:
-            share = dim(f"({fmt_pct(r.wins / r.instances, 0)}" + r"\%)")
-            faster = rf"{minibar(r.wins / r.instances)}\ \ {bold(int(r.wins), 'wins', e)}\ {share}"
-            x = rf"${sfmt(r.median_speedup)}\times$"
-            speedup = two_lines(rf"{{\boldmath{x}}}" if e in top["speedup"] else x,
-                                run_range(r, "median_speedup", sfmt, ranges))
-        out.append(f"{name} & {solved} & {total} & {median} & {faster} & {speedup} \\\\")
+        out.append(f"{name} & {solved} & {mean} & {dim(mfmt(r.sd_time))} & {median} & \\\\")
     return out
 
 
-def latex_table(joined, timeout_s, baseline="simple", ranges=True, with_router=False):
+def latex_table(joined, timeout_s, stem, ranges=True, with_router=False):
+    """The tabular, after writing each corpus's cactus plot to <stem>_cactus_<corpus>.pdf."""
     if not with_router:
         joined = encodings_only(joined)
     elif len(set(run_counts(joined).values())) > 1:          # the headers name one count of runs
         raise ValueError(f"the router and the encodings have different numbers of runs: "
                          f"{run_counts(joined)}")
-    tables = {c: solver_outcomes(joined, timeout_s, baseline, c) for c in CORPORA}
+    tables = {c: solver_outcomes(joined, timeout_s, corpus=c) for c in CORPORA}
     ms = all(t["median_time_max"].max() < 1 for t in tables.values())
+    widest = max((time_formats(ms)[0](x) for t in tables.values() for x in t["median_time"]), key=len)
     runs = joined["run"].nunique()
     sw = {k: rf"\textcolor{{ds{k}}}{{\rule{{0.8ex}}{{0.8ex}}}}" for k in ("Sat", "Unsat", "Timeout")}
-    legend = dim(f"{sw['Sat']} sat / {sw['Unsat']} unsat / {sw['Timeout']} timed out")
+    legend = dim(rf"{sw['Sat']} sat\enspace {sw['Unsat']} unsat\enspace {sw['Timeout']} timed out")
+    sd = dim(r"$\pm$ SD")
     unit = "ms" if ms else "s"
+    ps.apply()
+    times = {c: solved_times(joined, timeout_s, c) for c in CORPORA}
+    counts = run_counts(joined)
+    encs = ordered(next(iter(tables.values())))
+    lo, ticks = time_axis(times, encs, timeout_s)
+    plots = {c: f"{stem.name}_cactus_{c}" for c in CORPORA}
+    # A plot spans its corpus's name row, the 2pt below it and its encodings' rows. Its top
+    # is raised to the top of the name row and it takes up no height, so the rows keep theirs.
+    # A row is \arraystretch times \normalbaselineskip tall; inside a tabular \baselineskip is 0.
+    height_in = ((len(encs) + 1) * STRETCH * ROW_PT + 2) / 72
+    for c, t in tables.items():
+        cactus(times[c], counts, encs, int(t.iloc[0].instances), lo, ticks, timeout_s,
+               height_in, stem.parent / f"{plots[c]}.pdf")
+    span = rf"\dimexpr {(len(encs) + 1) * STRETCH:g}\normalbaselineskip+2pt\relax"
+    hang = rf"-\dimexpr {(len(encs) + 0.3) * STRETCH:g}\normalbaselineskip+2pt\relax"
     lines = [f"% Written by python -m analysis.report.paper_table from {runs} runs, "
              f"timeout {timeout_s:g} s. Do not edit by hand.",
              *(rf"\definecolor{{{k}}}{{HTML}}{{{v}}}" for k, v in COLOURS.items()),
-             r"\begin{tabular}{@{}l l r r l r@{}}",
+             rf"\renewcommand{{\arraystretch}}{{{STRETCH:g}}}",
+             # encoding; bar, sat, unsat, timed out; mean +- SD, median; plot
+             rf"\begin{{tabular}}{{@{{}}l l@{{\ \ }}r{COUNT_GAP}r{COUNT_GAP}r r{PLUS_MINUS}l c l@{{}}}}",
              r"\toprule",
-             rf" & & \multicolumn{{2}}{{c}}{{Time, median of {runs} runs}} & "
-             rf"\multicolumn{{2}}{{c}}{{Versus {ENCODINGS.get(baseline, baseline)}}} \\",
-             r"\cmidrule(lr){3-4} \cmidrule(l){5-6}",
-             rf"Encoding & \makecell[l]{{Solved\\{legend}}} "
-             rf"& Total (s) & Median instance ({unit}) & Faster on & Median speedup \\"]
+             rf"\multicolumn{{5}}{{l}}{{}} & \multicolumn{{3}}{{c}}"
+             rf"{{Time ({unit})\ {dim(f'median of {runs} runs')}}} & \\",
+             r"\cmidrule(lr){6-8}",
+             # every heading centred over its column, or over the columns it names
+             rf"\multicolumn{{1}}{{@{{}}c}}{{Encoding}} & \multicolumn{{4}}{{c}}{{\makecell{{Solved\\{legend}}}}} "
+             rf"& \multicolumn{{2}}{{c}}{{Mean {sd}}} & \multicolumn{{1}}{{c}}{{\makecell{{Median\\instance}}}} "
+             rf"& \multicolumn{{1}}{{c@{{}}}}{{\makecell{{Instances solved\\{dim(f'by time, mean of {runs} runs')}}}}} \\"]
     for i, (c, t) in enumerate(tables.items()):
         lines.append(r"\midrule" if i == 0 else r"\midrule[\heavyrulewidth]")
         n = dim(f"{int(t.iloc[0].instances)} instances")
-        lines.append(rf"\multicolumn{{6}}{{@{{}}l}}{{\textbf{{{CORPORA[c]}}}\ {n}}} \\")
+        plot = rf"\raisebox{{{hang}}}[0pt][0pt]{{\includegraphics[height={span}]{{{plots[c]}}}}}"
+        # the corpus's name in the encodings' column, its size above the bars it measures
+        lines.append(rf"\textbf{{{CORPORA[c]}}} & \multicolumn{{4}}{{l}}{{{n}}} & \multicolumn{{2}}{{c}}{{}} & & {plot} \\")
         lines.append(r"\addlinespace[2pt]")
-        lines.extend(rows(t, baseline, ranges, ms))
+        lines.extend(rows(t, ranges, ms, widest))
     lines += [r"\bottomrule", r"\end{tabular}"]
     return "\n".join(lines) + "\n"
 
@@ -156,17 +252,17 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
-    ap.add_argument("--baseline", default="simple")
     ap.add_argument("--no-ranges", dest="ranges", action="store_false",
                     help="leave out the lowest and highest run under each median over the runs")
     ap.add_argument("--with-router", action="store_true",
                     help="add the router's live runs as a row, when joined.csv holds them")
-    ap.add_argument("--output", default=str(OUTPUTS / "outcomes_table.tex"))
+    ap.add_argument("--output", default=str(OUTPUTS / "outcomes_table.tex"),
+                    help="the tabular; the cactus plots are written beside it")
     add_timeout_arg(ap)
     args = ap.parse_args()
     try:
-        tex = latex_table(pd.read_csv(args.joined), timeout_seconds(ap, args), args.baseline,
-                          args.ranges, args.with_router)
+        tex = latex_table(pd.read_csv(args.joined), timeout_seconds(ap, args),
+                          Path(args.output).with_suffix(""), args.ranges, args.with_router)
     except ValueError as e:
         ap.error(str(e))
     Path(args.output).write_text(tex)

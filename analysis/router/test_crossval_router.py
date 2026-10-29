@@ -1,10 +1,14 @@
+import json
+import tempfile
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
 from analysis.router.crossval_router import (average_summaries, live_agreement, live_router,
                                              measured_summaries, out_of_fold_picks,
                                              strategy_costs, strategy_run_costs, summarize,
-                                             summary_table)
+                                             summary_table, written_picks)
 from analysis.router.test_train_router import random_instances
 
 
@@ -178,6 +182,40 @@ def test_live_agreement_compares_the_live_picks_with_the_prediction():
     assert a["time_vs_recorded_median"] == 1.099             # less routing: 1.099, 1.0995, 0.999
 
 
+def write_fold_models(out, oof, cols, timeout):
+    """fold_models.json and router_eval.csv in `out`, as crossval_router writes them for `oof`."""
+    folds = oof.groupby(["repeat", "fold"])["fallback"].first()
+    by_repeat = {r: g.set_index("id") for r, g in oof.groupby("repeat")}
+    (out / "fold_models.json").write_text(json.dumps({
+        "features": cols, "timeout_s": timeout,
+        "models": [[{"fallback": folds[(r, k)]} for k in sorted(folds[r].index)] for r in by_repeat],
+        "fold_of": [{i: int(k) for i, k in g["fold"].items()} for g in by_repeat.values()],
+        "pick": [g["pick"].to_dict() for g in by_repeat.values()]}))
+    oof.rename(columns={"pick": "router"}).to_csv(out / "router_eval.csv", index=False)
+
+
+def test_written_picks_are_the_picks_the_fold_models_were_written_with():
+    costs, feats = random_instances(30)
+    strata = pd.Series(["llm"] * 15 + ["legal"] * 15, index=costs.index)
+    oof = out_of_fold_picks(costs, feats, strata, min_samples_leaf=1, max_depth=8, margin=0.0,
+                            n_splits=3, repeats=2, trees=3).drop(columns="trained_on")
+    cols = list(feats.columns)
+    with tempfile.TemporaryDirectory() as d:
+        out = Path(d)
+        write_fold_models(out, oof, cols, 20.0)
+        _, read = written_picks(out, costs.index, cols, 20.0)
+        key = ["repeat", "id"]
+        pd.testing.assert_frame_equal(read.sort_values(key).reset_index(drop=True)[oof.columns],
+                                      oof.sort_values(key).reset_index(drop=True))
+        assert "feature columns" in refusal(written_picks, out, costs.index, cols[:-1], 20.0)
+        assert "timeout" in refusal(written_picks, out, costs.index, cols, 60.0)
+        assert "other instances" in refusal(written_picks, out, costs.index[:-1], cols, 20.0)
+        other = oof.assign(pick=oof["pick"].where(oof.index != 0, "zz"))   # one pick differs
+        write_fold_models(out, oof, cols, 20.0)
+        other.rename(columns={"pick": "router"}).to_csv(out / "router_eval.csv", index=False)
+        assert "disagree" in refusal(written_picks, out, costs.index, cols, 20.0)
+
+
 if __name__ == "__main__":
     test_every_instance_is_routed_once_per_repeat_by_a_router_that_did_not_see_it()
     test_on_fold_gets_every_folds_forests_and_its_instances()
@@ -191,4 +229,5 @@ if __name__ == "__main__":
     test_every_live_run_is_summarized_like_its_repeat_then_averaged()
     test_a_run_uses_its_own_repeats_picks()
     test_live_agreement_compares_the_live_picks_with_the_prediction()
+    test_written_picks_are_the_picks_the_fold_models_were_written_with()
     print("all crossval_router tests passed")

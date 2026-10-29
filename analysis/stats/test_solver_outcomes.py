@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 
 from analysis.stats.solver_outcomes import fmt_pct, run_counts, solved_times, solver_outcomes
@@ -46,8 +48,22 @@ def test_a_row_with_fewer_runs_is_measured_over_its_own_runs():
     r = solver_outcomes(df, TIMEOUT, baseline="y").loc["router"]
     assert (r["solved"], r["timeout"]) == (2.0, 1.0)         # its one run, not a mean over four
     assert r["total_time"] == r["total_time_min"] == r["total_time_max"] == 23.0
+    assert r["mean_time"] == r["total_time"] / r["instances"]
     assert run_counts(df) == {"router": 1, "x": 4, "y": 4}
     assert len(solved_times(df, TIMEOUT)["router"]) / run_counts(df)["router"] == r["solved"]
+
+
+def test_the_sd_is_that_of_the_run_whose_mean_is_the_median():
+    # x's runs on i1 and i2: means 2, 4, 6 and 9 s, SDs 2, 4, 6 and 2 / sqrt(2). Of runs 1-3,
+    # the median mean picks run 2 (SD 4 / sqrt(2)); of all four, it averages runs 2 and 3, so
+    # the SD averages theirs (5 / sqrt(2)), not the median of the four SDs (3 / sqrt(2)).
+    times = {1: (1.0, 3.0), 2: (2.0, 6.0), 3: (3.0, 9.0), 4: (8.0, 10.0)}
+    rows = [(i, "x", r, "sat", t) for r, ts in times.items() for i, t in zip(["i1", "i2"], ts)] \
+        + [(i, "y", r, "sat", 1.0) for i in ["i1", "i2"] for r in times]
+    odd = solver_outcomes(joined([row for row in rows if row[2] != 4]), TIMEOUT, baseline="y").loc["x"]
+    assert odd["mean_time"] == 4.0 and math.isclose(odd["sd_time"], 4 / 2 ** 0.5)
+    even = solver_outcomes(joined(rows), TIMEOUT, baseline="y").loc["x"]
+    assert even["mean_time"] == 5.0 and math.isclose(even["sd_time"], 5 / 2 ** 0.5)
 
 
 def test_a_router_error_is_refused_rather_than_dropping_the_instance_for_everyone():
@@ -94,6 +110,7 @@ if __name__ == "__main__":
     test_the_solved_counts_are_the_mean_over_the_runs_of_each_runs_count()
     test_the_router_is_a_row_but_does_not_decide_what_no_encoding_solves()
     test_a_row_with_fewer_runs_is_measured_over_its_own_runs()
+    test_the_sd_is_that_of_the_run_whose_mean_is_the_median()
     test_a_router_error_is_refused_rather_than_dropping_the_instance_for_everyone()
     test_a_router_run_that_covers_only_some_instances_is_refused()
     test_a_finished_run_over_the_timeout_is_a_timeout()

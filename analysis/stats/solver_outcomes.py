@@ -15,9 +15,10 @@ Every number comes from instance_costs.py, the measurement the router is trained
 cross-validated on: a timed-out run counts at the timeout (--timeout, or
 $DATESAT_TIMEOUT_MS), and every instance that every encoding ran without an error counts.
 The solved counts are taken in every run and averaged over the runs, so they can be
-fractional. Total time, median time and median speedup are computed on every run separately
-and reported as the median over the runs, with the fastest and slowest run as its _min and
-_max. The wins compare instance costs, the median over an instance's runs. An instance on
+fractional. Total time, mean time, median time and median speedup are computed on every run
+separately and reported as the median over the runs, with the fastest and slowest run as its
+_min and _max; the standard deviation beside the mean time is that of the run the median
+picks. The wins compare instance costs, the median over an instance's runs. An instance on
 which every encoding timed out counts as a timeout for every encoding. The router's
 cross-validation counts the same way, so its always-<encoding> rows have this table's
 timeouts and total time. The router's live runs (run_router_cv.py), when joined, are a row
@@ -35,12 +36,18 @@ Columns
   solve_rate           solved / instances: the mean over the runs of the run's share solved
   total_time           median over the runs of the run's summed time on the instances,
                        timeouts at the timeout (seconds)
-  median_time          median over the runs of the run's median time on the instances,
+  mean_time            median over the runs of the run's mean time on the instances,
+                       timeouts at the timeout: total_time / instances
+  sd_time              standard deviation over the instances of the time in the run whose
+                       mean_time is the median, timeouts at the timeout; with an even number
+                       of runs, the mean of the two middle runs', as mean_time is the mean of
+                       their means
+  median_time         median over the runs of the run's median time on the instances,
                        timeouts at the timeout
   wins                 instances on which it costs less than the baseline
   median_speedup       median over the runs of the run's median over the instances of the
                        baseline's time / its time, run k against the baseline's run k
-  <column>_min/max     the lowest and highest run's value of each of those three
+  <column>_min/max     the lowest and highest run's value of each of those four
   unsolvable           of those instances, the ones on which every encoding timed out;
                        they count as a timeout in every row
   incomplete           instances with an errored or missing run, left out of every other
@@ -62,8 +69,9 @@ from analysis.stats.join_results import add_timeout_arg, timeout_seconds
 CORPORA = ["llm", "legal", "grammar"]
 COUNTS = ["instances", "wins", "unsolvable", "incomplete"]
 OUTCOMES = ["sat", "unsat", "timeout"]        # each the mean over the runs of a count
-PER_RUN = ["total_time", "median_time", "median_speedup"]
-FLOATS = OUTCOMES + ["solved", "solve_rate"] + [f"{c}{s}" for c in PER_RUN for s in ("", "_min", "_max")]
+PER_RUN = ["total_time", "mean_time", "median_time", "median_speedup"]
+FLOATS = (OUTCOMES + ["solved", "solve_rate"] + [f"{c}{s}" for c in PER_RUN for s in ("", "_min", "_max")]
+          + ["sd_time"])
 
 
 def scope_costs(df, timeout_cost):
@@ -104,9 +112,15 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
         speedup = costs[baseline] / c
         compared = e != baseline
         own = runs[e].dropna().groupby(level="run")                    # the row's own runs
-        per_run = {"total_time": own.sum(), "median_time": own.median()} if n else {}
+        per_run = {"total_time": own.sum(), "mean_time": own.mean(), "median_time": own.median()} if n else {}
         if compared and n:
             per_run["median_speedup"] = (runs[baseline] / runs[e]).dropna().groupby(level="run").median()
+        sd = None
+        if n:
+            # the SD of the run whose mean is the median; with an even number of runs the median
+            # averages the two middle runs' means, so their SDs are averaged too
+            middle = per_run["mean_time"].sort_values(kind="stable").index
+            sd = own.std()[middle[[(len(middle) - 1) // 2, len(middle) // 2]]].mean()
         rows.append({
             "encoding": e,
             "instances": n,
@@ -118,6 +132,7 @@ def solver_outcomes(df, timeout_cost, baseline="simple", corpus=None):
             "incomplete": incomplete,
             **{f"{k}{s}": getattr(per_run[k], f)() if k in per_run else None
                for k in PER_RUN for s, f in (("", "median"), ("_min", "min"), ("_max", "max"))},
+            "sd_time": sd,
         })
     out = pd.DataFrame(rows).set_index("encoding")
     return out.astype({c: "Int64" for c in COUNTS}).astype({c: "float64" for c in FLOATS})

@@ -384,7 +384,7 @@ footer li { margin: 3px 0; }
     </div>
     <div class="stats" id="rt-stats" style="margin: 0 0 26px"></div>
     <div class="rt-charts">
-      <figure class="rt-fig"><figcaption>Speedup in total time<span class="cap-sub">Over always <span class="mono rt-base">simple</span>. Dominated by the slow instances and the timeouts.</span></figcaption><div class="rt-chart" id="rt-chart-total" role="img"></div></figure>
+      <figure class="rt-fig"><figcaption>Mean speedup per instance<span class="cap-sub">Geometric mean over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-mean" role="img"></div></figure>
       <figure class="rt-fig"><figcaption>Median speedup per instance<span class="cap-sub">Median over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-median" role="img"></div></figure>
     </div>
     <div class="rt-charts rt-row">
@@ -864,11 +864,11 @@ function renderRouter() {
   const cv = RT.cv, S = RT.scopes[state.rscope], T = S.table;
   const base = esc(cv.baseline), best = cv.best_performing_encoding, B = esc(best);
   const r = T.router, o = T.oracle, b = T[`always ${best}`];
-  const vs = b.total_s / r.total_s;
+  const vs = r.speedup_geomean / b.speedup_geomean;     // the geometric mean of the router's speedup over always best
   $("#rt-stats").innerHTML = [
-    ["Router", xf(r.speedup_total), `faster than always <span class="mono">${base}</span> in total time; ${xf(r.speedup_median)} on the median instance`],
-    ["Ideal router (oracle)", xf(o.speedup_total), `the most any router could reach; ${xf(o.speedup_median)} on the median instance`],
-    [`Versus always ${B}`, xf(vs), `${vs >= 1 ? "faster" : "slower"} in total: ${r.total_s.toFixed(1)} s against ${b.total_s.toFixed(1)} s, ${numf(r.timeouts)} timeouts against ${numf(b.timeouts)}`],
+    ["Router", xf(r.speedup_geomean), `faster than always <span class="mono">${base}</span> per instance (geometric mean); ${xf(r.speedup_median)} on the median instance`],
+    ["Ideal router (oracle)", xf(o.speedup_geomean), `the most any router could reach; ${xf(o.speedup_median)} on the median instance`],
+    [`Versus always ${B}`, xf(vs), `${vs >= 1 ? "faster" : "slower"} per instance (geometric mean); ${r.total_s.toFixed(1)} s against ${b.total_s.toFixed(1)} s in total, ${numf(r.timeouts)} timeouts against ${numf(b.timeouts)}`],
     ["Gap closed", pctf(S.gap_closed), `of the way from always <span class="mono">${B}</span> to the oracle, in total time`],
     ["Picks the fastest", pctf(S.picks_fastest), `of the ${S.instances} instances`],
   ].map(([k, v, sub]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`).join("");
@@ -876,15 +876,15 @@ function renderRouter() {
   const names = Object.keys(T);
   let h = `<thead><tr><th class="l" rowspan="2">Strategy</th><th rowspan="2">Total time</th><th rowspan="2">Timeouts</th>
     <th class="grp" colspan="2">Speedup over ${base}</th></tr>
-    <tr><th class="sub l">total time, as a share of the ideal</th><th class="sub">median per instance</th></tr></thead><tbody>`;
+    <tr><th class="sub l">mean per instance, as a share of the ideal</th><th class="sub">median per instance</th></tr></thead><tbody>`;
   for (const name of names) {
-    const t = T[name], share = t.speedup_total / o.speedup_total;
+    const t = T[name], share = t.speedup_geomean / o.speedup_geomean;
     const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
     const avg = name === "router" ? (cv.measured ? (cv.live.runs > 1 ? `, averaged over its ${cv.live.runs} live runs, routing included` : ", in its one live run, routing included") : `, averaged over ${cv.repeats} repeats`) : "";
     h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>
       <td${tipAttr(`${rtLabel(name)}<br>Sum over the ${S.instances} instances${avg}; a timeout counts as ${cv.timeout_cost_s} s.`)}>${t.total_s.toFixed(1)} s</td>
       <td>${t.timeouts ? numf(t.timeouts) : zero(0)}</td>
-      <td class="l"${tipAttr(`${rtLabel(name)}<br>${xf(t.speedup_total)} over ${base} in total time: ${(100 * share).toFixed(0)}% of the oracle's ${xf(o.speedup_total)}.`)}><span class="bar-cell"><span class="minibar"><i style="width:${Math.min(100, 100 * share).toFixed(1)}%"></i></span>${xf(t.speedup_total)}</span></td>
+      <td class="l"${tipAttr(`${rtLabel(name)}<br>${xf(t.speedup_geomean)} over ${base}: the geometric mean over instances of ${base}'s time divided by this strategy's time, ${(100 * share).toFixed(0)}% of the oracle's ${xf(o.speedup_geomean)}.`)}><span class="bar-cell"><span class="minibar"><i style="width:${Math.min(100, 100 * share).toFixed(1)}%"></i></span>${xf(t.speedup_geomean)}</span></td>
       <td${tipAttr(`${rtLabel(name)}<br>Median over instances of ${base}'s time divided by this strategy's time.`)}>${xf(t.speedup_median)}</td></tr>`;
   }
   $("#rt-table").innerHTML = h + "</tbody>";
@@ -895,7 +895,7 @@ function renderRouter() {
   rtSolveTable(S);
   rtPicksTable(S);
   if (window.Plotly) {
-    rtChart("rt-chart-total", T, "speedup_total", "in total time");
+    rtChart("rt-chart-mean", T, "speedup_geomean", "geometric mean per instance");
     rtChart("rt-chart-median", T, "speedup_median", "on the median instance");
     rtPicksChart("rt-chart-picks", S);
   } else {
@@ -1130,8 +1130,8 @@ function renderReduction() {
     const A = R.scopes.all.all, S = R.scopes.all.selected;
     const d = S.router.total_s / A.router.total_s - 1;
     tiles.push(
-      [`Router, ${R.n_features.all} features`, sf(A.router.total_s), `${xf(A.router.speedup_total)} over always <span class="mono">${esc(R.baseline)}</span>; picks the fastest on ${pctf(A.picks_fastest)}`],
-      [`Router, ${R.n_features.selected} features`, sf(S.router.total_s), `${xf(S.router.speedup_total)} over always <span class="mono">${esc(R.baseline)}</span>; picks the fastest on ${pctf(S.picks_fastest)}`],
+      [`Router, ${R.n_features.all} features`, sf(A.router.total_s), `${xf(A.router.speedup_geomean)} over always <span class="mono">${esc(R.baseline)}</span> per instance (geometric mean); picks the fastest on ${pctf(A.picks_fastest)}`],
+      [`Router, ${R.n_features.selected} features`, sf(S.router.total_s), `${xf(S.router.speedup_geomean)} over always <span class="mono">${esc(R.baseline)}</span> per instance (geometric mean); picks the fastest on ${pctf(S.picks_fastest)}`],
       ["Change in total time", (d >= 0 ? "+" : "−") + Math.abs(100 * d).toFixed(1) + "%", `${d > 0 ? "slower" : d < 0 ? "faster" : "no change"} with ${R.n_features.selected} features than with ${R.n_features.all}, over all ${A.instances} instances`],
     );
   }
