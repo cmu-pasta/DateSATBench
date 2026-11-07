@@ -70,6 +70,7 @@ def execute_constraint_code(
     constraint_code: str,
     solution: Dict[str, str],
     constraint_data: Optional[Dict[str, Any]] = None,
+    python_bounds: bool = False,
 ) -> Tuple[bool, str, Optional[str]]:
     """
     Execute constraint code with concrete values using Python-based constraint validator.
@@ -141,7 +142,9 @@ def execute_constraint_code(
             validated_constraints_str = "\n".join(constraint_strs)
 
         # Evaluate using the pure-Python constraint validator (supports date/bool/int)
-        ok, msg = validate_constraint_solution(constraint_code, parsed_solution)
+        ok, msg = validate_constraint_solution(
+            constraint_code, parsed_solution, python_bounds=python_bounds
+        )
         if ok:
             return True, msg, validated_constraints_str
         return False, f"Constraint execution failed: {msg}", validated_constraints_str
@@ -155,6 +158,7 @@ def validate_solution_with_concrete(
     solution: Dict[str, Union[str, Date, Period]],
     constraint_id: str = "",
     approach: str = "concrete",
+    python_bounds: bool = False,
 ) -> Tuple[bool, str, Optional[str]]:
     """
     Validate a solution by executing constraints with concrete values.
@@ -211,7 +215,7 @@ def validate_solution_with_concrete(
     # Execute the constraint with concrete values using Python-based enumeration solver.
     # This validates using Python date arithmetic, not SMT-LIB.
     success, message, validated_constraints_str = execute_constraint_code(
-        constraint_code, string_solution, constraint_data
+        constraint_code, string_solution, constraint_data, python_bounds=python_bounds
     )
 
     if not success:
@@ -313,8 +317,11 @@ def validate_sat_record(
     # Use concrete validation (execute constraints with concrete values)
     # Construct approach name from approach and implementation
     approach_name = f"{approach}_{rec.get('implementation', 'unknown')}"
+    # Validate under the mode the solution was produced in (records predating the
+    # field were produced unbounded).
     is_valid, message, _ = validate_solution_with_concrete(
-        constraint_data, solution, constraint_id, approach_name
+        constraint_data, solution, constraint_id, approach_name,
+        python_bounds=bool(rec.get("python_bounds", False)),
     )
 
     return is_valid, message

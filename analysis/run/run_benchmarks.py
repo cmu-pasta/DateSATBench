@@ -2,6 +2,7 @@ import argparse
 import json
 import multiprocessing as mp
 import os
+import subprocess
 import sys
 import time
 from datetime import datetime
@@ -26,6 +27,7 @@ def _solve_task(
     timeout_ms: int,
     use_maxsat: bool,
     router_model: str | None = None,
+    python_bounds: bool = False,
 ) -> dict:
     """Solve one instance and keep only the result fields the runner records."""
     # Only the router approach takes a model file (run_router_cv.py passes one per fold).
@@ -37,6 +39,7 @@ def _solve_task(
         timeout_ms=timeout_ms,
         verbose=False,  # Suppress verbose output during benchmarking
         use_maxsat=use_maxsat,
+        python_bounds=python_bounds,
         **router_kwargs,
     )
 
@@ -54,6 +57,7 @@ def _solve_task(
         "build_time": solve_result.get("build_time"),
         "solve_time": solve_result.get("solve_time"),
         "solution": merged_solution or None,
+        "python_bounds": solve_result.get("python_bounds", python_bounds),
     }
     # The router approach also reports the encoding it picked and the time picking took
     # (already part of execution_time).
@@ -136,6 +140,7 @@ def run_constraint_with_approach(
     use_maxsat: bool = False,
     hard_timeout_ms: int | None = None,
     router_model: str | None = None,
+    python_bounds: bool = False,
 ) -> dict:
     """
     Run a single constraint with a specific solver approach and implementation.
@@ -144,7 +149,8 @@ def run_constraint_with_approach(
     time (default: HARD_TIMEOUT_MS), the worker is killed and
     the instance is recorded as a timeout with "hard_timeout": True.
     For the router approach, router_model is the model file it routes by
-    (default: DateSat's).
+    (default: DateSat's). python_bounds selects DateSat's bounded mode (every date,
+    including intermediate results, in years 1..9999); False is the unbounded default.
 
     Returns a dict containing the constraint ID, status, execution time and
     solution (if SAT).
@@ -169,11 +175,14 @@ def run_constraint_with_approach(
         "error_message": None,
         "solution": None,
         "hard_timeout": False,
+        "python_bounds": python_bounds,
     }
 
     limit_s = (hard_timeout_ms or HARD_TIMEOUT_MS) / 1000
     start_time = time.time()
-    worker.send((constraint_data, approach, implementation, timeout_ms, use_maxsat, router_model))
+    worker.send(
+        (constraint_data, approach, implementation, timeout_ms, use_maxsat, router_model, python_bounds)
+    )
 
     message = worker.recv(limit_s)
     if message is None:
@@ -260,8 +269,10 @@ ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
 
 # Approaches that --approaches accepts but the default run leaves out. `router` picks one
 # of the int encodings per instance with a trained model (see DateSat's docs/router.md).
+# simple_new and epoch_new are variants of simple and epoch_days (see DateSat's
+# symbolic_int/simple_new_int.py and epoch_new_int.py).
 OPT_IN_APPROACHES_BY_IMPL = {
-    "int": ["alpha_beta_table", "router"],
+    "int": ["alpha_beta_table", "router", "simple_new", "epoch_new"],
     "bitvector": [],
 }
 
@@ -310,6 +321,7 @@ def run_constraints_file(
     use_maxsat: bool = False,
     approaches: list[str] = None,
     hard_timeout_ms: int | None = None,
+    python_bounds: bool = False,
 ):
     """Run benchmarks on constraints from a file with specified solver approaches.
 
@@ -322,6 +334,8 @@ def run_constraints_file(
         approaches: List of approaches to test (None = all approaches)
         hard_timeout_ms: Wall-clock limit per instance, after which it is
             killed (None = HARD_TIMEOUT_MS)
+        python_bounds: Run DateSat in bounded mode (years 1..9999) instead of
+            the unbounded default
     """
     # Load constraints (supports both JSON and JSONL formats)
     constraints = _load_constraints(constraints_file)
@@ -358,6 +372,7 @@ def run_constraints_file(
                     timeout_ms,
                     use_maxsat,
                     hard_timeout_ms,
+                    python_bounds=python_bounds,
                 )
                 results.append(result)
 
@@ -432,6 +447,44 @@ def check_run_dir(results_dir: Path) -> None:
         print(f"  {approach}: {correct}/{total} correct ({percentage:.1f}%)")
 
 
+def _solver_mode(python_bounds: bool) -> str:
+    return "python_bounds" if python_bounds else "unbounded"
+
+
+def _git_state(path: Path) -> dict:
+    """Commit and dirty flag of the git checkout at path (None where unavailable)."""
+    def git(*cmd):
+        try:
+            out = subprocess.run(
+                ["git", "-C", str(path), *cmd], capture_output=True, text=True, timeout=30
+            )
+        except (OSError, subprocess.SubprocessError):
+            return None
+        return out.stdout.strip() if out.returncode == 0 else None
+
+    commit = git("rev-parse", "HEAD")
+    status = git("status", "--porcelain", "--untracked-files=no")
+    return {"commit": commit, "dirty": None if status is None else bool(status)}
+
+
+def _invocation_record(timestamp: str) -> dict:
+    """The command line and environment of this invocation, for run_config.json."""
+    import shlex
+    import z3
+
+    datesat_pkg = Path(datesat.__file__).resolve().parent
+    return {
+        "started": timestamp,
+        "command": shlex.join([sys.executable, "-m", "analysis.run.run_benchmarks", *sys.argv[1:]]),
+        "cwd": os.getcwd(),
+        "host": os.uname().nodename,
+        "datesat_path": str(datesat_pkg),
+        "datesat_git": _git_state(datesat_pkg.parent),
+        "datesatbench_git": _git_state(REPO),
+        "z3_version": z3.get_version_string(),
+    }
+
+
 def main():
     """
     Run benchmarks on all constraint sets and optionally analyze results.
@@ -476,6 +529,13 @@ def main():
         "--maxsat",
         action="store_true",
         help="Use MaxSAT optimization with soft constraints for dates near today",
+    )
+    parser.add_argument(
+        "--python-bounds",
+        action="store_true",
+        help="Run DateSat in bounded mode: every date, including intermediate Date + "
+        "Period results, is restricted to years 1..9999 (DateSat's python_bounds). "
+        "Default: DateSat's unbounded mode.",
     )
     parser.add_argument(
         "--approaches",
@@ -608,6 +668,7 @@ def main():
     print(f"  Hard timeout: {args.hard_timeout}ms")
     print(f"  Runs: {args.runs}")
     print(f"  MaxSAT: {'Enabled' if args.maxsat else 'Disabled'}")
+    print(f"  DateSat mode: {_solver_mode(args.python_bounds)}")
     print(f"  Analysis: {'Enabled' if not args.no_analysis else 'Disabled'}")
     if args.approaches:
         print(f"  Approaches: {args.approaches}")
@@ -631,6 +692,12 @@ def main():
     results_root.mkdir(parents=True, exist_ok=True)
     run_config_path = results_root / "run_config.json"
     prior = json.loads(run_config_path.read_text()) if run_config_path.exists() else {}
+    solver_mode = _solver_mode(args.python_bounds)
+    if "solver_mode" in prior and prior["solver_mode"] != solver_mode:
+        sys.exit(
+            f"❌ {results_root} holds {prior['solver_mode']} results; "
+            f"refusing to add {solver_mode} runs under the same --tag."
+        )
     approach_pairs = _resolve_approach_pairs(args.approaches)
     datasets = [
         cs["output_dir"].name for cs in constraint_sets if cs["constraints_file"].exists()
@@ -643,9 +710,12 @@ def main():
         ),
         "datasets": sorted(set(prior.get("datasets", [])) | set(datasets)),
         "maxsat": args.maxsat,
+        "solver_mode": solver_mode,  # "unbounded" or "python_bounds"
         "timestamp": prior.get("timestamp", timestamp),
         "tag": tag,
         "datesatbench_root": str(datesatbench_root),
+        # One entry per invocation under this tag: how it was started and with what.
+        "invocations": prior.get("invocations", []) + [_invocation_record(timestamp)],
     }
     run_config_path.write_text(json.dumps(run_config, indent=2))
 
@@ -692,6 +762,7 @@ def main():
                 use_maxsat=args.maxsat,
                 approaches=args.approaches,
                 hard_timeout_ms=args.hard_timeout,
+                python_bounds=args.python_bounds,
             )
 
             completed_runs.append((run_idx, name, Path(output_dir)))
