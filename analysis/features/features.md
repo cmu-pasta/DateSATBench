@@ -1,4 +1,4 @@
-# features(5): the 63 columns of features.csv
+# features(5): the 61 columns of features.csv
 
 Each entry gives the feature's meaning in one or two lines, then a small example with the
 value it produces. `test_features_md.py` runs every example below through
@@ -140,9 +140,9 @@ f == True;  g -> a < b                                    →  1   (g; f is pinn
 
 ### pinned_var_frac
 
-Pinned variables / all declared variables, over every sort together. The three columns
-after it split the same count by sort, each over its own sort's declarations, so a corpus
-that declares no `int` or `bool` variables gets 0 there.
+Pinned variables / all declared variables, over every sort together. The two columns
+after it split the same count for dates and ints, each over its own sort's declarations, so
+a corpus that declares no `int` variables gets 0 there.
 
 ```
 a == Date(2020,1,1);  b > a;  x == 3;  f == True;  g -> b < a
@@ -167,20 +167,6 @@ Pinned int variables / declared int variables.
 
 ```
 (same example)                                            →  1.0   (x pinned)
-```
-
-
-
-### pinned_bool_frac
-
-Pinned bool variables / declared bool variables. A bool is pinned by a top-level `f == True`
-or `f == False`; the same equality as the left side of an `->` does not pin it. On the
-shipped datasets this column is 0 for every instance: only legal declares bools, and its
-bool equalities are almost all antecedents of an `->`. `cluster.py` and the correlation
-plot leave constant columns out automatically.
-
-```
-(same example)                                            →  0.5   (f pinned, g free)
 ```
 
 
@@ -390,9 +376,9 @@ The `date ± period` operations on variables: how many there are, how large thei
 and what they connect. The encodings translate these operations very differently, because a
 month or a year has no fixed number of days. `b == a + Period(0,18,0)` is one
 operation, with a months part of 18, that ties `b` to `a`. An operation on a literal date
-folds to a constant and is left out of every column except `ground_arith_frac`.
+folds to a constant and is left out of every column.
 
-The first seven columns, up to `max_date_chain_len`, treat every operation alike. But two
+The first six columns, up to `max_date_chain_len`, treat every operation alike. But two
 operations with the same period can cost a solver very different amounts: `a != a +
 Period(0,0,1000)` compares a date with itself and is decided almost for free, while `a != b
 + Period(0,0,1000)` ties two dates together. So the columns from `n_self_ops` on classify
@@ -412,21 +398,11 @@ leaves the self-referential ones out. A comparison on a field, such as
 ### n_date_period_ops
 
 `date ± period` operations that involve a variable. Operations on a literal date are
-excluded because they fold to a constant (see `ground_arith_frac`).
+excluded because they fold to a constant.
 
 ```
 b == a + Period(1,2,40);  b < Date(2020,1,1) + Period(0,0,10);  a > a - Period(0,0,3)
                                                           →  2   (the Date(2020,1,1) one folds)
-```
-
-
-
-### ground_arith_frac
-
-`date ± period` operations on a literal date / all `date ± period` operations.
-
-```
-(same example)                                            →  0.333   (1 of 3)
 ```
 
 
