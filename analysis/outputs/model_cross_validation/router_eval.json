@@ -1,7 +1,7 @@
 {
  "joined": "analysis/outputs/joined.csv",
- "evaluated_on": "every instance, out of fold: 5-fold cross-validation stratified by corpus, repeated 10 times",
- "router_measured": false,
+ "evaluated_on": "every instance, out of fold: 5-fold cross-validation stratified by corpus, repeated 10 times; the router measured on 10 live runs",
+ "router_measured": true,
  "instances": 800,
  "dropped": {
   "errored_or_missing": 0
@@ -125,11 +125,11 @@
     "speedup_geomean": 1.0
    },
    "router": {
-    "total_s": 1146.665,
-    "timeouts": 38.4,
-    "speedup_total": 2.9165,
-    "speedup_median": 2.932,
-    "speedup_geomean": 6.3331
+    "total_s": 1178.658,
+    "timeouts": 41.8,
+    "speedup_total": 2.8364,
+    "speedup_median": 2.3214,
+    "speedup_geomean": 5.4684
    },
    "oracle": {
     "total_s": 914.661,
@@ -150,11 +150,11 @@
   "router_picks_fastest": 0.4869,
   "gap_closed_to_oracle": {
    "router": {
-    "always simple": 0.9044,
-    "always hybrid_init_ymd": 0.6039
+    "always simple": 0.8912,
+    "always hybrid_init_ymd": 0.5492
    }
   },
-  "router_total_sd_s": 34.14
+  "router_total_sd_s": 26.494
  },
  "by_corpus": {
   "grammar": {
@@ -196,11 +196,11 @@
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 1014.912,
-     "timeouts": 37.5,
-     "speedup_total": 3.0251,
-     "speedup_median": 4.4889,
-     "speedup_geomean": 9.9082
+     "total_s": 1034.693,
+     "timeouts": 39.9,
+     "speedup_total": 2.9679,
+     "speedup_median": 2.9285,
+     "speedup_geomean": 8.1435
     },
     "oracle": {
      "total_s": 875.185,
@@ -221,11 +221,11 @@
    "router_picks_fastest": 0.465,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.9363,
-     "always hybrid_init_ymd": 0.5697
+     "always simple": 0.9273,
+     "always hybrid_init_ymd": 0.5088
     }
    },
-   "router_total_sd_s": 17.749
+   "router_total_sd_s": 24.431
   },
   "legal": {
    "instances": 200,
@@ -266,11 +266,11 @@
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 127.947,
-     "timeouts": 0.9,
-     "speedup_total": 1.7201,
-     "speedup_median": 1.0,
-     "speedup_geomean": 1.939
+     "total_s": 140.343,
+     "timeouts": 1.9,
+     "speedup_total": 1.5504,
+     "speedup_median": 1.084,
+     "speedup_geomean": 1.9631
     },
     "oracle": {
      "total_s": 36.941,
@@ -291,11 +291,11 @@
    "router_picks_fastest": 0.374,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.4875,
-     "always hybrid_init_ymd": 0.6479
+     "always simple": 0.4176,
+     "always hybrid_init_ymd": 0.6
     }
    },
-   "router_total_sd_s": 20.783
+   "router_total_sd_s": 17.833
   },
   "llm": {
    "instances": 100,
@@ -336,11 +336,11 @@
      "speedup_geomean": 1.0
     },
     "router": {
-     "total_s": 3.806,
+     "total_s": 3.622,
      "timeouts": 0,
-     "speedup_total": 15.2665,
-     "speedup_median": 1.1057,
-     "speedup_geomean": 7.2163
+     "speedup_total": 16.2428,
+     "speedup_median": 0.969,
+     "speedup_geomean": 5.808
     },
     "oracle": {
      "total_s": 2.535,
@@ -361,11 +361,11 @@
    "router_picks_fastest": 0.822,
    "gap_closed_to_oracle": {
     "router": {
-     "always simple": 0.977,
-     "always hybrid_init_ymd": 0.4919
+     "always simple": 0.9803,
+     "always hybrid_init_ymd": 0.5654
     }
    },
-   "router_total_sd_s": 0.309
+   "router_total_sd_s": 0.49
   }
  },
  "predicted": {
@@ -652,6 +652,37 @@
    }
   }
  },
- "live": null,
+ "live": {
+  "runs": 10,
+  "repeats_used": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "results": 8000,
+  "picks_known": 7582,
+  "picks_agree": 7582,
+  "routing_time_s": {
+   "median": 0.002027,
+   "mean": 0.002153,
+   "max": 0.008623
+  },
+  "routing_share": 0.004763,
+  "time_vs_recorded_median": 1.019,
+  "time_vs_recorded_n": 7553,
+  "predicted_total_s": 1146.665,
+  "predicted_total_by_corpus_s": {
+   "grammar": 1014.912,
+   "legal": 127.947,
+   "llm": 3.806
+  }
+ },
  "fold_models": "fold_models.json"
 }

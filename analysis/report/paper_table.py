@@ -2,7 +2,6 @@ r"""
 Write the report's solver-outcomes table as a LaTeX tabular for the paper.
 
     python -m analysis.report.paper_table --timeout 20000     # outputs/outcomes_table.tex, and its plots
-    python -m analysis.report.paper_table --no-ranges         # without the lowest-highest run
     python -m analysis.report.paper_table --with-router       # the router's live runs as a last row
 
 The numbers are solver_outcomes()'s, the ones the report shows, one block per corpus. The
@@ -14,9 +13,8 @@ cactus plot is written beside it, as outcomes_table_cactus_<corpus>.pdf.
 Columns: the encoding; the instances it solves, as a bar of sat, unsat and timed-out
 instances with the three counts beside it, each in a column of its own and counted in every
 run and averaged over the runs (so it can be fractional); mean and median time per
-instance, each the median over the runs, with the lowest and highest run under each in grey
-and the standard deviation over the instances after the mean, as mean +- SD (solver_outcomes'
-sd_time); and, spanning the corpus's rows, its cactus plot as plot_cactus
+instance, each the median over the runs, with the standard deviation over the instances
+after the mean, as mean +- SD (solver_outcomes' sd_time); and, spanning the corpus's rows, its cactus plot as plot_cactus
 draws a panel, one line per encoding. Each line has its own colour and dash pattern, so it
 can be told apart in black and white; a sample before each encoding's name shows it. The
 best in each corpus is bold and underlined: the most instances solved, on the sat and unsat
@@ -75,10 +73,6 @@ def dim(text):
     return rf"{{\scriptsize\color{{dsDim}}{text}}}"
 
 
-def two_lines(top, bottom, align="r"):
-    return rf"\makecell[{align}]{{{top}\\{dim(bottom)}}}" if bottom else top
-
-
 def solved_bar(r):
     segs = [(c, r[k]) for c, k in (("dsSat", "sat"), ("dsUnsat", "unsat"), ("dsTimeout", "timeout"))
             if r[k] > 0]
@@ -135,10 +129,6 @@ def cactus(times, runs, encodings, n, lo, ticks, timeout_s, height_in, path):
     plt.close(fig)
 
 
-def run_range(r, col, fmt, ranges):
-    return f"{fmt(r[col + '_min'])}--{fmt(r[col + '_max'])}" if ranges else None
-
-
 def best(values, low):
     """The encodings whose shown value is the best in their corpus: the lowest if `low`,
     else the highest. Ties all count."""
@@ -163,7 +153,7 @@ def time_formats(ms):
     return (lambda x: f"{x:.2f}"), (lambda x: f"{x:.2f}")
 
 
-def rows(t, ranges, ms, widest):
+def rows(t, ms, widest):
     tfmt, mfmt = time_formats(ms)
     encs = ordered(t)
     shown = lambda fmt, col, es: {e: float(fmt(t.loc[e, col])) for e in es}   # compared as printed
@@ -182,17 +172,15 @@ def rows(t, ranges, ms, widest):
         # counts line up down the table; sat and unsat add up to the solved count.
         solved = " & ".join([solved_bar(r), mark(k["sat"], "solved", e),
                              mark(k["unsat"], "solved", e), k["timeout"]])
-        mean = two_lines(mark(mfmt(r.mean_time), "mean", e),
-                         run_range(r, "mean_time", mfmt, ranges))
+        mean = mark(mfmt(r.mean_time), "mean", e)
         # The time right-aligned in a slot as wide as the widest, so the times line up and the
         # column can centre them under its heading, which the time heading above makes wide.
-        median = two_lines(rf"\hphantom{{\textbf{{{widest}}}}}\llap{{{mark(tfmt(r.median_time), 'median', e)}}}",
-                           run_range(r, "median_time", tfmt, ranges))
+        median = rf"\hphantom{{\textbf{{{widest}}}}}\llap{{{mark(tfmt(r.median_time), 'median', e)}}}"
         out.append(f"{name} & {solved} & {mean} & {dim(mfmt(r.sd_time))} & {median} & \\\\")
     return out
 
 
-def latex_table(joined, timeout_s, stem, ranges=True, with_router=False):
+def latex_table(joined, timeout_s, stem, with_router=False):
     """The tabular, after writing each corpus's cactus plot to <stem>_cactus_<corpus>.pdf."""
     if not with_router:
         joined = encodings_only(joined)
@@ -243,7 +231,7 @@ def latex_table(joined, timeout_s, stem, ranges=True, with_router=False):
         # the corpus's name in the encodings' column, its size above the bars it measures
         lines.append(rf"\textbf{{{CORPORA[c]}}} & \multicolumn{{4}}{{l}}{{{n}}} & \multicolumn{{2}}{{c}}{{}} & & {plot} \\")
         lines.append(r"\addlinespace[2pt]")
-        lines.extend(rows(t, ranges, ms, widest))
+        lines.extend(rows(t, ms, widest))
     lines += [r"\bottomrule", r"\end{tabular}"]
     return "\n".join(lines) + "\n"
 
@@ -252,8 +240,6 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
-    ap.add_argument("--no-ranges", dest="ranges", action="store_false",
-                    help="leave out the lowest and highest run under each median over the runs")
     ap.add_argument("--with-router", action="store_true",
                     help="add the router's live runs as a row, when joined.csv holds them")
     ap.add_argument("--output", default=str(OUTPUTS / "outcomes_table.tex"),
@@ -262,7 +248,7 @@ def main():
     args = ap.parse_args()
     try:
         tex = latex_table(pd.read_csv(args.joined), timeout_seconds(ap, args),
-                          Path(args.output).with_suffix(""), args.ranges, args.with_router)
+                          Path(args.output).with_suffix(""), args.with_router)
     except ValueError as e:
         ap.error(str(e))
     Path(args.output).write_text(tex)
