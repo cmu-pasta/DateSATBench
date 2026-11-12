@@ -1,5 +1,5 @@
 {
-  "results_dir": "/home/angelc2/DateSATBench/results/all-10runs-unbounded-datesat677e3bc/llm/run_3",
+  "results_dir": "results/all-10runs-unbounded-datesat677e3bc/llm/run_3",
   "constraints_checked": 100,
   "counts_by_approach": {
     "alpha_beta_int": {
@@ -36,13 +36,6 @@
       "error": 0,
       "timeout": 1,
       "not_applicable": 0
-    },
-    "simple_new_int": {
-      "correct": 100,
-      "wrong": 0,
-      "error": 0,
-      "timeout": 0,
-      "not_applicable": 0
     }
   },
   "by_constraint": [
@@ -53,8 +46,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -96,14 +88,6 @@
             "x": "Date(2000, 2, 29)",
             "y": "Date(2004, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2004, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -112,8 +96,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -125,8 +108,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -173,15 +155,6 @@
             "mid": "Date(2016, 1, 15)",
             "start": "Date(2015, 11, 15)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "end": "Date(2016, 3, 15)",
-            "mid": "Date(2016, 1, 15)",
-            "start": "Date(2015, 11, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -190,8 +163,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -203,8 +175,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -256,16 +227,6 @@
             "_aux_date_0": "Date(2000, 2, 28)",
             "_aux_date_1": "Date(2000, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2004, 2, 29)",
-            "_aux_date_0": "Date(2000, 2, 28)",
-            "_aux_date_1": "Date(2000, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -274,8 +235,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -287,8 +247,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -335,15 +294,6 @@
             "mid": "Date(2020, 2, 28)",
             "start": "Date(2020, 1, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "end": "Date(2020, 3, 28)",
-            "mid": "Date(2020, 2, 28)",
-            "start": "Date(2020, 1, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -352,8 +302,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -365,8 +314,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -423,17 +371,6 @@
             "d": "Date(2016, 2, 1)",
             "_aux_date_0": "Date(2016, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(2015, 6, 15)",
-            "b": "Date(2015, 12, 15)",
-            "c": "Date(2016, 1, 29)",
-            "d": "Date(2016, 2, 1)",
-            "_aux_date_0": "Date(2016, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -442,8 +379,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -455,8 +391,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -503,15 +438,6 @@
             "y": "Date(1951, 6, 29)",
             "z": "Date(1951, 1, 1)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(1950, 11, 29)",
-            "y": "Date(1951, 11, 29)",
-            "z": "Date(1951, 1, 1)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -520,8 +446,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -533,8 +458,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -581,15 +505,6 @@
             "q": "Date(2081, 2, 28)",
             "r": "Date(2081, 3, 27)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "p": "Date(2080, 11, 30)",
-            "q": "Date(2081, 2, 28)",
-            "r": "Date(2081, 3, 27)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -598,8 +513,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -611,8 +525,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -659,15 +572,6 @@
             "y": "Date(2004, 2, 29)",
             "z": "Date(2001, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2004, 2, 29)",
-            "z": "Date(2001, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -676,8 +580,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -689,8 +592,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -699,8 +601,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -712,8 +613,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -760,15 +660,6 @@
             "mid": "Date(2010, 9, 15)",
             "start": "Date(2010, 6, 15)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "end": "Date(2010, 12, 15)",
-            "mid": "Date(2010, 9, 15)",
-            "start": "Date(2010, 6, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -777,8 +668,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -790,8 +680,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -800,8 +689,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -813,8 +701,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -861,15 +748,6 @@
             "mid": "Date(1951, 8, 2)",
             "start": "Date(1951, 2, 2)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "end": "Date(1952, 8, 2)",
-            "mid": "Date(1951, 8, 2)",
-            "start": "Date(1951, 2, 2)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -878,8 +756,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -891,8 +768,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -949,17 +825,6 @@
             "d4": "Date(2016, 3, 31)",
             "_aux_date_0": "Date(2015, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "d1": "Date(2015, 1, 31)",
-            "d2": "Date(2015, 2, 28)",
-            "d3": "Date(2015, 3, 31)",
-            "d4": "Date(2016, 3, 31)",
-            "_aux_date_0": "Date(2015, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -968,8 +833,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -981,8 +845,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -991,8 +854,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1004,8 +866,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1062,17 +923,6 @@
             "d": "Date(1921, 9, 1)",
             "e": "Date(1921, 10, 2)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(1920, 3, 1)",
-            "b": "Date(1921, 3, 1)",
-            "c": "Date(1920, 12, 31)",
-            "d": "Date(1921, 9, 1)",
-            "e": "Date(1921, 10, 2)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1081,8 +931,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1094,8 +943,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1104,8 +952,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1117,8 +964,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1160,14 +1006,6 @@
             "leap_date": "Date(2000, 2, 29)",
             "next_year": "Date(2001, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "leap_date": "Date(2000, 2, 29)",
-            "next_year": "Date(2001, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1176,8 +1014,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1189,8 +1026,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1237,15 +1073,6 @@
             "y": "Date(2020, 2, 29)",
             "z": "Date(2020, 3, 1)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2020, 1, 31)",
-            "y": "Date(2020, 2, 29)",
-            "z": "Date(2020, 3, 2)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1254,8 +1081,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1267,8 +1093,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1277,8 +1102,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1290,8 +1114,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1333,14 +1156,6 @@
             "date1": "Date(1950, 4, 30)",
             "date2": "Date(1950, 10, 30)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "date1": "Date(1950, 4, 30)",
-            "date2": "Date(1950, 10, 30)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1349,8 +1164,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1362,8 +1176,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1372,8 +1185,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1385,8 +1197,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1433,15 +1244,6 @@
             "leap_start": "Date(2000, 1, 31)",
             "month_later": "Date(2000, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "days_later": "Date(2000, 2, 29)",
-            "leap_start": "Date(2000, 1, 31)",
-            "month_later": "Date(2000, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1450,8 +1252,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1463,8 +1264,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1473,8 +1273,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1486,8 +1285,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1534,15 +1332,6 @@
             "jan_days": "Date(2023, 1, 15)",
             "jan_month": "Date(2023, 1, 15)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "dec_start": "Date(2022, 12, 15)",
-            "jan_days": "Date(2023, 1, 15)",
-            "jan_month": "Date(2023, 1, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1551,8 +1340,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1564,8 +1352,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1574,8 +1361,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1587,8 +1373,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1635,15 +1420,6 @@
             "month_later": "Date(2020, 2, 15)",
             "x": "Date(2020, 1, 15)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "days_later": "Date(2020, 2, 14)",
-            "month_later": "Date(2020, 2, 15)",
-            "x": "Date(2020, 1, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1652,8 +1428,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1665,8 +1440,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1713,15 +1487,6 @@
             "plus_month": "Date(2023, 2, 28)",
             "start": "Date(2023, 1, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "plus_28": "Date(2023, 2, 28)",
-            "plus_month": "Date(2023, 2, 28)",
-            "start": "Date(2023, 1, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1730,8 +1495,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1743,8 +1507,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1753,8 +1516,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1766,8 +1528,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1776,8 +1537,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1789,8 +1549,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -1842,16 +1601,6 @@
             "jan_days": "Date(2022, 1, 5)",
             "jan_month": "Date(2022, 1, 5)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "dec": "Date(2021, 12, 5)",
-            "feb": "Date(2022, 2, 5)",
-            "jan_days": "Date(2022, 1, 5)",
-            "jan_month": "Date(2022, 1, 5)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -1860,8 +1609,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1873,8 +1621,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1883,8 +1630,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1896,8 +1642,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1906,8 +1651,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1919,8 +1663,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1929,8 +1672,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1942,8 +1684,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1952,8 +1693,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1965,8 +1705,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1975,8 +1714,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -1988,8 +1726,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -1998,8 +1735,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2011,8 +1747,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2021,8 +1756,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2034,8 +1768,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2044,8 +1777,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2057,8 +1789,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2067,8 +1798,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2080,8 +1810,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2138,17 +1867,6 @@
             "jan_month": "Date(2022, 1, 15)",
             "mid_check": "Date(2021, 12, 30)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "dec_start": "Date(2021, 12, 15)",
-            "end_check": "Date(2022, 1, 4)",
-            "jan_days": "Date(2022, 1, 15)",
-            "jan_month": "Date(2022, 1, 15)",
-            "mid_check": "Date(2021, 12, 30)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2157,8 +1875,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2170,8 +1887,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2213,14 +1929,6 @@
             "x": "Date(2000, 2, 29)",
             "y": "Date(2001, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2001, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2229,8 +1937,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2242,8 +1949,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2252,8 +1958,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2265,8 +1970,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2318,16 +2022,6 @@
             "c": "Date(2020, 9, 15)",
             "d": "Date(2020, 12, 15)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(2020, 3, 15)",
-            "b": "Date(2020, 6, 15)",
-            "c": "Date(2020, 9, 15)",
-            "d": "Date(2020, 12, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2336,8 +2030,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2349,8 +2042,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2359,8 +2051,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2372,8 +2063,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2425,16 +2115,6 @@
             "mid": "Date(2000, 1, 1)",
             "start": "Date(1999, 12, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "check": "Date(2002, 1, 1)",
-            "end": "Date(2001, 1, 1)",
-            "mid": "Date(2000, 1, 1)",
-            "start": "Date(1999, 12, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2443,8 +2123,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2456,8 +2135,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2499,14 +2177,6 @@
             "x": "Date(2000, 2, 29)",
             "y": "Date(2001, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2001, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2515,8 +2185,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2528,8 +2197,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2576,15 +2244,6 @@
             "mid": "Date(2020, 2, 15)",
             "start": "Date(2020, 1, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "end": "Date(2020, 2, 29)",
-            "mid": "Date(2020, 2, 15)",
-            "start": "Date(2020, 1, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2593,8 +2252,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2606,8 +2264,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2616,8 +2273,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2629,8 +2285,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2639,8 +2294,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2652,8 +2306,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2700,15 +2353,6 @@
             "future": "Date(1980, 3, 31)",
             "next": "Date(1975, 4, 30)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "base": "Date(1975, 3, 31)",
-            "future": "Date(1980, 3, 31)",
-            "next": "Date(1975, 4, 30)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2717,8 +2361,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2730,8 +2373,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2740,8 +2382,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2753,8 +2394,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2796,14 +2436,6 @@
             "x": "Date(2020, 1, 31)",
             "y": "Date(2020, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2020, 1, 31)",
-            "y": "Date(2020, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2812,8 +2444,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2825,8 +2456,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2835,8 +2465,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2848,8 +2477,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2891,14 +2519,6 @@
             "a": "Date(1950, 6, 15)",
             "b": "Date(2000, 6, 15)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(1950, 6, 15)",
-            "b": "Date(2000, 6, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -2907,8 +2527,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2920,8 +2539,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -2930,8 +2548,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -2943,8 +2560,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -2986,14 +2602,6 @@
             "x": "Date(2000, 2, 29)",
             "y": "Date(2001, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2001, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3002,8 +2610,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3015,8 +2622,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3063,15 +2669,6 @@
             "y": "Date(2020, 2, 29)",
             "z": "Date(2020, 3, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2020, 1, 31)",
-            "y": "Date(2020, 2, 29)",
-            "z": "Date(2020, 3, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3080,8 +2677,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3093,8 +2689,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -3103,8 +2698,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3116,8 +2710,7 @@
         "epoch_days_int": "timeout",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3155,15 +2748,6 @@
             "y": "Date(2001, 2, 14)",
             "z": "Date(2026, 2, 14)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(1951, 2, 14)",
-            "y": "Date(2001, 2, 14)",
-            "z": "Date(2026, 2, 14)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3172,8 +2756,7 @@
         "epoch_days_int": "timeout",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3185,8 +2768,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3238,16 +2820,6 @@
             "c": "Date(2019, 3, 28)",
             "d": "Date(2019, 3, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(2019, 1, 31)",
-            "b": "Date(2019, 2, 28)",
-            "c": "Date(2019, 3, 28)",
-            "d": "Date(2019, 3, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3256,8 +2828,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3269,8 +2840,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3317,15 +2887,6 @@
             "y": "Date(2004, 2, 29)",
             "_aux_date_0": "Date(2004, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2004, 2, 29)",
-            "_aux_date_0": "Date(2004, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3334,8 +2895,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3347,8 +2907,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -3357,8 +2916,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3370,8 +2928,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3443,20 +3000,6 @@
             "_aux_date_2": "Date(2100, 2, 28)",
             "l": 2004
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "w": "Date(2000, 2, 29)",
-            "x": "Date(2001, 2, 28)",
-            "y": "Date(2004, 2, 29)",
-            "z": "Date(2100, 2, 28)",
-            "_aux_date_0": "Date(2001, 2, 28)",
-            "_aux_date_1": "Date(2004, 2, 29)",
-            "_aux_date_2": "Date(2100, 2, 28)",
-            "l": 2004
-          }
         }
       },
       "unsat_consensus": false,
@@ -3465,8 +3008,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3478,8 +3020,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -3488,8 +3029,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3501,8 +3041,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3564,18 +3103,6 @@
             "_aux_date_0": "Date(1960, 6, 15)",
             "_aux_date_1": "Date(1970, 7, 10)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(1950, 6, 15)",
-            "b": "Date(1960, 6, 15)",
-            "c": "Date(1970, 7, 10)",
-            "d": "Date(2000, 6, 15)",
-            "_aux_date_0": "Date(1960, 6, 15)",
-            "_aux_date_1": "Date(1970, 7, 10)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3584,8 +3111,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3597,8 +3123,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3660,18 +3185,6 @@
             "_aux_date_1": "Date(2008, 2, 29)",
             "l": 2008
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2004, 2, 29)",
-            "z": "Date(2008, 2, 29)",
-            "_aux_date_0": "Date(2004, 2, 29)",
-            "_aux_date_1": "Date(2008, 2, 29)",
-            "l": 2008
-          }
         }
       },
       "unsat_consensus": false,
@@ -3680,8 +3193,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3693,8 +3205,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3751,17 +3262,6 @@
             "_aux_date_0": "Date(2021, 3, 15)",
             "_aux_date_1": "Date(2022, 4, 10)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "base": "Date(2020, 3, 15)",
-            "next_year": "Date(2021, 3, 15)",
-            "offset": "Date(2022, 4, 10)",
-            "_aux_date_0": "Date(2021, 3, 15)",
-            "_aux_date_1": "Date(2022, 4, 10)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3770,8 +3270,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3783,8 +3282,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3851,19 +3349,6 @@
             "_aux_date_1": "Date(2050, 12, 5)",
             "_aux_date_2": "Date(2010, 3, 20)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "anchor": "Date(1950, 6, 15)",
-            "derived1": "Date(2000, 6, 15)",
-            "derived2": "Date(2050, 12, 5)",
-            "derived3": "Date(2010, 3, 20)",
-            "_aux_date_0": "Date(2000, 6, 15)",
-            "_aux_date_1": "Date(2050, 12, 5)",
-            "_aux_date_2": "Date(2010, 3, 20)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3872,8 +3357,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3885,8 +3369,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -3943,17 +3426,6 @@
             "_aux_date_0": "Date(2000, 2, 29)",
             "_aux_date_1": "Date(2004, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "adjusted": "Date(2004, 2, 29)",
-            "leap_cross": "Date(2000, 2, 29)",
-            "start": "Date(1999, 2, 28)",
-            "_aux_date_0": "Date(2000, 2, 29)",
-            "_aux_date_1": "Date(2004, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -3962,8 +3434,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -3975,8 +3446,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4043,19 +3513,6 @@
             "_aux_date_1": "Date(2010, 12, 5)",
             "_aux_date_2": "Date(2015, 6, 25)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "computed1": "Date(2020, 3, 25)",
-            "computed2": "Date(2010, 12, 5)",
-            "computed3": "Date(2015, 6, 25)",
-            "origin": "Date(2010, 5, 20)",
-            "_aux_date_0": "Date(2020, 3, 25)",
-            "_aux_date_1": "Date(2010, 12, 5)",
-            "_aux_date_2": "Date(2015, 6, 25)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4064,8 +3521,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4077,8 +3533,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4135,17 +3590,6 @@
             "_aux_date_0": "Date(2001, 2, 28)",
             "_aux_date_1": "Date(2004, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2001, 2, 28)",
-            "z": "Date(2004, 2, 29)",
-            "_aux_date_0": "Date(2001, 2, 28)",
-            "_aux_date_1": "Date(2004, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4154,8 +3598,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4167,8 +3610,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4235,19 +3677,6 @@
             "_aux_date_1": "Date(1995, 6, 15)",
             "_aux_date_2": "Date(2000, 12, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "w": "Date(2000, 12, 31)",
-            "x": "Date(1995, 6, 15)",
-            "y": "Date(2005, 9, 1)",
-            "z": "Date(1995, 6, 15)",
-            "_aux_date_0": "Date(2005, 9, 1)",
-            "_aux_date_1": "Date(1995, 6, 15)",
-            "_aux_date_2": "Date(2000, 12, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4256,8 +3685,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4269,8 +3697,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -4279,8 +3706,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4292,8 +3718,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4350,17 +3775,6 @@
             "_aux_date_0": "Date(2020, 2, 29)",
             "_aux_date_1": "Date(2021, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2020, 2, 15)",
-            "y": "Date(2020, 2, 29)",
-            "z": "Date(2021, 2, 28)",
-            "_aux_date_0": "Date(2020, 2, 29)",
-            "_aux_date_1": "Date(2021, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4369,8 +3783,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4382,8 +3795,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -4392,8 +3804,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4405,8 +3816,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4463,17 +3873,6 @@
             "_aux_date_0": "Date(2004, 2, 29)",
             "_aux_date_1": "Date(2008, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 2, 29)",
-            "y": "Date(2004, 2, 29)",
-            "z": "Date(2008, 2, 29)",
-            "_aux_date_0": "Date(2004, 2, 29)",
-            "_aux_date_1": "Date(2008, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4482,8 +3881,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4495,8 +3893,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4553,17 +3950,6 @@
             "_aux_date_0": "Date(2021, 5, 25)",
             "_aux_date_1": "Date(2020, 9, 10)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "base": "Date(2020, 6, 15)",
-            "next": "Date(2021, 5, 25)",
-            "shifted": "Date(2020, 9, 10)",
-            "_aux_date_0": "Date(2021, 5, 25)",
-            "_aux_date_1": "Date(2020, 9, 10)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4572,8 +3958,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4585,8 +3970,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4653,19 +4037,6 @@
             "_aux_date_1": "Date(1975, 9, 25)",
             "_aux_date_2": "Date(1985, 6, 20)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(1950, 3, 15)",
-            "b": "Date(2000, 3, 15)",
-            "c": "Date(1975, 9, 25)",
-            "d": "Date(1985, 6, 20)",
-            "_aux_date_0": "Date(2000, 3, 15)",
-            "_aux_date_1": "Date(1975, 9, 25)",
-            "_aux_date_2": "Date(1985, 6, 20)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4674,8 +4045,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4687,8 +4057,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4745,17 +4114,6 @@
             "_aux_date_0": "Date(2004, 2, 29)",
             "_aux_date_1": "Date(2001, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "leap1": "Date(2000, 2, 29)",
-            "leap2": "Date(2004, 2, 29)",
-            "nonleap": "Date(2001, 2, 28)",
-            "_aux_date_0": "Date(2004, 2, 29)",
-            "_aux_date_1": "Date(2001, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4764,8 +4122,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4777,8 +4134,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -4787,8 +4143,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4800,8 +4155,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4858,17 +4212,6 @@
             "year2": "Date(2002, 1, 1)",
             "year4": "Date(2004, 1, 1)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "days1460": "Date(2003, 12, 31)",
-            "days730": "Date(2001, 12, 31)",
-            "start": "Date(2000, 1, 1)",
-            "year2": "Date(2002, 1, 1)",
-            "year4": "Date(2004, 1, 1)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4877,8 +4220,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4890,8 +4232,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -4900,8 +4241,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4913,8 +4253,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -4966,16 +4305,6 @@
             "c": "Date(2002, 3, 1)",
             "d": "Date(2002, 3, 2)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(2001, 3, 1)",
-            "b": "Date(2002, 3, 1)",
-            "c": "Date(2002, 3, 1)",
-            "d": "Date(2002, 3, 2)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -4984,8 +4313,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -4997,8 +4325,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5007,8 +4334,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5020,8 +4346,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5068,15 +4393,6 @@
             "y": "Date(2002, 1, 1)",
             "z": "Date(2001, 12, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2000, 1, 1)",
-            "y": "Date(2002, 1, 1)",
-            "z": "Date(2001, 12, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5085,8 +4401,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5098,8 +4413,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5156,17 +4470,6 @@
             "d": "Date(2000, 3, 1)",
             "e": "Date(2001, 3, 1)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(2000, 2, 29)",
-            "b": "Date(2001, 2, 28)",
-            "c": "Date(2001, 3, 1)",
-            "d": "Date(2000, 3, 1)",
-            "e": "Date(2001, 3, 1)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5175,8 +4478,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5188,8 +4490,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5198,8 +4499,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5211,8 +4511,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5259,15 +4558,6 @@
             "leap_start": "Date(2020, 2, 29)",
             "one_year_later": "Date(2021, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "days_366_later": "Date(2021, 3, 1)",
-            "leap_start": "Date(2020, 2, 29)",
-            "one_year_later": "Date(2021, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5276,8 +4566,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5289,8 +4578,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5299,8 +4587,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5312,8 +4599,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5322,8 +4608,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5335,8 +4620,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5393,17 +4677,6 @@
             "y": "Date(2017, 1, 1)",
             "z": "Date(2020, 1, 1)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "v": "Date(2020, 1, 1)",
-            "w": "Date(2016, 1, 1)",
-            "x": "Date(2017, 1, 1)",
-            "y": "Date(2017, 1, 1)",
-            "z": "Date(2020, 1, 1)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5412,8 +4685,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5425,8 +4697,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5435,8 +4706,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5448,8 +4718,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5458,8 +4727,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5471,8 +4739,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5524,16 +4791,6 @@
             "c": "Date(2004, 1, 1)",
             "d": "Date(2003, 12, 31)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "a": "Date(2000, 1, 1)",
-            "b": "Date(2004, 1, 1)",
-            "c": "Date(2004, 1, 1)",
-            "d": "Date(2003, 12, 31)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5542,8 +4799,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5555,8 +4811,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "timeout",
-        "simple_new_int": "sat"
+        "simple_int": "timeout"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5594,15 +4849,6 @@
             "middle": "Date(2000, 12, 15)",
             "start": "Date(1999, 12, 16)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "end": "Date(2000, 12, 15)",
-            "middle": "Date(2000, 12, 14)",
-            "start": "Date(1999, 12, 15)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5611,8 +4857,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "timeout",
-        "simple_new_int": "correct"
+        "simple_int": "timeout"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5624,8 +4869,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5682,17 +4926,6 @@
             "v4": "Date(2004, 2, 29)",
             "v5": "Date(2004, 2, 29)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "v1": "Date(2000, 2, 29)",
-            "v2": "Date(2001, 2, 28)",
-            "v3": "Date(2001, 3, 1)",
-            "v4": "Date(2004, 2, 29)",
-            "v5": "Date(2004, 2, 29)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5701,8 +4934,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5714,8 +4946,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5724,8 +4955,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5737,8 +4967,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5790,16 +5019,6 @@
             "y": "Date(2002, 3, 1)",
             "z": "Date(2002, 3, 1)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "w": "Date(2002, 3, 2)",
-            "x": "Date(2001, 3, 1)",
-            "y": "Date(2002, 3, 1)",
-            "z": "Date(2002, 3, 1)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5808,8 +5027,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5821,8 +5039,7 @@
         "epoch_days_int": "unsat",
         "hybrid_init_epoch_int": "unsat",
         "hybrid_init_ymd_int": "unsat",
-        "simple_int": "unsat",
-        "simple_new_int": "unsat"
+        "simple_int": "unsat"
       },
       "sat_validation": {},
       "unsat_consensus": true,
@@ -5831,8 +5048,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -5844,8 +5060,7 @@
         "epoch_days_int": "sat",
         "hybrid_init_epoch_int": "sat",
         "hybrid_init_ymd_int": "sat",
-        "simple_int": "sat",
-        "simple_new_int": "sat"
+        "simple_int": "sat"
       },
       "sat_validation": {
         "alpha_beta_int": {
@@ -5892,15 +5107,6 @@
             "y": "Date(2021, 2, 28)",
             "z": "Date(2021, 2, 28)"
           }
-        },
-        "simple_new_int": {
-          "valid": true,
-          "message": "Solution validated successfully",
-          "solution": {
-            "x": "Date(2020, 2, 29)",
-            "y": "Date(2021, 2, 28)",
-            "z": "Date(2021, 2, 28)"
-          }
         }
       },
       "unsat_consensus": false,
@@ -5909,8 +5115,7 @@
         "epoch_days_int": "correct",
         "hybrid_init_epoch_int": "correct",
         "hybrid_init_ymd_int": "correct",
-        "simple_int": "correct",
-        "simple_new_int": "correct"
+        "simple_int": "correct"
       },
       "wrong_approaches": [],
       "might_correct_approaches": []
@@ -6046,10 +5251,6 @@
         {
           "approach": "simple_int",
           "average_lines": 0.0
-        },
-        {
-          "approach": "simple_new_int",
-          "average_lines": 0.0
         }
       ],
       "avg_time_sorted": [
@@ -6060,10 +5261,6 @@
         {
           "approach": "hybrid_init_ymd_int",
           "average_time": 0.046950764656066894
-        },
-        {
-          "approach": "simple_new_int",
-          "average_time": 0.13480082988739014
         },
         {
           "approach": "epoch_days_int",
@@ -6089,7 +5286,7 @@
       "avg_time_sorted": [
         {
           "implementation": "int",
-          "average_time": 0.23863015770912172
+          "average_time": 0.259396023273468
         }
       ]
     },
@@ -6499,403 +5696,403 @@
       "avg_time_sorted": [
         {
           "constraint_id": "llm-property_access-51",
-          "avg_time": 0.0026928186416625977
-        },
-        {
-          "constraint_id": "llm-symbolic_date_vars-64",
-          "avg_time": 0.005372365315755208
+          "avg_time": 0.002727031707763672
         },
         {
           "constraint_id": "llm-symbolic_date_vars-61",
-          "avg_time": 0.005403439203898112
+          "avg_time": 0.0053160667419433595
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-64",
+          "avg_time": 0.005354738235473633
         },
         {
           "constraint_id": "llm-property_access-49",
-          "avg_time": 0.00629882017771403
-        },
-        {
-          "constraint_id": "llm-property_access-44",
-          "avg_time": 0.006529649098714192
-        },
-        {
-          "constraint_id": "llm-property_access-41",
-          "avg_time": 0.006540060043334961
+          "avg_time": 0.005795860290527343
         },
         {
           "constraint_id": "llm-property_access-55",
-          "avg_time": 0.006665547688802083
+          "avg_time": 0.00627751350402832
+        },
+        {
+          "constraint_id": "llm-property_access-41",
+          "avg_time": 0.00654749870300293
+        },
+        {
+          "constraint_id": "llm-property_access-44",
+          "avg_time": 0.006565713882446289
         },
         {
           "constraint_id": "llm-property_access-46",
-          "avg_time": 0.006675362586975098
+          "avg_time": 0.006701850891113281
         },
         {
           "constraint_id": "llm-property_access-56",
-          "avg_time": 0.006830096244812012
+          "avg_time": 0.0068820476531982425
         },
         {
           "constraint_id": "llm-property_access-54",
-          "avg_time": 0.007007122039794922
+          "avg_time": 0.00703725814819336
         },
         {
           "constraint_id": "llm-property_access-52",
-          "avg_time": 0.0071048736572265625
-        },
-        {
-          "constraint_id": "llm-logical_operators-3",
-          "avg_time": 0.007922887802124023
+          "avg_time": 0.0071413516998291016
         },
         {
           "constraint_id": "llm-logical_operators-6",
-          "avg_time": 0.00793162981669108
+          "avg_time": 0.008068990707397462
+        },
+        {
+          "constraint_id": "llm-logical_operators-3",
+          "avg_time": 0.008117198944091797
         },
         {
           "constraint_id": "llm-symbolic_date_vars-62",
-          "avg_time": 0.008330225944519043
+          "avg_time": 0.008286142349243164
         },
         {
           "constraint_id": "llm-property_access-42",
-          "avg_time": 0.008451620737711588
+          "avg_time": 0.008568954467773438
         },
         {
           "constraint_id": "llm-logical_operators-1",
-          "avg_time": 0.008648912111918131
+          "avg_time": 0.008792495727539063
         },
         {
           "constraint_id": "llm-logical_operators-19",
-          "avg_time": 0.00915964444478353
+          "avg_time": 0.009171390533447265
         },
         {
           "constraint_id": "llm-logical_operators-16",
-          "avg_time": 0.009416460990905762
+          "avg_time": 0.009461641311645508
         },
         {
           "constraint_id": "llm-symbolic_date_vars-74",
-          "avg_time": 0.00973963737487793
+          "avg_time": 0.009915018081665039
         },
         {
           "constraint_id": "llm-symbolic_date_vars-69",
-          "avg_time": 0.009870807329813639
+          "avg_time": 0.010071039199829102
         },
         {
           "constraint_id": "llm-property_access-57",
-          "avg_time": 0.010483384132385254
-        },
-        {
-          "constraint_id": "llm-symbolic_date_vars-76",
-          "avg_time": 0.010650356610616049
+          "avg_time": 0.010488796234130859
         },
         {
           "constraint_id": "llm-property_access-50",
-          "avg_time": 0.010807037353515625
+          "avg_time": 0.010872173309326171
         },
         {
           "constraint_id": "llm-property_access-53",
-          "avg_time": 0.010886510213216146
+          "avg_time": 0.011022710800170898
         },
         {
-          "constraint_id": "llm-symbolic_date_vars-79",
-          "avg_time": 0.011452635129292807
-        },
-        {
-          "constraint_id": "llm-symbolic_date_vars-71",
-          "avg_time": 0.011647383371988932
+          "constraint_id": "llm-symbolic_date_vars-76",
+          "avg_time": 0.011023378372192383
         },
         {
           "constraint_id": "llm-logical_operators-5",
-          "avg_time": 0.011701146761576334
+          "avg_time": 0.011884164810180665
         },
         {
           "constraint_id": "llm-property_access-58",
-          "avg_time": 0.012006402015686035
+          "avg_time": 0.011966085433959961
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-79",
+          "avg_time": 0.011966180801391602
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-71",
+          "avg_time": 0.012224388122558594
         },
         {
           "constraint_id": "llm-symbolic_date_vars-75",
-          "avg_time": 0.012217124303181967
+          "avg_time": 0.012343740463256836
         },
         {
           "constraint_id": "llm-symbolic_date_vars-67",
-          "avg_time": 0.012246529261271158
+          "avg_time": 0.012531185150146484
         },
         {
           "constraint_id": "llm-logical_operators-17",
-          "avg_time": 0.012529929478963217
+          "avg_time": 0.01254100799560547
         },
         {
           "constraint_id": "llm-logical_operators-18",
-          "avg_time": 0.012548009554545084
+          "avg_time": 0.012827205657958984
         },
         {
           "constraint_id": "llm-symbolic_date_vars-65",
-          "avg_time": 0.013037721316019693
+          "avg_time": 0.013076210021972656
         },
         {
           "constraint_id": "llm-symbolic_date_vars-80",
-          "avg_time": 0.013135393460591635
+          "avg_time": 0.0134979248046875
         },
         {
           "constraint_id": "llm-month_vs_days-36",
-          "avg_time": 0.013746301333109537
+          "avg_time": 0.013711309432983399
         },
         {
           "constraint_id": "llm-month_vs_days-29",
-          "avg_time": 0.013791839281717936
+          "avg_time": 0.013871002197265624
         },
         {
           "constraint_id": "llm-month_vs_days-24",
-          "avg_time": 0.013866941134134928
-        },
-        {
-          "constraint_id": "llm-symbolic_date_vars-63",
-          "avg_time": 0.013899127642313639
+          "avg_time": 0.013876247406005859
         },
         {
           "constraint_id": "llm-month_vs_days-34",
-          "avg_time": 0.013920187950134277
+          "avg_time": 0.014026737213134766
         },
         {
-          "constraint_id": "llm-symbolic_date_vars-77",
-          "avg_time": 0.014012694358825684
+          "constraint_id": "llm-symbolic_date_vars-63",
+          "avg_time": 0.014268159866333008
         },
         {
           "constraint_id": "llm-property_access-48",
-          "avg_time": 0.014638662338256836
+          "avg_time": 0.014864921569824219
         },
         {
-          "constraint_id": "llm-logical_operators-10",
-          "avg_time": 0.015290021896362305
-        },
-        {
-          "constraint_id": "llm-month_vs_days-25",
-          "avg_time": 0.015653332074483235
+          "constraint_id": "llm-symbolic_date_vars-77",
+          "avg_time": 0.015042829513549804
         },
         {
           "constraint_id": "llm-property_access-60",
-          "avg_time": 0.015700777371724445
+          "avg_time": 0.01557173728942871
+        },
+        {
+          "constraint_id": "llm-logical_operators-10",
+          "avg_time": 0.015601778030395507
+        },
+        {
+          "constraint_id": "llm-month_vs_days-25",
+          "avg_time": 0.015817880630493164
         },
         {
           "constraint_id": "llm-symbolic_date_vars-73",
-          "avg_time": 0.015737096468607586
-        },
-        {
-          "constraint_id": "llm-symbolic_date_vars-66",
-          "avg_time": 0.015872081120808918
+          "avg_time": 0.0160919189453125
         },
         {
           "constraint_id": "llm-property_access-43",
-          "avg_time": 0.015948176383972168
+          "avg_time": 0.016332626342773438
+        },
+        {
+          "constraint_id": "llm-symbolic_date_vars-66",
+          "avg_time": 0.017020177841186524
         },
         {
           "constraint_id": "llm-logical_operators-11",
-          "avg_time": 0.01810022195180257
+          "avg_time": 0.018223285675048828
         },
         {
           "constraint_id": "llm-logical_operators-20",
-          "avg_time": 0.018639643987019856
+          "avg_time": 0.01850442886352539
         },
         {
           "constraint_id": "llm-month_vs_days-32",
-          "avg_time": 0.02078060309092204
+          "avg_time": 0.020920658111572267
         },
         {
           "constraint_id": "llm-symbolic_date_vars-70",
-          "avg_time": 0.025043527285257976
+          "avg_time": 0.02767801284790039
         },
         {
           "constraint_id": "llm-logical_operators-8",
-          "avg_time": 0.02726300557454427
+          "avg_time": 0.029120779037475585
         },
         {
           "constraint_id": "llm-month_vs_days-35",
-          "avg_time": 0.028855562210083008
+          "avg_time": 0.029821205139160156
         },
         {
           "constraint_id": "llm-symbolic_date_vars-78",
-          "avg_time": 0.029523015022277832
+          "avg_time": 0.0330657958984375
         },
         {
           "constraint_id": "llm-symbolic_date_vars-72",
-          "avg_time": 0.029995441436767578
+          "avg_time": 0.03360147476196289
         },
         {
           "constraint_id": "llm-symbolic_date_vars-68",
-          "avg_time": 0.03096167246500651
+          "avg_time": 0.03475790023803711
         },
         {
           "constraint_id": "llm-property_access-47",
-          "avg_time": 0.07625134785970052
+          "avg_time": 0.088916015625
         },
         {
           "constraint_id": "llm-month_vs_days-31",
-          "avg_time": 0.08188458283742268
+          "avg_time": 0.09557299613952637
         },
         {
           "constraint_id": "llm-logical_operators-15",
-          "avg_time": 0.0879971981048584
+          "avg_time": 0.1026853084564209
         },
         {
           "constraint_id": "llm-month_vs_days-26",
-          "avg_time": 0.08874956766764323
+          "avg_time": 0.10373511314392089
         },
         {
           "constraint_id": "llm-month_vs_days-22",
-          "avg_time": 0.09498910109202068
+          "avg_time": 0.10979433059692383
         },
         {
           "constraint_id": "llm-month_vs_days-37",
-          "avg_time": 0.09798224767049153
+          "avg_time": 0.11348614692687989
         },
         {
           "constraint_id": "llm-month_vs_days-38",
-          "avg_time": 0.09859466552734375
+          "avg_time": 0.11422348022460938
         },
         {
           "constraint_id": "llm-month_vs_days-27",
-          "avg_time": 0.10112909475962321
+          "avg_time": 0.1171412467956543
         },
         {
           "constraint_id": "llm-month_vs_days-30",
-          "avg_time": 0.10266562302907307
-        },
-        {
-          "constraint_id": "llm-month_vs_days-21",
-          "avg_time": 0.1030349334081014
+          "avg_time": 0.11715922355651856
         },
         {
           "constraint_id": "llm-logical_operators-13",
-          "avg_time": 0.10423886775970459
+          "avg_time": 0.11758604049682617
+        },
+        {
+          "constraint_id": "llm-month_vs_days-21",
+          "avg_time": 0.12090945243835449
         },
         {
           "constraint_id": "llm-month_vs_days-39",
-          "avg_time": 0.10448352495829265
+          "avg_time": 0.12201647758483887
         },
         {
           "constraint_id": "llm-month_vs_days-23",
-          "avg_time": 0.10643426577250163
+          "avg_time": 0.12206835746765136
         },
         {
           "constraint_id": "llm-month_vs_days-28",
-          "avg_time": 0.10782913366953532
+          "avg_time": 0.12316818237304687
         },
         {
           "constraint_id": "llm-logical_operators-9",
-          "avg_time": 0.10993258158365886
+          "avg_time": 0.12979817390441895
         },
         {
           "constraint_id": "llm-year_vs_days-83",
-          "avg_time": 0.11955817540486653
+          "avg_time": 0.13429627418518067
         },
         {
           "constraint_id": "llm-month_vs_days-40",
-          "avg_time": 0.12008500099182129
-        },
-        {
-          "constraint_id": "llm-logical_operators-14",
-          "avg_time": 0.16021605332692465
+          "avg_time": 0.13581037521362305
         },
         {
           "constraint_id": "llm-property_access-45",
-          "avg_time": 0.1860452095667521
-        },
-        {
-          "constraint_id": "llm-year_vs_days-86",
-          "avg_time": 0.2032254139582316
-        },
-        {
-          "constraint_id": "llm-year_vs_days-96",
-          "avg_time": 0.20789881547292074
+          "avg_time": 0.14121489524841307
         },
         {
           "constraint_id": "llm-year_vs_days-99",
-          "avg_time": 0.2091528574625651
-        },
-        {
-          "constraint_id": "llm-year_vs_days-91",
-          "avg_time": 0.213396946589152
+          "avg_time": 0.1585926055908203
         },
         {
           "constraint_id": "llm-year_vs_days-89",
-          "avg_time": 0.21456527709960938
+          "avg_time": 0.15928053855895996
+        },
+        {
+          "constraint_id": "llm-year_vs_days-86",
+          "avg_time": 0.16068825721740723
+        },
+        {
+          "constraint_id": "llm-year_vs_days-91",
+          "avg_time": 0.16215863227844238
+        },
+        {
+          "constraint_id": "llm-year_vs_days-96",
+          "avg_time": 0.16318440437316895
         },
         {
           "constraint_id": "llm-year_vs_days-87",
-          "avg_time": 0.21981275081634521
+          "avg_time": 0.1658379077911377
         },
         {
           "constraint_id": "llm-year_vs_days-81",
-          "avg_time": 0.22491276264190674
+          "avg_time": 0.1758502960205078
+        },
+        {
+          "constraint_id": "llm-logical_operators-14",
+          "avg_time": 0.189284086227417
         },
         {
           "constraint_id": "llm-year_vs_days-98",
-          "avg_time": 0.25487732887268066
+          "avg_time": 0.2201014995574951
         },
         {
           "constraint_id": "llm-year_vs_days-97",
-          "avg_time": 0.26702173550923664
-        },
-        {
-          "constraint_id": "llm-year_vs_days-82",
-          "avg_time": 0.2687508662541707
+          "avg_time": 0.2266157627105713
         },
         {
           "constraint_id": "llm-year_vs_days-85",
-          "avg_time": 0.2702910900115967
+          "avg_time": 0.22947897911071777
+        },
+        {
+          "constraint_id": "llm-year_vs_days-82",
+          "avg_time": 0.2380751132965088
         },
         {
           "constraint_id": "llm-year_vs_days-84",
-          "avg_time": 0.2811942497889201
+          "avg_time": 0.24999666213989258
         },
         {
           "constraint_id": "llm-logical_operators-4",
-          "avg_time": 0.2938661575317383
+          "avg_time": 0.2678645133972168
         },
         {
           "constraint_id": "llm-year_vs_days-88",
-          "avg_time": 0.31626176834106445
+          "avg_time": 0.29396347999572753
         },
         {
           "constraint_id": "llm-logical_operators-12",
-          "avg_time": 0.3167128960291545
+          "avg_time": 0.37738661766052245
         },
         {
           "constraint_id": "llm-year_vs_days-92",
-          "avg_time": 0.39157338937123615
+          "avg_time": 0.37929716110229494
         },
         {
           "constraint_id": "llm-logical_operators-7",
-          "avg_time": 0.4038776159286499
+          "avg_time": 0.4503983974456787
         },
         {
           "constraint_id": "llm-year_vs_days-90",
-          "avg_time": 0.45736030737559
+          "avg_time": 0.45388011932373046
         },
         {
           "constraint_id": "llm-year_vs_days-100",
-          "avg_time": 0.5187138319015503
+          "avg_time": 0.5212361335754394
         },
         {
           "constraint_id": "llm-year_vs_days-95",
-          "avg_time": 0.5664405822753906
+          "avg_time": 0.5747089385986328
         },
         {
           "constraint_id": "llm-year_vs_days-93",
-          "avg_time": 0.7298386494318644
+          "avg_time": 0.7636816024780273
         },
         {
           "constraint_id": "llm-month_vs_days-33",
-          "avg_time": 1.3590585788091023
+          "avg_time": 1.575564479827881
         },
         {
           "constraint_id": "llm-logical_operators-2",
-          "avg_time": 1.8562012910842896
+          "avg_time": 2.224194383621216
         },
         {
           "constraint_id": "llm-year_vs_days-94",
-          "avg_time": 4.45495069026947
+          "avg_time": 4.801423645019531
         },
         {
           "constraint_id": "llm-property_access-59",
-          "avg_time": 6.57777726650238
+          "avg_time": 7.890420198440552
         }
       ]
     }
