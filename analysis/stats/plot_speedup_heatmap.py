@@ -4,23 +4,22 @@ Plot how each feature relates to each encoding's speedup over the baseline.
     python -m analysis.stats.plot_speedup_heatmap --timeout 20000     # or set DATESAT_TIMEOUT_MS
     python -m analysis.stats.plot_speedup_heatmap --corpus legal
 
-Reads joined.csv. A cell is the Spearman rho, over the usable instances, between a
+Reads joined.csv. A cell is the Spearman rho, over the complete instances, between a
 feature and one encoding's speedup (the baseline's cost / the encoding's cost). rho > 0
 (green): the encoding gains on the baseline as the feature grows; rho < 0 (red): it loses
 ground.
 
-Costs and usable instances are instance_costs.py's, as in every other stage: one cost per
-instance, the median over its runs, with a timed-out run counting at the timeout. So by
-default an instance where only one side timed out is ranked at that bound (the true
-speedup is at least as extreme, so this is conservative), and one where both timed out
-has speedup 1. `--timeouts drop` is a check on that: it keeps only the instances both
-sides solved.
+Costs and instances are instance_costs.py's, as in every other stage: one cost per
+instance, the median over its runs, with a timed-out run counting at the timeout, and no
+instance left out for its timeouts. So an instance where only one side timed out is ranked
+at that bound (the true speedup is at least as extreme, so this is conservative), and one
+where both timed out has speedup 1.
 
 Stars mark cells that survive Benjamini-Hochberg correction across the whole grid
 (* q < 0.05, ** q < 0.01). Rows keep the column order of features.csv, so every
 heatmap (pooled or per corpus) lists features in the same order.
 
-Writes analysis/outputs/plots/speedup_heatmap[_<corpus>][_exact].png.
+Writes analysis/outputs/plots/speedup_heatmap[_<corpus>].png.
 """
 
 import argparse
@@ -34,12 +33,9 @@ import pandas as pd
 from scipy.stats import spearmanr
 
 from analysis.paths import OUTPUTS, PLOTS
-from analysis.stats.instance_costs import usable_costs
-from analysis.stats.join_results import add_timeout_arg, timeout_seconds
+from analysis.stats.instance_costs import complete_costs, encodings_only
+from analysis.stats.join_results import RESULT_COLUMNS as NON_FEATURES, add_timeout_arg, timeout_seconds
 from analysis.stats.plot_feature_correlation import CMAP, INK, INK_2, SURFACE, ink_on
-
-NON_FEATURES = {"id", "corpus", "encoding", "run", "time", "status", "solved",
-                "baseline_time", "baseline_status", "speedup", "speedup_bound"}
 
 
 def bh_qvalues(p):
@@ -57,16 +53,18 @@ def bh_qvalues(p):
     return q
 
 
-def speedup_correlations(df, timeout_cost, baseline="simple", corpus=None, timeouts="bound"):
-    """Spearman rho, BH q-value and instance count per (feature, encoding), over the usable
-    instances (only those both sides solved with timeouts="drop").
+def speedup_correlations(df, timeout_cost, baseline="simple", corpus=None):
+    """Spearman rho, BH q-value and instance count per (feature, encoding), over the
+    complete instances, timeouts at the timeout.
 
     Returns (rho, q, n): two DataFrames indexed by feature with one column per
-    encoding, and a dict encoding -> number of instances used.
+    encoding, and a dict encoding -> number of instances used. The router's own results
+    are left out: it is not an encoding.
     """
+    df = encodings_only(df)
     if corpus:
         df = df[df["corpus"] == corpus]
-    costs, _ = usable_costs(df, timeout_cost)
+    costs, _ = complete_costs(df, timeout_cost)
     features = [c for c in df.columns if c not in NON_FEATURES and not c.startswith("label_")]
     feats = df.groupby("id")[features].first().loc[costs.index]
     encodings = sorted(e for e in costs.columns if e != baseline)
@@ -76,15 +74,12 @@ def speedup_correlations(df, timeout_cost, baseline="simple", corpus=None, timeo
     n = {}
     for e in encodings:
         speedup = costs[baseline] / costs[e]
-        keep = pd.Series(True, index=costs.index)
-        if timeouts == "drop":
-            keep = (costs[baseline] < timeout_cost) & (costs[e] < timeout_cost)
-        n[e] = int(keep.sum())
+        n[e] = len(costs)
         for f in features:
-            x = feats.loc[keep, f].astype(float)
+            x = feats[f].astype(float)
             if x.nunique() < 2:
-                continue            # constant within this subset: no correlation to report
-            r, p = spearmanr(x, speedup[keep])
+                continue            # constant within this scope: no correlation to report
+            r, p = spearmanr(x, speedup)
             rho.loc[f, e], pval.loc[f, e] = r, p
 
     q = pd.DataFrame(bh_qvalues(pval.values.ravel()).reshape(pval.shape),
@@ -98,15 +93,12 @@ def main():
     ap.add_argument("--baseline", default="simple")
     ap.add_argument("--corpus", help="restrict to one corpus (llm, grammar, legal)")
     add_timeout_arg(ap)
-    ap.add_argument("--timeouts", choices=("bound", "drop"), default="bound",
-                    help="count timeouts at the timeout (the measurement every stage uses), "
-                         "or keep only the instances both sides solved")
     ap.add_argument("--output", help="default: outputs/plots/speedup_heatmap[_<corpus>].png")
     args = ap.parse_args()
     timeout = timeout_seconds(ap, args)
 
     rho, q, n = speedup_correlations(pd.read_csv(args.joined), timeout, args.baseline,
-                                     args.corpus, args.timeouts)
+                                     args.corpus)
     encodings = list(rho.columns)
     order = list(rho.index)
 
@@ -139,13 +131,12 @@ def main():
     scope = f"{args.corpus} corpus" if args.corpus else "all corpora"
     ax.set_title(f"Feature vs speedup over {args.baseline}, {scope}", loc="left",
                  fontsize=13, color=INK, fontweight="semibold", pad=64)
-    note = ("One cost per instance; timeouts count at the timeout." if args.timeouts == "bound"
-            else "Only instances both sides solved.")
+    note = "One cost per instance; timeouts count at the timeout."
     ax.text(0, 1.045, "Green: encoding gains on baseline as feature grows; red: it loses ground. "
             f"{note}\n* BH q < 0.05, ** q < 0.01",
             transform=ax.transAxes, fontsize=8.5, color=INK_2)
 
-    suffix = (f"_{args.corpus}" if args.corpus else "") + ("_exact" if args.timeouts == "drop" else "")
+    suffix = f"_{args.corpus}" if args.corpus else ""
     out = Path(args.output) if args.output else PLOTS / f"speedup_heatmap{suffix}.png"
     out.parent.mkdir(exist_ok=True)
     fig.savefig(out, dpi=120, facecolor=SURFACE, bbox_inches="tight")

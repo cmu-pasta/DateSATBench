@@ -1,0 +1,39 @@
+{
+  "timeout_ms": 20000,
+  "hard_timeout_ms": 20000,
+  "approaches": [
+    "router"
+  ],
+  "datasets": [
+    "grammar",
+    "legal",
+    "llm"
+  ],
+  "maxsat": false,
+  "timestamp": "20261029_004244",
+  "tag": "router-cv-10runs",
+  "datesatbench_root": "/home/shrey/pldi/DateSATBench/datesatbench",
+  "fold_models": "/home/shrey/pldi/DateSATBench/analysis/outputs/model_cross_validation/fold_models.json",
+  "fold_models_sha256": "0d8a69d56430ffb5feb5c0d4b09c1b24f4595355193e5204a686cbbf36e88814",
+  "cross_validation": {
+    "seed": 0,
+    "folds": 5,
+    "repeats": 10,
+    "trees": 50,
+    "setting": {
+      "min_samples_leaf": 10,
+      "max_depth": 16,
+      "max_features": 0.5,
+      "margin": 0.0,
+      "train_timeout_cost_s": 80.0
+    }
+  },
+  "datesat_commit": "23e1c25880eacaf81f18cef0ca0f31855a769f98",
+  "machine": {
+    "host": "rigatoni.isri.cmu.edu",
+    "cpu": "Intel(R) Xeon(R) Gold 6226R CPU @ 2.90GHz",
+    "platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "z3": "5.1.0"
+  }
+}

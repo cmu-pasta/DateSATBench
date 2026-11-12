@@ -12,8 +12,8 @@
  "instances": {
   "total": 800,
   "dropped_errored_or_missing": 0,
-  "dropped_all_timeout": 32,
-  "trained_on": 768
+  "all_timeout": 32,
+  "trained_on": 800
  },
  "encodings": [
   "alpha_beta",
@@ -29,7 +29,6 @@
   "pinned_var_frac",
   "pinned_date_frac",
   "pinned_int_frac",
-  "pinned_bool_frac",
   "n_date_subexprs",
   "n_atoms",
   "n_date_comparisons",
@@ -42,7 +41,6 @@
   "neg_ordering_frac",
   "n_unit_constraints",
   "n_date_period_ops",
-  "ground_arith_frac",
   "max_abs_years",
   "max_abs_months",
   "max_abs_days",
@@ -89,11 +87,11 @@
  ],
  "bounds": "keep",
  "total_cost_s": {
-  "alpha_beta": 2111.651,
-  "epoch_days": 2143.408,
-  "hybrid_init_epoch": 1788.136,
-  "hybrid_init_ymd": 672.422,
-  "simple": 2698.198
+  "alpha_beta": 3212.442,
+  "epoch_days": 2740.948,
+  "hybrid_init_epoch": 2726.031,
+  "hybrid_init_ymd": 1500.344,
+  "simple": 3341.592
  },
  "best_single_encoding": "hybrid_init_ymd",
  "fallback": "hybrid_init_ymd",
@@ -102,330 +100,330 @@
   "alpha_beta vs epoch_days": {
    "examples": 740,
    "faster": {
-    "alpha_beta": 250,
-    "epoch_days": 490
+    "alpha_beta": 239,
+    "epoch_days": 501
    },
    "weight_s": {
-    "alpha_beta": 4595.248,
-    "epoch_days": 4563.491
+    "alpha_beta": 4491.683,
+    "epoch_days": 5923.177
    },
    "top_features": [
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.2291
+     "importance": 0.2458
     },
     {
      "feature": "form_balance",
-     "importance": 0.1841
-    },
-    {
-     "feature": "max_abs_days",
-     "importance": 0.1498
+     "importance": 0.2094
     },
     {
      "feature": "n_day_steps",
-     "importance": 0.0772
+     "importance": 0.1359
+    },
+    {
+     "feature": "max_abs_days",
+     "importance": 0.1023
     },
     {
      "feature": "n_ymd_needs",
-     "importance": 0.0488
+     "importance": 0.0482
     }
    ]
   },
   "alpha_beta vs hybrid_init_epoch": {
-   "examples": 753,
+   "examples": 744,
    "faster": {
-    "alpha_beta": 252,
-    "hybrid_init_epoch": 501
+    "alpha_beta": 245,
+    "hybrid_init_epoch": 499
    },
    "weight_s": {
-    "alpha_beta": 3682.188,
-    "hybrid_init_epoch": 5565.704
+    "alpha_beta": 4079.949,
+    "hybrid_init_epoch": 6186.36
    },
    "top_features": [
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.3273
-    },
-    {
-     "feature": "n_day_steps",
-     "importance": 0.2208
+     "importance": 0.3124
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.1971
+     "importance": 0.2303
     },
     {
      "feature": "form_balance",
-     "importance": 0.0585
+     "importance": 0.2183
     },
     {
-     "feature": "max_abs_days_nonself",
-     "importance": 0.0259
+     "feature": "n_day_steps",
+     "importance": 0.1455
+    },
+    {
+     "feature": "n_arith_unit",
+     "importance": 0.0086
     }
    ]
   },
   "alpha_beta vs hybrid_init_ymd": {
-   "examples": 754,
+   "examples": 748,
    "faster": {
     "alpha_beta": 219,
-    "hybrid_init_ymd": 535
+    "hybrid_init_ymd": 529
    },
    "weight_s": {
-    "alpha_beta": 378.58,
-    "hybrid_init_ymd": 5717.809
+    "alpha_beta": 179.86,
+    "hybrid_init_ymd": 6511.957
    },
    "top_features": [
     {
-     "feature": "max_disjunction_width",
-     "importance": 0.1363
+     "feature": "pinned_date_frac",
+     "importance": 0.1729
     },
     {
-     "feature": "max_abs_months",
-     "importance": 0.0923
+     "feature": "pinned_var_frac",
+     "importance": 0.1025
     },
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.0762
-    },
-    {
-     "feature": "sum_abs_months",
-     "importance": 0.0709
+     "importance": 0.0986
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.0705
+     "importance": 0.0927
+    },
+    {
+     "feature": "n_ymd_needs",
+     "importance": 0.0625
     }
    ]
   },
   "alpha_beta vs simple": {
-   "examples": 720,
+   "examples": 717,
    "faster": {
-    "alpha_beta": 451,
-    "simple": 269
+    "alpha_beta": 438,
+    "simple": 279
    },
    "weight_s": {
-    "alpha_beta": 5025.144,
-    "simple": 2878.598
+    "alpha_beta": 4596.856,
+    "simple": 3987.706
    },
    "top_features": [
     {
      "feature": "max_abs_days",
-     "importance": 0.4139
+     "importance": 0.428
     },
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.3697
-    },
-    {
-     "feature": "sum_abs_days",
-     "importance": 0.0898
+     "importance": 0.3586
     },
     {
      "feature": "max_abs_days_nonself",
-     "importance": 0.0681
+     "importance": 0.1126
     },
     {
-     "feature": "max_abs_months",
-     "importance": 0.0166
+     "feature": "sum_abs_days",
+     "importance": 0.0557
+    },
+    {
+     "feature": "lit_year_span",
+     "importance": 0.012
     }
    ]
   },
   "epoch_days vs hybrid_init_epoch": {
-   "examples": 743,
+   "examples": 745,
    "faster": {
-    "epoch_days": 473,
-    "hybrid_init_epoch": 270
+    "epoch_days": 483,
+    "hybrid_init_epoch": 262
    },
    "weight_s": {
-    "epoch_days": 2661.718,
-    "hybrid_init_epoch": 4576.989
+    "epoch_days": 3981.933,
+    "hybrid_init_epoch": 4656.85
    },
    "top_features": [
     {
      "feature": "max_date_chain_len",
-     "importance": 0.3726
+     "importance": 0.3581
     },
     {
-     "feature": "n_atoms",
-     "importance": 0.0707
+     "feature": "self_op_frac",
+     "importance": 0.0837
     },
     {
      "feature": "implication_atom_frac",
-     "importance": 0.0694
+     "importance": 0.0583
     },
     {
-     "feature": "n_free_date_vars",
-     "importance": 0.0538
+     "feature": "max_abs_months",
+     "importance": 0.031
     },
     {
-     "feature": "n_arith_unit",
-     "importance": 0.0498
+     "feature": "n_date_subexprs",
+     "importance": 0.0308
     }
    ]
   },
   "epoch_days vs hybrid_init_ymd": {
-   "examples": 763,
+   "examples": 760,
    "faster": {
-    "epoch_days": 442,
-    "hybrid_init_ymd": 321
+    "epoch_days": 435,
+    "hybrid_init_ymd": 325
    },
    "weight_s": {
-    "epoch_days": 1096.742,
-    "hybrid_init_ymd": 6467.728
+    "epoch_days": 1298.57,
+    "hybrid_init_ymd": 6199.174
    },
    "top_features": [
     {
-     "feature": "n_date_comparisons",
-     "importance": 0.2714
+     "feature": "n_atoms",
+     "importance": 0.1614
     },
     {
-     "feature": "n_atoms",
-     "importance": 0.1593
+     "feature": "n_date_comparisons",
+     "importance": 0.1323
     },
     {
      "feature": "form_balance",
-     "importance": 0.1209
+     "importance": 0.1322
     },
     {
-     "feature": "n_date_eq",
-     "importance": 0.0545
+     "feature": "n_ymd_needs",
+     "importance": 0.0822
     },
     {
-     "feature": "n_day_ops",
-     "importance": 0.0376
+     "feature": "sum_abs_days",
+     "importance": 0.0417
     }
    ]
   },
   "epoch_days vs simple": {
-   "examples": 740,
+   "examples": 747,
    "faster": {
-    "epoch_days": 489,
-    "simple": 251
+    "epoch_days": 486,
+    "simple": 261
    },
    "weight_s": {
-    "epoch_days": 6693.127,
-    "simple": 4578.337
+    "epoch_days": 7058.338,
+    "simple": 5017.695
    },
    "top_features": [
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.4013
+     "importance": 0.5146
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.3805
+     "importance": 0.2775
     },
     {
      "feature": "form_balance",
-     "importance": 0.1272
+     "importance": 0.0837
     },
     {
      "feature": "max_abs_days_nonself",
-     "importance": 0.0412
+     "importance": 0.041
     },
     {
-     "feature": "mixed_frac",
-     "importance": 0.0107
+     "feature": "sum_abs_days",
+     "importance": 0.0293
     }
    ]
   },
   "hybrid_init_epoch vs hybrid_init_ymd": {
-   "examples": 759,
+   "examples": 755,
    "faster": {
-    "hybrid_init_epoch": 414,
-    "hybrid_init_ymd": 345
+    "hybrid_init_epoch": 416,
+    "hybrid_init_ymd": 339
    },
    "weight_s": {
-    "hybrid_init_epoch": 726.971,
-    "hybrid_init_ymd": 4182.685
+    "hybrid_init_epoch": 814.486,
+    "hybrid_init_ymd": 5040.172
    },
    "top_features": [
     {
      "feature": "form_balance",
-     "importance": 0.2645
+     "importance": 0.3323
     },
     {
-     "feature": "n_day_ops",
-     "importance": 0.1553
+     "feature": "sum_abs_months",
+     "importance": 0.1108
     },
     {
      "feature": "n_day_steps",
-     "importance": 0.0659
+     "importance": 0.0865
+    },
+    {
+     "feature": "sum_abs_days",
+     "importance": 0.0641
     },
     {
      "feature": "max_abs_months_nonself",
-     "importance": 0.063
-    },
-    {
-     "feature": "sum_abs_days_all",
-     "importance": 0.0573
+     "importance": 0.059
     }
    ]
   },
   "hybrid_init_epoch vs simple": {
-   "examples": 756,
+   "examples": 758,
    "faster": {
-    "hybrid_init_epoch": 496,
-    "simple": 260
+    "hybrid_init_epoch": 493,
+    "simple": 265
    },
    "weight_s": {
-    "hybrid_init_epoch": 7935.717,
-    "simple": 3905.655
+    "hybrid_init_epoch": 7914.244,
+    "simple": 5198.683
    },
    "top_features": [
     {
      "feature": "sum_abs_days_all",
-     "importance": 0.4558
+     "importance": 0.4942
     },
     {
      "feature": "max_abs_days",
-     "importance": 0.2915
+     "importance": 0.2837
     },
     {
      "feature": "form_balance",
-     "importance": 0.1306
-    },
-    {
-     "feature": "n_day_steps",
-     "importance": 0.0378
+     "importance": 0.0628
     },
     {
      "feature": "max_abs_days_nonself",
-     "importance": 0.0167
+     "importance": 0.0508
+    },
+    {
+     "feature": "sum_abs_days",
+     "importance": 0.029
     }
    ]
   },
   "hybrid_init_ymd vs simple": {
-   "examples": 758,
+   "examples": 759,
    "faster": {
-    "hybrid_init_ymd": 636,
-    "simple": 122
+    "hybrid_init_ymd": 626,
+    "simple": 133
    },
    "weight_s": {
-    "hybrid_init_ymd": 8158.287,
-    "simple": 672.511
+    "hybrid_init_ymd": 8023.932,
+    "simple": 1082.684
    },
    "top_features": [
     {
-     "feature": "max_abs_days",
-     "importance": 0.3526
-    },
-    {
      "feature": "sum_abs_days_all",
-     "importance": 0.2098
+     "importance": 0.4395
     },
     {
-     "feature": "n_unit_constraints",
-     "importance": 0.0633
+     "feature": "max_abs_days",
+     "importance": 0.228
     },
     {
-     "feature": "n_atoms",
-     "importance": 0.0608
+     "feature": "max_abs_days_nonself",
+     "importance": 0.0381
     },
     {
-     "feature": "n_free_bool_vars",
-     "importance": 0.0388
+     "feature": "self_op_frac",
+     "importance": 0.0341
+    },
+    {
+     "feature": "sum_abs_days",
+     "importance": 0.0278
     }
    ]
   }

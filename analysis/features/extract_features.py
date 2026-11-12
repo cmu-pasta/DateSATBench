@@ -212,9 +212,9 @@ def graph_diameter(edges):
 
 
 def arithmetic_structure(trees, sorts):
-    """The Arithmetic structure columns: what the `date ± period` operations on variables
-    connect, and how large their steps are, counted over the date comparisons that hold
-    them. Self-referential operations (a < a + p) count only in n_self_ops and
+    """The Date arithmetic columns from n_self_ops on: what the `date ± period` operations on
+    variables connect, and how large their steps are, counted over the date comparisons that
+    hold them. Self-referential operations (a < a + p) count only in n_self_ops and
     self_op_frac."""
     f = dict.fromkeys(ARITHMETIC_STRUCTURE, 0)
     edges = set()
@@ -367,7 +367,7 @@ def features_for(entry, corpus):
     f["n_free_int_vars"] = len([v for v in declared["int"] if v not in pinned])
     f["n_free_bool_vars"] = len([v for v in declared["bool"] if v not in pinned])
     f["pinned_var_frac"] = (len(pinned) / n_vars) if n_vars else 0.0
-    for s in ("date", "int", "bool"):
+    for s in ("date", "int"):
         n_s = len(declared[s])
         n_pinned_s = sum(1 for v in declared[s] if v in pinned)
         f[f"pinned_{s}_frac"] = (n_pinned_s / n_s) if n_s else 0.0
@@ -423,11 +423,9 @@ def features_for(entry, corpus):
 
     # ---- date arithmetic ----------------------------------------------
     all_adds = [n for t in trees for n in walk(t) if isinstance(n, DateAdd)]
-    ground_adds = [n for n in all_adds if is_ground_date(n)]
     live = [n for n in all_adds if not is_ground_date(n)]
 
     f["n_date_period_ops"] = len(live)
-    f["ground_arith_frac"] = (len(ground_adds) / len(all_adds)) if all_adds else 0.0
 
     f["max_abs_years"] = max((abs(n.period.ny) for n in live), default=0)
     f["max_abs_months"] = max((abs(n.period.nm) for n in live), default=0)
@@ -466,7 +464,7 @@ def features_for(entry, corpus):
         sum(1 for n in lit_ctors if n.d.value >= 28) / len(lit_ctors)
     ) if lit_ctors else 0.0
 
-    # ---- variable coupling ----------------------------------------------
+    # ---- search space: variable coupling -----------------------------------
     edges = set()
     for a in all_atoms:
         vs = sorted(atom_variables(a, sorts))
@@ -505,7 +503,7 @@ def features_for(entry, corpus):
         and any(isinstance(n, Var) and sorts.get(n.name) == "int" for n in walk(a))
     )
 
-    # ---- arithmetic structure -------------------------------------------
+    # ---- date arithmetic: what the operations connect ----------------------
     f.update(arithmetic_structure(trees, sorts))
 
     # ---- encoding costs --------------------------------------------------
@@ -519,6 +517,11 @@ def features_for(entry, corpus):
     return f
 
 
+# The Search space columns on how the variables are tied together.
+VARIABLE_COUPLING = [
+    "n_components", "largest_component_frac", "graph_density", "mixed_sort_coupling"]
+
+# The Date arithmetic columns that arithmetic_structure() computes.
 ARITHMETIC_STRUCTURE = [
     "n_self_ops", "n_cross_ops", "n_const_ops", "self_op_frac",
     "n_year_ops", "n_month_ops", "n_day_ops", "n_mixed_ops", "n_day_steps_ge28",
@@ -534,26 +537,29 @@ ENCODING_COSTS = [
 FEATURE_GROUPS = [
     ("Search space", [
         "n_free_date_vars", "n_free_int_vars", "n_free_bool_vars", "pinned_var_frac",
-        "pinned_date_frac", "pinned_int_frac", "pinned_bool_frac", "n_date_subexprs"]),
+        "pinned_date_frac", "pinned_int_frac", "n_date_subexprs"]
+        + VARIABLE_COUPLING),
     ("Boolean skeleton", [
         "n_atoms", "n_date_comparisons", "n_int_comparisons", "ordering_cmp_frac",
         "n_case_splits", "max_disjunction_width", "bool_alternation_depth",
         "implication_atom_frac", "neg_ordering_frac", "n_unit_constraints"]),
     ("Date arithmetic", [
-        "n_date_period_ops", "ground_arith_frac", "max_abs_years", "max_abs_months",
-        "max_abs_days", "mixed_frac", "max_date_chain_len"]),
+        "n_date_period_ops", "max_abs_years", "max_abs_months",
+        "max_abs_days", "mixed_frac", "max_date_chain_len"]
+        + ARITHMETIC_STRUCTURE),
     ("Component extraction", [
         "n_dot_year", "n_dot_month", "n_dot_day", "property_access_frac",
         "n_symbolic_date_ctors"]),
     ("Calendar corners", ["uses_feb29", "uses_leap_year", "near_month_end_frac"]),
-    ("Variable coupling", [
-        "n_components", "largest_component_frac", "graph_density", "mixed_sort_coupling"]),
-    ("Arithmetic structure", ARITHMETIC_STRUCTURE),
     ("Encoding costs", ENCODING_COSTS),
 ]
 
+# features.csv keeps the column order it had before the groups were merged: VARIABLE_COUPLING
+# and ARITHMETIC_STRUCTURE come after Calendar corners, not inside their groups. The router's
+# forests draw features by column position, so reordering the columns would change its results.
+_LAST = VARIABLE_COUPLING + ARITHMETIC_STRUCTURE + ENCODING_COSTS
 COLUMNS = (["id", "corpus"]
-           + [f for _, feats in FEATURE_GROUPS for f in feats]
+           + [f for _, feats in FEATURE_GROUPS for f in feats if f not in _LAST] + _LAST
            + ["label_status", "label_execution_time"])
 
 

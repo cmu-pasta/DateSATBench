@@ -15,9 +15,7 @@
   --chip: #eeede8;
   --accent: #2a78d6;
   --accent-ink: #ffffff;
-  --c-llm: #2a78d6;
-  --c-legal: #eb6834;
-  --c-grammar: #1baf7a;
+  /* --c-<corpus>, each corpus's colour, is set from the data: the paper's (paper_style.py) */
   /* Fastest encoding in the feature-space projection: one colour per family, the three
      hybrids sharing green and told apart by shape. Four slots of the reference palette that
      hold up when every pair meets, as in a scatter: worst pair Delta E 16.3 for normal
@@ -37,9 +35,9 @@
   --div-p1: #66b588;
   --div-p2: #166534;   /* darkest green at rho = +1 */
   --const: #e4e2dc;
-  --o-sat: #3d3c37; --o-unsat: #75736b; --o-timeout: #adaba2;
-  --rt-context: #95938b;   /* the single encodings behind the router: grey, >= 3:1 on the surface */
-  --rt-headroom: rgba(42, 120, 214, 0.13);   /* the accent, faint: what is left between router and ideal */
+  --o-sat: #2f9e55; --o-unsat: #f0a030; --o-timeout: #d43d3d;   /* green, orange, red */
+  /* The cactus and router charts take the paper figures' colours from the data (paper_style.py):
+     a colour per encoding, the hybrids apart, and the router dark. */
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -158,6 +156,7 @@ table.out td.enc { font-family: var(--mono); font-size: 12.5px; }
 table.out tr.first td { border-top: 1px solid var(--ink-3); }
 table.out td.corp { font-weight: 600; vertical-align: top; }
 table.out td.corp .sub { display: block; font: 400 11.5px/1.4 var(--mono); color: var(--ink-3); margin-top: 2px; white-space: normal; width: 13ch; }
+table.out td .rng, table.out th .rng { display: block; font: 400 11.5px/1.4 var(--mono); color: var(--ink-3); margin-top: 2px; }   /* lowest-highest run */
 table.out td[data-tip] { cursor: default; }
 table.out td[data-tip]:hover { background: var(--chip); }
 .obar { display: inline-flex; gap: 2px; width: 96px; height: 8px; border-radius: 0 4px 4px 0; overflow: hidden; vertical-align: 1px; }
@@ -168,6 +167,13 @@ table.out td[data-tip]:hover { background: var(--chip); }
 .o-error { background: repeating-linear-gradient(45deg, var(--o-unsat) 0 2px, transparent 2px 4px); }
 .olegend { display: flex; flex-wrap: wrap; gap: 4px 16px; font: 400 12.5px/1.3 var(--mono); color: var(--ink-2); margin: 0 0 10px; }
 .olegend .sw { display: inline-block; width: 14px; height: 8px; margin-right: 6px; vertical-align: 0; border-radius: 0 3px 3px 0; }
+/* ---- cactus plot (under the outcome table) ---- */
+.cactus-head { margin: 32px 0 10px; }
+.cactus-head h3 { font: 600 17px/1.3 var(--sans); margin: 0 0 4px; }
+.cactus-head .note { margin: 0; }
+.lsw { display: inline-block; width: 22px; height: 0; border-top: 2px solid; margin-right: 6px; vertical-align: 3px; }
+.cactus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px 28px; }
+.cactus-chart { height: 340px; }
 .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 0; }
 .bar-cell { display: inline-flex; align-items: center; gap: 8px; }
 .minibar { width: 64px; height: 6px; background: var(--chip); border-radius: 3px; overflow: hidden; display: inline-block; }
@@ -211,8 +217,8 @@ table.out.rt .minibar { width: 120px; }
 .rt-legend { display: flex; flex-wrap: wrap; gap: 4px 18px; margin-top: 12px; font: 400 12px/1.4 var(--mono); color: var(--ink-2); }
 .rt-legend span { display: inline-flex; align-items: center; gap: 7px; }
 .rt-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; }
-.rt-legend .sw-vote { background: var(--accent); }
-.rt-legend .sw-fall { border: 1px solid var(--accent); background: repeating-linear-gradient(135deg, var(--accent) 0 1.5px, var(--surface) 1.5px 4px); }
+.rt-legend .sw-vote { background: var(--ink-3); }   /* grey keys, as in the paper: the bars carry the encodings' colours */
+.rt-legend .sw-fall { border: 1px solid var(--ink-3); background: repeating-linear-gradient(135deg, var(--ink-3) 0 1.5px, var(--surface) 1.5px 4px); }
 .rt-legend .sw-fast { width: 2px; height: 14px; border-radius: 0; background: var(--ink); margin-inline: 5px; }
 .rt-chart-picks { height: 312px; }
 .rt-row .rt-fig { display: flex; flex-direction: column; }
@@ -222,8 +228,7 @@ table.out.rt-solve th, table.out.rt-solve td { padding-block: 0; }
 table.out.rt-solve thead th { padding-bottom: 7px; }
 .solve-cell { display: grid; grid-template-columns: minmax(90px, 1fr) 6.5ch 10ch; align-items: center; gap: 14px; }
 table.out.rt-solve .solve-cell .minibar { width: 100%; height: 8px; border-radius: 4px; }
-.solve-cell .minibar i { border-radius: 4px; background: var(--rt-context); }
-tr.rt-router .solve-cell .minibar i { background: var(--accent); }
+.solve-cell .minibar i { border-radius: 4px; }   /* the colour of the strategy's bar in the charts, set inline */
 tr.rt-oracle .solve-cell .minibar i { background: transparent; border: 1.5px dashed var(--ink-2); }
 .solve-cell .rate { text-align: right; color: var(--ink); }
 .solve-cell .dim { text-align: right; font-size: 12px; }
@@ -312,17 +317,10 @@ footer li { margin: 3px 0; }
         <div class="seg" role="group" aria-labelledby="lbl-scope" id="seg-scope">
           <button id="scope-all" data-v="all" aria-pressed="true">All corpora</button>
           <button id="scope-llm" data-v="llm" aria-pressed="false">LLM</button>
-          <button id="scope-legal" data-v="legal" aria-pressed="false">Legal</button>
           <button id="scope-grammar" data-v="grammar" aria-pressed="false">Grammar</button>
+          <button id="scope-legal" data-v="legal" aria-pressed="false">Legal</button>
           <button id="scope-compare" data-v="compare" aria-pressed="false">Side by side</button>
         </div>
-      </div>
-      <div class="ctl"><span class="ctl-label" id="lbl-to">Timed-out instances</span>
-        <div class="seg" role="group" aria-labelledby="lbl-to" id="seg-to" aria-describedby="to-hint">
-          <button id="to-bound" data-v="bound" aria-pressed="true">Count at the time limit</button>
-          <button id="to-drop" data-v="drop" aria-pressed="false">Leave out</button>
-        </div>
-        <span class="ctl-hint" id="to-hint"></span>
       </div>
       <div class="ctl heat-legend"><span class="ctl-label">Spearman <span style="text-transform:none">ρ</span></span>
         <div class="legend-scale">
@@ -345,15 +343,15 @@ footer li { margin: 3px 0; }
 
   <section id="outcomes">
     <h2>Solver outcomes</h2>
-    <p class="sec-lede">What each encoding did. Show every corpus side by side, all corpora pooled, or one corpus at a time, and narrow to a single encoding to follow it across corpora. Hover a row's cells for the counts behind them.</p>
+    <p class="sec-lede">What each encoding did. Show every corpus side by side, all corpora pooled, or one corpus at a time, and narrow to a single encoding to follow it across corpora. Hover a row's cells for the counts behind them. The cactus plot under the table follows the same choices.</p>
     <div class="controls">
       <div class="ctl"><span class="ctl-label" id="lbl-oscope">Corpus</span>
         <div class="seg" role="group" aria-labelledby="lbl-oscope" id="seg-oscope">
           <button id="oscope-compare" data-v="compare" aria-pressed="true">Side by side</button>
           <button id="oscope-all" data-v="all" aria-pressed="false">All corpora</button>
           <button id="oscope-llm" data-v="llm" aria-pressed="false">LLM</button>
-          <button id="oscope-legal" data-v="legal" aria-pressed="false">Legal</button>
           <button id="oscope-grammar" data-v="grammar" aria-pressed="false">Grammar</button>
+          <button id="oscope-legal" data-v="legal" aria-pressed="false">Legal</button>
         </div>
       </div>
       <div class="ctl"><span class="ctl-label" id="lbl-oenc">Encoding</span>
@@ -363,6 +361,12 @@ footer li { margin: 3px 0; }
     <div class="olegend" id="olegend"></div>
     <div class="scroll"><table class="out" id="out"></table></div>
     <p class="note" id="out-note"></p>
+    <div class="cactus-head">
+      <h3>Instances solved within a time (cactus plot)</h3>
+      <p class="note" id="cactus-note"></p>
+    </div>
+    <div class="olegend" id="cactus-legend"></div>
+    <div class="cactus-grid" id="cactus"></div>
   </section>
 
   <section id="router">
@@ -373,14 +377,14 @@ footer li { margin: 3px 0; }
         <div class="seg" role="group" aria-labelledby="lbl-rscope" id="seg-rscope">
           <button id="rscope-all" data-v="all" aria-pressed="true">All corpora</button>
           <button id="rscope-llm" data-v="llm" aria-pressed="false">LLM</button>
-          <button id="rscope-legal" data-v="legal" aria-pressed="false">Legal</button>
           <button id="rscope-grammar" data-v="grammar" aria-pressed="false">Grammar</button>
+          <button id="rscope-legal" data-v="legal" aria-pressed="false">Legal</button>
         </div>
       </div>
     </div>
     <div class="stats" id="rt-stats" style="margin: 0 0 26px"></div>
     <div class="rt-charts">
-      <figure class="rt-fig"><figcaption>Speedup in total time<span class="cap-sub">Over always <span class="mono rt-base">simple</span>. Dominated by the slow instances and the timeouts.</span></figcaption><div class="rt-chart" id="rt-chart-total" role="img"></div></figure>
+      <figure class="rt-fig"><figcaption>Mean speedup per instance<span class="cap-sub">Geometric mean over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-mean" role="img"></div></figure>
       <figure class="rt-fig"><figcaption>Median speedup per instance<span class="cap-sub">Median over instances of <span class="mono rt-base">simple</span>'s time divided by the strategy's.</span></figcaption><div class="rt-chart" id="rt-chart-median" role="img"></div></figure>
     </div>
     <div class="rt-charts rt-row">
@@ -437,8 +441,10 @@ footer li { margin: 3px 0; }
 <script>
 const DATA = __DATA__;
 const M = DATA.meta;
+const PAPER = M.paper;                  // the paper figures' order and colours (paper_style.py)
 const ENC = M.encodings;
-const CORPORA = ["llm", "legal", "grammar"];
+const CORPORA = PAPER.corpora;          // in the paper's order
+for (const c of CORPORA) document.documentElement.style.setProperty(`--c-${c}`, PAPER.corpus_colours[c]);
 const CNAME = { all: "All corpora", llm: "LLM", legal: "Legal", grammar: "Grammar" };
 const $ = (s) => document.querySelector(s);
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -454,7 +460,7 @@ document.querySelectorAll(".n-feat").forEach((el) => { el.textContent = N_FEAT; 
     `<span><b>${ENC.length}</b> encodings vs <b>${esc(M.baseline)}</b>${(M.left_out || []).length ? ` (left out: <b>${M.left_out.map(esc).join(", ")}</b>)` : ""}</span>`,
     `<span><b>${M.runs}</b> run${M.runs === 1 ? "" : "s"} per instance${M.timeout_s ? `, ${M.timeout_s} s timeout` : ""}</span>`,
     `<span>injected bounds <b>${esc(M.bounds === "strip" ? "stripped" : M.bounds === "keep" ? "kept" : M.bounds)}</b></span>`,
-    `<span>results <b>${esc(M.results)}</b></span>`,
+    `<span>results <b>${M.results.map(esc).join(" + ")}</b></span>`,
     `<span>generated <b>${esc(M.generated)}</b></span>`,
   ];
   $("#prov").innerHTML = parts.join("");
@@ -492,7 +498,7 @@ function showTip(e, html) {
 function hideTip() { tip.hidden = true; }
 
 /* ---------- segmented controls ---------- */
-const state = { scope: "all", to: "bound", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3", pcol: "corpus", pfocus: "all" };
+const state = { scope: "all", oscope: "compare", oenc: "all", rscope: "all", proj: "t", dim: "3", pcol: "corpus", pfocus: "all" };
 function wireSeg(id, key, cb) {
   const seg = $(id);
   seg.addEventListener("click", (e) => {
@@ -533,7 +539,7 @@ function heatBody(feats, scopes, H) {
 }
 function renderHeat() {
   const scopes = state.scope === "compare" ? ["all", ...CORPORA] : [state.scope];
-  const H = DATA.heat[state.to];
+  const H = DATA.heat;
   const grid = $("#heat");
   grid.className = "heat-grid " + (scopes.length > 1 ? "cols-1" : "cols-3");
   grid.style.setProperty("--feat-w", Math.max(...DATA.groups.flatMap(([, fs]) => fs.map((f) => f.length))) + 1 + "ch");
@@ -542,21 +548,12 @@ function renderHeat() {
   ).join("");
   const s = divStops();
   $("#legend-bar").style.background = `linear-gradient(90deg, ${s.join(", ")})`;
-  // (instance, encoding) pairs the two modes disagree on: the encoding or the baseline timed out.
-  const n = (mode) => Object.values(DATA.heat[mode][scopes[0]].n).reduce((a, b) => a + b, 0);
-  const extra = n("bound") - n("drop");
-  const where = scopes.length > 1 ? " across all corpora" : "";
-  $("#to-hint").innerHTML = state.to === "bound"
-    ? `As in the rest of the report: a timed-out side counts at the ${M.timeout_s} s limit. ${extra} instance and encoding pairs${where} have one.`
-    : `A check, not the report's measurement: only instances both the encoding and <span class="mono">${esc(M.baseline)}</span> solved. Leaves out ${extra} instance and encoding pairs${where}.`;
-  $("#to-note").innerHTML = state.to === "bound"
-    ? `<h3>Timeouts count at the time limit</h3><p>Every instance counts once, measured as everywhere in this report. Where only one side timed out, its speedup is a bound: the true one is at least as far from 1, so ranking at the bound understates the effect. Where both timed out, the speedup is 1.</p>`
-    : `<h3>Timed-out instances left out</h3><p>Only instances both sides solved, to check that a correlation does not rest on the timeouts alone. This drops the cases where one encoding solves what the other cannot, which are often the most informative.</p>`;
+  $("#to-note").innerHTML = `<h3>Timeouts count at the time limit</h3><p>Every instance counts once, measured as everywhere in this report, and none is left out for its timeouts. Where only one side timed out, its speedup is a bound: the true one is at least as far from 1, so ranking at the bound understates the effect. Where both timed out, the speedup is 1.</p>`;
 }
 $("#heat").addEventListener("mouseover", (e) => {
   const td = e.target.closest("td[data-f]"); if (!td) return;
   const { f, e: enc, s } = td.dataset;
-  const H = DATA.heat[state.to][s];
+  const H = DATA.heat[s];
   const r = H.rho[f]?.[enc], q = H.q[f]?.[enc];
   const body = r == null
     ? "Constant in this subset, so no correlation."
@@ -572,23 +569,36 @@ function fmtTime(t) {
   if (t < 1) return (t * 1000).toFixed(t < 0.01 ? 2 : 1) + " ms";
   return t.toFixed(2) + " s";
 }
-const OUT_ENCS = [M.baseline, ...ENC];
+const OUT_ENCS = [M.baseline, ...ENC, ...M.strategies];   // the router's live runs, if joined, last
 const OSTATUS = [["sat", "sat"], ["unsat", "unsat"], ["timeout", "timed out"]];
 $("#seg-oenc").innerHTML = ["all", ...OUT_ENCS].map((e) =>
   `<button id="oenc-${esc(e)}" data-v="${esc(e)}" aria-pressed="${e === state.oenc}">${e === "all" ? "All" : esc(e)}</button>`).join("");
-const zero = (n) => (n ? n : '<span class="dim">0</span>');
+const numf = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(1));   // a count, or a mean of counts
+/* A share as a percentage to d decimals, a half rounded up, as fmt_pct() in solver_outcomes.py
+   does for the paper: 175.1 of 200 is 87.6%, where the float 0.8755, just under, gives 87.5%. */
+const pct = (share, d) => (Math.floor(Number((100 * share * 10 ** d).toPrecision(12)) + 0.5) / 10 ** d).toFixed(d);
+const zero = (n) => (n ? numf(n) : '<span class="dim">0</span>');
+/* A per-run column: the median over the runs, and under it the lowest and highest run, in the
+   median's unit (scaled by k, d decimals). */
+function runCell(o, key, u) {
+  if (o[key] == null) return '<span class="dim">—</span>';
+  const f = (x) => (x * u.k).toFixed(u.d);
+  return `${f(o[key])}${u.u}<span class="rng">${f(o[key + "_min"])}–${f(o[key + "_max"])}</span>`;
+}
+const timeUnit = (t) => (t < 1 ? { k: 1000, d: t < 0.01 ? 2 : 1, u: " ms" } : { k: 1, d: 2, u: " s" });
 const tipAttr = (html) => ` data-tip="${esc(html)}"`;
 
 function renderOutcomes() {
-  const scopes = state.oscope === "compare" ? ["all", ...CORPORA] : [state.oscope];
+  const scopes = state.oscope === "compare" ? CORPORA : [state.oscope];
   const encs = state.oenc === "all" ? OUT_ENCS : [state.oenc];
   const B = esc(M.baseline), T = M.timeout_s;
+  const perRun = `<span class="rng">median of ${M.runs} runs</span>`;
   $("#olegend").innerHTML = OSTATUS.map(([k, label]) => `<span><i class="sw o-${k}"></i>${label}</span>`).join("");
 
-  let h = `<thead><tr><th class="l" rowspan="2">Corpus</th><th class="l" rowspan="2">Encoding</th><th class="l" rowspan="2">Solved</th>
+  let h = `<thead><tr><th class="l" rowspan="2">Corpus</th><th class="l" rowspan="2">Encoding</th><th class="l" rowspan="2">Solved<span class="rng">mean of ${M.runs} runs</span></th>
     <th rowspan="2">Sat</th><th rowspan="2">Unsat</th><th rowspan="2">Timed out</th>
     <th class="grp" colspan="2">Time</th><th class="grp" colspan="2">Versus ${B}</th></tr>
-    <tr><th class="sub">total (computed using medians per instance)</th><th class="sub">median instance</th><th class="sub">beats it</th><th class="sub w">median speedup</th></tr></thead><tbody>`;
+    <tr><th class="sub">total${perRun}</th><th class="sub">median instance${perRun}</th><th class="sub">beats it</th><th class="sub">median speedup${perRun}</th></tr></thead><tbody>`;
   for (const c of scopes) {
     encs.forEach((e, i) => {
       const o = DATA.outcomes[c][e], N = o.instances;
@@ -598,31 +608,90 @@ function renderOutcomes() {
 
       const segs = OSTATUS.filter(([k]) => o[k] > 0);
       const bar = `<span class="obar" aria-hidden="true">${segs.map(([k]) => `<i class="o-${k}" style="flex-grow:${o[k]}"></i>`).join("")}</span>`;
-      const pct = (100 * o.solve_rate).toFixed(1);
-      const solvedTip = head + segs.map(([k, label]) => `${label} ${o[k]}`).join(" · ") + `<br>${o.solved} of ${N} instances solved within ${T} s (${pct}%)`;
+      const solvedPct = pct(o.solved / N, 1);
+      const solvedTip = head + segs.map(([k, label]) => `${label} ${numf(o[k])}`).join(" · ") + `<br>${numf(o.solved)} of ${N} instances solved within ${T} s (${solvedPct}%): each run's count, averaged over the ${M.runs_of[e]} runs`;
 
       let beats = '<span class="dim">baseline</span>', beatsTip = "";
       let ms = '<span class="dim">1.00×</span>', msTip = "";
       if (e !== M.baseline) {
         const w = (100 * o.wins) / N;
-        beats = `<span class="bar-cell">${o.wins} / ${N}<span class="minibar"><i style="width:${w.toFixed(0)}%"></i></span>${w.toFixed(0)}%</span>`;
+        beats = `<span class="bar-cell">${o.wins} / ${N}<span class="minibar"><i style="width:${w}%"></i></span>${pct(o.wins / N, 0)}%</span>`;
         beatsTip = tipAttr(head + `Faster than ${B} on ${o.wins} of the ${N} instances, timeouts counted at ${T} s.`);
-        ms = o.median_speedup == null ? '<span class="dim">—</span>' : o.median_speedup.toFixed(2) + "×";
-        msTip = tipAttr(head + `Median over the ${N} instances of ${B}'s time divided by ${esc(e)}'s, timeouts at ${T} s.`);
+        ms = runCell(o, "median_speedup", { k: 1, d: 2, u: "×" });
+        msTip = tipAttr(head + `Median over the ${M.runs_of[e]} runs of each run's median over the ${N} instances of ${B}'s time divided by ${esc(e)}'s, run against run, timeouts at ${T} s. Below: the lowest and highest run.`);
       }
-      const totTip = tipAttr(head + `Sum over the ${N} instances; a timeout counts as ${T} s.`);
-      const medTip = tipAttr(head + `Median over the ${N} instances, timeouts at ${T} s. Every encoding of a corpus is timed on the same instances.`);
+      const totTip = tipAttr(head + `Median over the ${M.runs_of[e]} runs of each run's sum over the ${N} instances; a timeout counts as ${T} s. Below: the lowest and highest run.`);
+      const medTip = tipAttr(head + `Median over the ${M.runs_of[e]} runs of each run's median over the ${N} instances, timeouts at ${T} s. Below: the lowest and highest run. Every encoding of a corpus is timed on the same instances.`);
 
       h += `<tr class="${i === 0 ? "first" : ""}"><td class="corp l">${corp}</td><td class="enc l">${esc(e)}</td>
-        <td class="l"${tipAttr(solvedTip)}><span class="bar-cell">${bar}${o.solved} / ${N} <span class="dim">${pct}%</span></span></td>
+        <td class="l"${tipAttr(solvedTip)}><span class="bar-cell">${bar}${numf(o.solved)} / ${N} <span class="dim">${solvedPct}%</span></span></td>
         <td>${zero(o.sat)}</td><td>${zero(o.unsat)}</td><td>${zero(o.timeout)}</td>
-        <td${totTip}>${o.total_time.toFixed(1)} s</td><td${medTip}>${fmtTime(o.median_time)}</td>
+        <td${totTip}>${runCell(o, "total_time", { k: 1, d: 1, u: " s" })}</td><td${medTip}>${runCell(o, "median_time", timeUnit(o.median_time))}</td>
         <td${beatsTip}>${beats}</td><td${msTip}>${ms}</td></tr>`;
     });
   }
   $("#out").innerHTML = h + "</tbody>";
+  renderCactus(scopes, encs);
   const all = DATA.outcomes.all[M.baseline];
-  $("#out-note").innerHTML = `Every section of this report measures time the same way. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Every instance counts here: the ${all.unsolvable} on which every encoding timed out count as a timeout for every encoding, and are shown under each corpus. The speedup heatmap and the router leave them out, since no encoding is faster than another on them.${all.incomplete ? ` The ${all.incomplete} with an errored or missing run are left out everywhere.` : ""} Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`;
+  $("#out-note").innerHTML = `Every section of this report measures time the same way, except the total time, median instance and median speedup here. An instance's time on an encoding is the median over its ${M.runs} run${M.runs > 1 ? "s" : ""}, and a timed-out run counts as the ${T} s limit, so every instance counts once and every encoding is timed on the same instances. Those three are instead computed on every run separately (an encoding's run against the same run of ${B}) and shown as the median over the ${M.runs} runs, with the lowest and highest run below it. The solved, sat, unsat and timed-out counts are also taken in every run separately, and shown as the mean over the ${M.runs} runs, so they can be fractional. Every instance counts here: the ${all.unsolvable} on which every encoding timed out count as a timeout for every encoding, and are shown under each corpus. So does every other section: none leaves out timeouts.${all.incomplete ? ` The ${all.incomplete} with an errored or missing run are left out everywhere.` : ""} Total time is dominated by the slowest instances and the timeouts; the median instance and the median speedup describe the instance in the middle.`
+    + (M.strategies.includes("router") ? ` The <span class="mono">router</span> row is not an encoding: it is DateSat's router approach, run ${M.runs_of.router === 1 ? "once" : `${M.runs_of.router} times`} on every instance with models that were not trained on it (see <a href="#router">Specialized router</a>), its time including the routing. It is measured like every encoding here, but it does not count towards the instances no encoding solves.` : "");
+}
+/* ---------- cactus plot ---------- */
+/* One line per encoding: how many instances it solves within the time on the x axis in a run,
+   averaged over the runs, so a line climbs to the mean number of instances the encoding
+   solves by the limit, the Solved column. The same plot as
+   plot_cactus.py's for the paper, in the paper's encoding colours and order. */
+const encColor = (e) => PAPER.colours[e] || (e === "router" ? PAPER.router : css("--e-other"));
+const paperOrder = (encs) => [...PAPER.encodings.filter((e) => encs.includes(e)),
+                              ...encs.filter((e) => !PAPER.encodings.includes(e))];
+const plainTime = (t) => (t < 1 ? (t * 1000).toFixed(t < 0.01 ? 2 : 1) + " ms" : t.toFixed(2) + " s");
+function renderCactus(scopes, encs) {
+  const T = M.timeout_s, focus = encs.length === 1 ? encs[0] : null, all = paperOrder(OUT_ENCS);
+  const order = focus ? [...all.filter((e) => e !== focus), focus] : all;   // the focus drawn on top
+  $("#cactus-note").innerHTML = `Each line is one encoding: how many instances it solves within the time on the x axis, so it climbs to the number it solves within the ${T} s limit (dotted), the Solved column above. Each run's count is averaged over the ${M.runs} runs. Higher is more solved; further left is faster. Every encoding is timed on the same instances. Hover a line for its count at that time.`;
+  $("#cactus-legend").innerHTML = all.map((e) => `<span${focus && e !== focus ? ' class="dim"' : ""}><i class="lsw" style="border-top-color:${encColor(e)};opacity:${focus && e !== focus ? 0.35 : 1}"></i>${esc(e)}</span>`).join("");
+  $("#cactus").innerHTML = scopes.map((c) => {
+    const dot = c === "all" ? "" : `<span class="dot" style="background:var(--c-${c})"></span>`;
+    return `<figure class="rt-fig"><figcaption>${dot}${CNAME[c]}<span class="cap-sub">${DATA.outcomes[c][M.baseline].instances} instances</span></figcaption><div class="cactus-chart" id="cactus-${c}" role="img"></div></figure>`;
+  }).join("");
+
+  // one time axis for every panel, from the fastest solve shown to just past the limit; the
+  // limit is labelled, and a power of ten too near it to fit a label is not
+  const lo = Math.min(...scopes.flatMap((c) => OUT_ENCS.map((e) => (DATA.cactus[c][e] || [T])[0])));
+  const p0 = Math.floor(Math.log10(lo)), p1 = Math.ceil(Math.log10(T));
+  const tickvals = [...Array.from({ length: p1 - p0 }, (_, i) => 10 ** (p0 + i)).filter((v) => v < T), T];
+  const ticktext = tickvals.map((v) => (v === T || v < T / 3 ? plainTime(v).replace(/\.0+ /, " ") : ""));
+  const tick = { family: css("--mono"), size: 11, color: css("--ink-3") };
+  const title = (text) => ({ text, font: { family: css("--sans"), size: 12, color: css("--ink-3") } });
+  for (const c of scopes) {
+    const N = DATA.outcomes[c][M.baseline].instances;
+    const traces = order.map((e) => {
+      const ts = DATA.cactus[c][e] || [];
+      // a step up of 1 / runs at every solved run, then flat to the limit at the solved count
+      const x = ts.length ? [ts[0], ...ts, T] : [lo, T];
+      const y = (ts.length ? [0, ...ts.map((_, i) => i + 1), ts.length] : [0, 0]).map((k) => k / M.runs_of[e]);
+      const when = x.map((t, i) => [numf(y[i]), i === x.length - 1 ? `the ${T} s limit` : plainTime(t)]);
+      return { type: "scatter", mode: "lines", name: e, x, y,
+        line: { color: encColor(e), width: 2, shape: "hv" },
+        opacity: focus && e !== focus ? 0.25 : 1,
+        customdata: when, hovertemplate: `<b>${esc(e)}</b><br>%{customdata[0]} of ${N} solved within %{customdata[1]}, averaged over the runs<extra></extra>` };
+    });
+    traces.push({ type: "scatter", mode: "lines", x: [T, T], y: [0, N * 1.03], hoverinfo: "skip", showlegend: false,
+      line: { color: css("--ink-3"), width: 1, dash: "dot" } });
+    const layout = {
+      ...plotTheme(), height: 340, margin: { l: 56, r: 14, t: 10, b: 46 }, showlegend: false,
+      hovermode: "closest",
+      xaxis: { type: "log", title: title("time per instance"), range: [Math.log10(lo) - 0.12, Math.log10(T) + 0.08],
+               tickvals, ticktext, gridcolor: css("--rule"), zeroline: false, tickfont: tick, fixedrange: true },
+      yaxis: { title: title("instances solved"), range: [0, N * 1.03], gridcolor: css("--rule"), zeroline: false,
+               tickfont: tick, fixedrange: true },
+      hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--mono"), size: 12 }, bordercolor: css("--ink") },
+    };
+    const el = document.getElementById(`cactus-${c}`);
+    el.setAttribute("aria-label", `Cactus plot, ${CNAME[c]}: instances solved out of ${N} within the ${T} s limit, ` +
+      all.map((e) => `${e} ${numf((DATA.cactus[c][e] || []).length / M.runs_of[e])}`).join("; "));
+    Plotly.newPlot(el, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
+  }
 }
 $("#out").addEventListener("mouseover", (e) => {
   const td = e.target.closest("td[data-tip]");
@@ -635,72 +704,75 @@ $("#out").addEventListener("mouseleave", hideTip);
 const RT = DATA.router;
 const xf = (v) => v.toFixed(2) + "×";
 const pctf = (v) => (v == null ? "—" : (100 * v).toFixed(0) + "%");
-const numf = (v) => (Number.isInteger(v) ? String(v) : v.toFixed(1));
 function rtLabel(name) {
-  if (name === "router") return "router (cross-validated)";
+  if (name === "router") return RT.cv.measured ? "router (measured)" : "router (cross-validated)";
   if (name === "oracle") return "oracle (ideal)";
   return `always <span class="mono">${esc(name.replace(/^always /, ""))}</span>`;
 }
-/* One panel: horizontal bars of each strategy's speedup, the router in the accent and the
-   single encodings in grey, with the oracle as a dashed ceiling line rather than a bar. */
-function rtChart(id, T, key, what) {
-  const o = T.oracle[key], r = T.router[key];
-  const singles = Object.keys(T).filter((n) => n !== "router" && n !== "oracle")
-    .sort((a, b) => T[a][key] - T[b][key]);
-  const order = [...singles, "router"];                    // Plotly puts the first category at the bottom
-  const label = (n) => (n === "router" ? "<b>router</b>" : n);
-  const isR = (n) => n === "router";
-  const trace = {
-    type: "bar", orientation: "h",
-    y: order.map(label), x: order.map((n) => T[n][key]),
-    marker: { color: order.map((n) => (isR(n) ? css("--accent") : css("--rt-context"))) },
-    // the router's value sits inside its bar, so the headroom band to its right stays free
-    text: order.map((n) => xf(T[n][key])), cliponaxis: false,
-    textposition: order.map((n) => (isR(n) ? "inside" : "outside")), insidetextanchor: "end",
-    textfont: { family: css("--mono"), size: 12.5, color: order.map((n) => (isR(n) ? "#ffffff" : css("--ink-2"))) },
-    customdata: order.map((n) => [T[n].total_s.toFixed(1), numf(T[n].timeouts), (100 * T[n][key] / o).toFixed(0),
-                                  isR(n) ? `<br>${xf(o / r)} headroom to the ideal` : ""]),
-    hovertemplate: `<b>%{y}</b><br>%{x:.2f}× over ${esc(RT.cv.baseline)}, ${what}<br>%{customdata[0]} s in total · %{customdata[1]} timeouts<br>%{customdata[2]}% of the ideal ${xf(o)}%{customdata[3]}<extra></extra>`,
-  };
-  const tick = { family: css("--mono"), size: 12, color: css("--ink-2") };
-  const layout = {
-    ...plotTheme(), height: 340, margin: { l: 10, r: 18, t: 30, b: 34 },
-    bargap: 0.45, showlegend: false,
-    xaxis: { range: [0, o * 1.16], ticksuffix: "×", gridcolor: css("--rule"), zeroline: true,
-             zerolinecolor: css("--ink-3"), tickfont: { ...tick, size: 11, color: css("--ink-3") }, fixedrange: true },
-    yaxis: { tickfont: tick, automargin: true, fixedrange: true,
+/* The router charts are drawn as the paper's router figure (plot_router.py): one row per
+   strategy, the router on top in dark and every encoding below it in its colour, in the
+   paper's order in every chart, so that they can be read across. */
+const RT_BAR = 0.62;                                      // bar height, in rows
+/* The axes and the theme every router chart shares, for n rows and an x axis up to top: an
+   axis line along the bottom, a grid up the bars, the labels on the left. */
+function rtLayout(top, n, suffix = "") {
+  const tick = { family: css("--mono"), size: 12, color: css("--ink") };
+  return {
+    ...plotTheme(), showlegend: false, bargap: 1 - RT_BAR,
+    xaxis: { range: [0, top], ticksuffix: suffix, gridcolor: css("--rule"), zeroline: false, showline: true,
+             linecolor: css("--ink-2"), ticks: "outside", ticklen: 4, tickcolor: css("--ink-2"),
+             tickfont: { ...tick, size: 11, color: css("--ink-2") }, fixedrange: true },
+    yaxis: { range: [-0.5, n - 0.5], tickfont: tick, automargin: true, fixedrange: true,
              ticks: "outside", ticklen: 8, tickcolor: "rgba(0,0,0,0)" },   // an invisible tick: room between label and bar
-    shapes: [
-      // headroom: from the router's bar to the ideal, on the router's row
-      { type: "rect", xref: "x", yref: "y", x0: r, x1: o, y0: order.length - 1 - 0.275, y1: order.length - 1 + 0.275,
-        fillcolor: css("--rt-headroom"), line: { width: 0 }, layer: "below" },
-      { type: "line", xref: "x", x0: o, x1: o, yref: "paper", y0: 0, y1: 1.02,
-        line: { color: css("--ink"), width: 1.5, dash: "dash" } },
-    ],
-    annotations: [
-      { x: o, xref: "x", y: 1.02, yref: "paper", yanchor: "bottom", xanchor: "right", showarrow: false,
-        text: `ideal (oracle) <b>${xf(o)}</b>`, font: { family: css("--mono"), size: 12, color: css("--ink") } },
-      { x: o, xref: "x", xshift: -8, y: order.length - 1, yref: "y", xanchor: "right", showarrow: false,
-        text: `${xf(o / r)} headroom`, font: { family: css("--mono"), size: 11.5, color: css("--ink-2") } },   // popped below when it does not fit
-    ],
     hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
   };
+}
+/* One panel of a speedup: the router's value inside its bar, a line at 1× (always the
+   baseline) behind the bars, and the oracle as a dashed ceiling rather than a bar. */
+function rtChart(id, T, key, what) {
+  const o = T.oracle[key], top = o * 1.2;
+  const rows = ["router", ...rtEncodings(T)];             // top to bottom
+  const order = rows.slice().reverse();                   // Plotly puts the first category at the bottom
+  const isR = (n) => n === "router";
+  const row = (n) => T[isR(n) ? n : `always ${n}`];
+  const trace = {
+    type: "bar", orientation: "h",
+    y: order.map((n) => (isR(n) ? "<b>router</b>" : n)), x: order.map((n) => row(n)[key]),
+    marker: { color: order.map((n) => (isR(n) ? PAPER.router : encColor(n))) },
+    text: order.map((n) => (isR(n) ? `<b>${xf(row(n)[key])}</b>` : xf(row(n)[key]))), cliponaxis: false,
+    textposition: order.map((n) => (isR(n) ? "inside" : "outside")), insidetextanchor: "end",
+    textfont: { family: css("--mono"), size: 12.5, color: order.map((n) => (isR(n) ? "#ffffff" : css("--ink-2"))) },
+    customdata: order.map((n) => [isR(n) ? "router" : `always ${esc(n)}`, row(n).total_s.toFixed(1),
+                                  numf(row(n).timeouts), (100 * row(n)[key] / o).toFixed(0)]),
+    hovertemplate: `<b>%{customdata[0]}</b><br>%{x:.2f}× over ${esc(RT.cv.baseline)}, ${what}<br>%{customdata[1]} s in total · %{customdata[2]} timeouts<br>%{customdata[3]}% of the oracle's ${xf(o)}<extra></extra>`,
+  };
+  // The line at 1× is drawn only between the bars, as if behind them: a shape under the
+  // bars would also sit under the grid line at 1×.
+  const half = RT_BAR / 2, n = order.length;
+  const gaps = [[-0.5, -half], ...order.slice(1).map((_, i) => [i + half, i + 1 - half]), [n - 1 + half, n - 0.5]];
+  const layout = {
+    ...rtLayout(top, n, "×"), height: 340, margin: { l: 10, r: 18, t: 30, b: 34 },
+    shapes: [
+      ...gaps.map(([y0, y1]) => ({ type: "line", xref: "x", x0: 1, x1: 1, yref: "y", y0, y1,
+                                   line: { color: css("--ink-3"), width: 1 } })),
+      // the oracle, a ceiling: its line stops under its label
+      { type: "line", xref: "x", x0: o, x1: o, yref: "paper", y0: 0, y1: 1,
+        line: { color: css("--ink-3"), width: 1.2, dash: "dash" } },
+    ],
+    annotations: [{ x: o, xref: "x", y: 1, yref: "paper", yanchor: "bottom", xanchor: "center", showarrow: false,
+      text: `oracle ${xf(o)}`, font: { family: css("--mono"), size: 12, color: css("--ink-2") } }],
+  };
   const el = document.getElementById(id);
-  // Label the headroom band only when it is wide enough to hold the label (plot width
-  // estimated from the panel, less the margins and the y-axis labels).
-  const plotW = el.clientWidth - layout.margin.l - layout.margin.r - 150;
-  const hrText = `${xf(o / r)} headroom`;
-  if (((o - r) / (o * 1.16)) * plotW < hrText.length * 7.4 + 20) layout.annotations.pop();
-  el.setAttribute("aria-label", `Bar chart of speedup over ${RT.cv.baseline}, ${what}: router ${xf(T.router[key])}, ideal ${xf(o)}; ` +
-    singles.slice().reverse().map((n) => `${n} ${xf(T[n][key])}`).join(", "));
+  el.setAttribute("aria-label", `Bar chart of speedup over ${RT.cv.baseline}, ${what}: router ${xf(T.router[key])}, oracle ${xf(o)}; ` +
+    rows.slice(1).map((e) => `always ${e} ${xf(row(e)[key])}`).join(", "));
   Plotly.react(el, [trace], layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
-/* Which encoding the router picks in a scope: one bar per encoding, in a fixed order so that
-   switching the corpus does not reorder them. The accent bar is the router's vote and the
-   hatched part the fallback; the ink tick is how often that encoding is the fastest, which
-   is what the oracle picks. */
+/* Which encoding the router picks in a scope: one bar per encoding in its colour, in the
+   paper's order, which switching the corpus does not change. The solid part is the router's
+   vote and the hatched part the fallback; the ink tick is how often that encoding is the
+   fastest, which is what the oracle picks. */
 function rtEncodings(T) {
-  return Object.keys(T).filter((n) => n.startsWith("always ")).map((n) => n.slice(7)).sort();
+  return paperOrder(Object.keys(T).filter((n) => n.startsWith("always ")).map((n) => n.slice(7)));
 }
 function rtPicks(S) {
   const fb = RT.cv.fallbacks.length === 1 ? RT.cv.fallbacks[0] : null;
@@ -713,21 +785,20 @@ function rtPicksChart(id, S) {
   const rows = rtPicks(S).reverse();                    // Plotly puts the first category at the bottom
   const n = S.instances, y = rows.map((r) => r.e), fb = RT.cv.fallbacks.length === 1 ? RT.cv.fallbacks[0] : null;
   const share = (v) => (100 * v / n).toFixed(1) + "%";
-  const surf = css("--surface"), acc = css("--accent");
-  const tick = { family: css("--mono"), size: 12, color: css("--ink-2") };
+  const surf = css("--surface"), colours = rows.map((r) => encColor(r.e));
   const barHover = rows.map((r) => `<b>${esc(r.e)}</b><br>the router picks it on ${numf(r.picks)} of ${n} instances (${share(r.picks)})`
     + (r.fell ? `<br>${numf(r.vote)} by the vote, ${numf(r.fell)} by falling back` : "")
     + (r.fastest == null ? "" : `<br>it is the fastest on ${r.fastest} (${share(r.fastest)})`));
   const traces = [
     { type: "bar", orientation: "h", name: "router's vote", y, x: rows.map((r) => r.vote),
-      marker: { color: acc, line: { color: surf, width: 2 } }, customdata: barHover, hovertemplate: "%{customdata}<extra></extra>" },
+      marker: { color: colours, line: { width: 0 } }, customdata: barHover, hovertemplate: "%{customdata}<extra></extra>" },
     { type: "bar", orientation: "h", name: fb ? `fallback (${fb})` : "fallback", y, x: rows.map((r) => r.fell || null),   // no empty segment, whose outline would show
-      marker: { color: surf, pattern: { shape: "/", fgcolor: acc, bgcolor: surf, size: 6, solidity: 0.35 }, line: { color: acc, width: 1 } },
+      marker: { color: surf, pattern: { shape: "/", fgcolor: colours, bgcolor: surf, size: 6, solidity: 0.35 }, line: { color: colours, width: 1 } },
       customdata: barHover, hovertemplate: "%{customdata}<extra></extra>", showlegend: rows.some((r) => r.fell > 0) },
   ];
   if (S.fastest) {
     traces.push({ type: "scatter", mode: "markers", name: "fastest (oracle)", y, x: rows.map((r) => r.fastest),
-      marker: { symbol: "line-ns", size: 30, line: { color: css("--ink"), width: 2 } },
+      marker: { symbol: "line-ns", size: 0.9 * (312 - 10 - 34) / rows.length, line: { color: css("--ink"), width: 2 } },   // 0.9 of a row, past the bar
       customdata: barHover, hovertemplate: "%{customdata}<extra></extra>" });
   }
   $("#rt-picks-legend").innerHTML = [["sw-vote", "router's vote"],
@@ -742,37 +813,35 @@ function rtPicksChart(id, S) {
     return r.fastest != null && r.fastest > r.picks && r.fastest < r.picks + span ? r.fastest : r.picks;
   };
   const layout = {
-    ...plotTheme(), height: 312, margin: { l: 10, r: 18, t: 10, b: 34 }, showlegend: false,
-    barmode: "stack", bargap: 0.5,
-    xaxis: { range: [0, range], gridcolor: css("--rule"), zeroline: true, zerolinecolor: css("--ink-3"),
-             tickfont: { ...tick, size: 11, color: css("--ink-3") }, fixedrange: true },
-    yaxis: { tickfont: tick, automargin: true, fixedrange: true, ticks: "outside", ticklen: 8, tickcolor: "rgba(0,0,0,0)" },
+    ...rtLayout(range, rows.length), height: 312, margin: { l: 10, r: 18, t: 10, b: 34 }, barmode: "stack",
     // each bar's count at its end, or just past the tick when the tick would sit under it
     annotations: rows.map((r) => ({ x: labelX(r), xref: "x", xshift: 10, y: r.e, yref: "y",
       xanchor: "left", showarrow: false, text: numf(r.picks), font: { family: css("--mono"), size: 12, color: css("--ink-2") } })),
-    hoverlabel: { bgcolor: css("--ink"), font: { color: css("--bg"), family: css("--sans") }, bordercolor: css("--ink") },
   };
   el.setAttribute("aria-label", `Bar chart of how often the router picks each encoding, out of ${n} instances: ` +
     rows.slice().reverse().map((r) => `${r.e} ${numf(r.picks)}` + (r.fastest == null ? "" : `, fastest on ${r.fastest}`)).join("; "));
   Plotly.react(el, traces, layout, { displaylogo: false, responsive: true, displayModeBar: false });
 }
 /* Every strategy's solve rate in the selected corpus, with a bar coloured as in the charts:
-   the router in the accent, the single encodings in grey, the oracle dashed. */
+   each encoding in its colour and in the paper's order, the router dark, the oracle dashed. */
 function rtSolveTable(S) {
   const cv = RT.cv;
+  const names = [...rtEncodings(S.table).map((e) => `always ${e}`), ...Object.keys(S.solve).filter((n) => !n.startsWith("always "))];
   let h = `<thead><tr><th class="l">Strategy</th><th class="l">Solved within ${cv.timeout_cost_s} s</th></tr></thead><tbody>`;
-  for (const [name, v] of Object.entries(S.solve)) {
+  for (const name of names) {
+    const v = S.solve[name];
     const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
-    const avg = name === "router" ? `, averaged over ${cv.repeats} repeats` : "";
-    const pct = (100 * v.rate).toFixed(1);
+    const colour = name === "router" ? PAPER.router : name === "oracle" ? null : encColor(name.slice(7));
+    const avg = name === "router" ? (cv.measured ? (cv.live.runs > 1 ? `, counted in each of its ${cv.live.runs} live runs and averaged over them` : ", in its one live run") : `, averaged over the ${M.runs} runs and ${cv.repeats} repeats`) : `, averaged over the ${M.runs} runs`;
+    const share = pct(v.solved / S.solve_of, 1);
     h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>`
-      + `<td class="l"${tipAttr(`${rtLabel(name)}, ${CNAME[state.rscope]}<br>Solves ${numf(v.solved)} of ${S.instances} instances within the ${cv.timeout_cost_s} s timeout${avg}; ${numf(S.table[name].timeouts)} time out.`)}>`
-      + `<span class="solve-cell"><span class="minibar"><i style="width:${pct}%"></i></span><span class="rate">${pct}%</span><span class="dim">${numf(v.solved)} / ${S.instances}</span></span></td></tr>`;
+      + `<td class="l"${tipAttr(`${rtLabel(name)}, ${CNAME[state.rscope]}<br>Solves ${numf(v.solved)} of ${S.solve_of} instances within the ${cv.timeout_cost_s} s timeout${avg}; ${numf(S.solve_of - v.solved)} time out.`)}>`
+      + `<span class="solve-cell"><span class="minibar"><i style="width:${share}%${colour ? `;background:${colour}` : ""}"></i></span><span class="rate">${share}%</span><span class="dim">${numf(v.solved)} / ${S.solve_of}</span></span></td></tr>`;
   }
   $("#rt-solve").innerHTML = h + "</tbody>";
-  $("#rt-solve-cap").innerHTML = `Out of the ${rtOutOf(S)}. `
-    + (state.rscope === "all" ? `The ${cv.dropped.all_timeout} instances no encoding solves are left out.`
-                              : `Instances no encoding solves (${cv.dropped.all_timeout} in all corpora) are left out.`);
+  const unsolvable = DATA.outcomes[state.rscope][M.baseline].unsolvable;
+  $("#rt-solve-cap").innerHTML = `Out of all ${S.solve_of}${state.rscope === "all" ? "" : ` ${CNAME[state.rscope]}`} instances, as in <a href="#outcomes">Solver outcomes</a>. `
+    + (unsolvable ? `The ${unsolvable} that no encoding solves count as unsolved for every strategy.` : "Every instance is solved by some encoding.");
 }
 function rtOutOf(S) {
   return `${S.instances}${state.rscope === "all" ? "" : ` ${CNAME[state.rscope]}`} instances`;
@@ -795,11 +864,11 @@ function renderRouter() {
   const cv = RT.cv, S = RT.scopes[state.rscope], T = S.table;
   const base = esc(cv.baseline), best = cv.best_performing_encoding, B = esc(best);
   const r = T.router, o = T.oracle, b = T[`always ${best}`];
-  const vs = b.total_s / r.total_s;
+  const vs = r.speedup_geomean / b.speedup_geomean;     // the geometric mean of the router's speedup over always best
   $("#rt-stats").innerHTML = [
-    ["Router", xf(r.speedup_total), `faster than always <span class="mono">${base}</span> in total time; ${xf(r.speedup_median)} on the median instance`],
-    ["Ideal router (oracle)", xf(o.speedup_total), `the most any router could reach; ${xf(o.speedup_median)} on the median instance`],
-    [`Versus always ${B}`, xf(vs), `${vs >= 1 ? "faster" : "slower"} in total: ${r.total_s.toFixed(1)} s against ${b.total_s.toFixed(1)} s, ${numf(r.timeouts)} timeouts against ${numf(b.timeouts)}`],
+    ["Router", xf(r.speedup_geomean), `faster than always <span class="mono">${base}</span> per instance (geometric mean); ${xf(r.speedup_median)} on the median instance`],
+    ["Ideal router (oracle)", xf(o.speedup_geomean), `the most any router could reach; ${xf(o.speedup_median)} on the median instance`],
+    [`Versus always ${B}`, xf(vs), `${vs >= 1 ? "faster" : "slower"} per instance (geometric mean); ${r.total_s.toFixed(1)} s against ${b.total_s.toFixed(1)} s in total, ${numf(r.timeouts)} timeouts against ${numf(b.timeouts)}`],
     ["Gap closed", pctf(S.gap_closed), `of the way from always <span class="mono">${B}</span> to the oracle, in total time`],
     ["Picks the fastest", pctf(S.picks_fastest), `of the ${S.instances} instances`],
   ].map(([k, v, sub]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${sub}</div></div>`).join("");
@@ -807,25 +876,26 @@ function renderRouter() {
   const names = Object.keys(T);
   let h = `<thead><tr><th class="l" rowspan="2">Strategy</th><th rowspan="2">Total time</th><th rowspan="2">Timeouts</th>
     <th class="grp" colspan="2">Speedup over ${base}</th></tr>
-    <tr><th class="sub l">total time, as a share of the ideal</th><th class="sub">median per instance</th></tr></thead><tbody>`;
+    <tr><th class="sub l">mean per instance, as a share of the ideal</th><th class="sub">median per instance</th></tr></thead><tbody>`;
   for (const name of names) {
-    const t = T[name], share = t.speedup_total / o.speedup_total;
+    const t = T[name], share = t.speedup_geomean / o.speedup_geomean;
     const cls = name === "router" ? "rt-router" : name === "oracle" ? "rt-oracle" : "";
-    const avg = name === "router" ? `, averaged over ${cv.repeats} repeats` : "";
+    const avg = name === "router" ? (cv.measured ? (cv.live.runs > 1 ? `, averaged over its ${cv.live.runs} live runs, routing included` : ", in its one live run, routing included") : `, averaged over ${cv.repeats} repeats`) : "";
     h += `<tr class="${cls}"><td class="l">${rtLabel(name)}</td>
       <td${tipAttr(`${rtLabel(name)}<br>Sum over the ${S.instances} instances${avg}; a timeout counts as ${cv.timeout_cost_s} s.`)}>${t.total_s.toFixed(1)} s</td>
       <td>${t.timeouts ? numf(t.timeouts) : zero(0)}</td>
-      <td class="l"${tipAttr(`${rtLabel(name)}<br>${xf(t.speedup_total)} over ${base} in total time: ${(100 * share).toFixed(0)}% of the oracle's ${xf(o.speedup_total)}.`)}><span class="bar-cell"><span class="minibar"><i style="width:${Math.min(100, 100 * share).toFixed(1)}%"></i></span>${xf(t.speedup_total)}</span></td>
+      <td class="l"${tipAttr(`${rtLabel(name)}<br>${xf(t.speedup_geomean)} over ${base}: the geometric mean over instances of ${base}'s time divided by this strategy's time, ${(100 * share).toFixed(0)}% of the oracle's ${xf(o.speedup_geomean)}.`)}><span class="bar-cell"><span class="minibar"><i style="width:${Math.min(100, 100 * share).toFixed(1)}%"></i></span>${xf(t.speedup_geomean)}</span></td>
       <td${tipAttr(`${rtLabel(name)}<br>Median over instances of ${base}'s time divided by this strategy's time.`)}>${xf(t.speedup_median)}</td></tr>`;
   }
   $("#rt-table").innerHTML = h + "</tbody>";
   document.querySelectorAll(".rt-base").forEach((el) => { el.textContent = cv.baseline; });
-  $("#rt-picks-cap").innerHTML = `Out of the ${rtOutOf(S)}, averaged over ${cv.repeats} repeats`
-    + (S.fastest ? "; the tick is how many each is fastest on." : ".");
+  const ties = DATA.outcomes[state.rscope][M.baseline].unsolvable;
+  $("#rt-picks-cap").innerHTML = `Out of the ${rtOutOf(S)}, averaged over ${cv.measured ? (cv.live.runs > 1 ? `the ${cv.live.runs} repeats the live runs used` : "the repeat the live run used") : `${cv.repeats} repeats`}`
+    + (S.fastest ? `; the tick is how many each is fastest on${ties ? ` (none is, on the ${ties} that every encoding times out on)` : ""}.` : ".");
   rtSolveTable(S);
   rtPicksTable(S);
   if (window.Plotly) {
-    rtChart("rt-chart-total", T, "speedup_total", "in total time");
+    rtChart("rt-chart-mean", T, "speedup_geomean", "geometric mean per instance");
     rtChart("rt-chart-median", T, "speedup_median", "on the median instance");
     rtPicksChart("rt-chart-picks", S);
   } else {
@@ -845,8 +915,16 @@ function renderRouter() {
     : "";
   $("#rt-notes").innerHTML = [
     modelBlk,
-    `<h3>How it is measured</h3><p>${cv.folds}-fold cross-validation over the ${cv.instances} instances, leaving out the ${cv.dropped.all_timeout} on which every encoding timed out. Every fold holds the same share of every corpus. Each instance is routed by a router trained on the other folds, so no router routes an instance it was trained on. The whole procedure runs ${cv.repeats} times with different folds and the results are averaged, which is why the router's timeouts can be fractional. A timeout counts as ${cv.timeout_cost_s} s, and the router's own run time is not included.</p>`,
-    `<h3>The ideal maximum</h3><p>The oracle picks, for every instance, the encoding that turned out fastest. That is only known after running all ${md ? md.encodings.length : "the"} encodings, so no router that picks once, before solving, can do better. Its speedup is the ceiling, the dashed line in both speedup charts.</p>`,
+    `<h3>How it is measured</h3><p>${cv.folds}-fold cross-validation over all ${cv.instances} instances${cv.all_timeout ? `, the ${cv.all_timeout} on which every encoding timed out included: every pair of encodings ties on them, so they give the router no training examples, and they count as a timeout for every strategy` : ""}. Every fold holds the same share of every corpus. Each instance is routed by a router trained on the other folds, so no router routes an instance it was trained on. The whole procedure runs ${cv.repeats} times with different folds.`
+      + (cv.measured
+        ? ` The router is measured: DateSat's router approach solved every instance in ${cv.live.runs > 1 ? `each of ${cv.live.runs} live runs, run N with the models of the N-th set of folds` : "one live run, with the models of the first set of folds"}. Each live run is summarized as its set of folds is in the prediction, with the router charged its time in that run, which includes the routing: extracting the features from the constraint text and walking the forests. Loading a model, once per process, is not counted. The summaries are averaged over the runs; each run routes with other models, so the spread over the runs covers the folds as well as timing noise. Every other strategy comes from the encodings' recorded runs. Timeouts are counted in every run and averaged over the runs, as in <a href="#outcomes">Solver outcomes</a>, which is why they can be fractional. A timeout counts as ${cv.timeout_cost_s} s.</p>`
+        : ` The router is predicted, not run: it is charged the recorded time of the encoding it picks, so its own run time is not included, and the results are averaged over the ${cv.repeats} sets of folds. Timeouts are counted in every one of the ${M.runs} runs and averaged over them, as in <a href="#outcomes">Solver outcomes</a>, which is why they can be fractional. A timeout counts as ${cv.timeout_cost_s} s. <span class="mono">run_router_cv.py</span> measures it.</p>`),
+    cv.measured ? (() => {
+      const L = cv.live, ms = (t) => (1000 * t).toFixed(2) + " ms";
+      const P = state.rscope === "all" ? L.predicted_total_s : L.predicted_total_by_corpus_s[state.rscope];
+      return `<h3>Measured against predicted</h3><p>Of the ${L.results} live runs of an instance${state.rscope === "all" ? "" : " (every corpus)"}, ${L.picks_known} reported the encoding they picked${L.results > L.picks_known ? ` (the other ${L.results - L.picks_known} were killed at the hard timeout first)` : ""}, and ${L.picks_agree} of those picked the encoding the cross-validation predicted. Routing took ${ms(L.routing_time_s.median)} per instance in the median and ${ms(L.routing_time_s.max)} at most, ${(100 * L.routing_share).toFixed(2)}% of the router's time. Where the router finished, its time less the routing was ${L.time_vs_recorded_median == null ? "—" : L.time_vs_recorded_median.toFixed(3) + "×"} the recorded time of the encoding it picked, in the median over ${L.time_vs_recorded_n} runs; far from 1, the machine ran faster or slower than when the encodings were recorded. Charged the recorded time of its picks instead (the prediction, over the same sets of folds), the router would total ${P.toFixed(1)} s${state.rscope === "all" ? "" : ` on ${CNAME[state.rscope]}`}, against the ${T.router.total_s.toFixed(1)} s measured${L.runs > 1 ? `; a run's total varies by ${S.total_sd.toFixed(1)} s (standard deviation over the ${L.runs} runs)` : ""}.</p>`;
+    })() : "",
+    `<h3>The ideal maximum</h3><p>The oracle picks, for every instance, the encoding that turned out fastest; for its timeouts and solve rate, the fastest in each run. That is only known after running all ${md ? md.encodings.length : "the"} encodings, so no router that picks once, before solving, can do better. Its speedup is the ceiling, the dashed line in both speedup charts.</p>`,
     `<h3>A caveat</h3><p>The cross-validation measures one fixed setting: leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth}, margin ${cv.setting.margin}${cv.setting.train_timeout_cost_s !== undefined ? ` and timeouts counted as ${cv.setting.train_timeout_cost_s} s in training` : ""}. No router routes an instance it was trained on, but if that setting was picked by comparing settings on these same instances, the figures are slightly optimistic. Testing on new constraints gives an unbiased figure.</p>`,
     pairsBlk,
   ].filter(Boolean).map((x) => `<div class="blk">${x}</div>`).join("");
@@ -1052,8 +1130,8 @@ function renderReduction() {
     const A = R.scopes.all.all, S = R.scopes.all.selected;
     const d = S.router.total_s / A.router.total_s - 1;
     tiles.push(
-      [`Router, ${R.n_features.all} features`, sf(A.router.total_s), `${xf(A.router.speedup_total)} over always <span class="mono">${esc(R.baseline)}</span>; picks the fastest on ${pctf(A.picks_fastest)}`],
-      [`Router, ${R.n_features.selected} features`, sf(S.router.total_s), `${xf(S.router.speedup_total)} over always <span class="mono">${esc(R.baseline)}</span>; picks the fastest on ${pctf(S.picks_fastest)}`],
+      [`Router, ${R.n_features.all} features`, sf(A.router.total_s), `${xf(A.router.speedup_geomean)} over always <span class="mono">${esc(R.baseline)}</span> per instance (geometric mean); picks the fastest on ${pctf(A.picks_fastest)}`],
+      [`Router, ${R.n_features.selected} features`, sf(S.router.total_s), `${xf(S.router.speedup_geomean)} over always <span class="mono">${esc(R.baseline)}</span> per instance (geometric mean); picks the fastest on ${pctf(S.picks_fastest)}`],
       ["Change in total time", (d >= 0 ? "+" : "−") + Math.abs(100 * d).toFixed(1) + "%", `${d > 0 ? "slower" : d < 0 ? "faster" : "no change"} with ${R.n_features.selected} features than with ${R.n_features.all}, over all ${A.instances} instances`],
     );
   }
@@ -1099,7 +1177,6 @@ function renderReduction() {
 
 /* ---------- wiring ---------- */
 wireSeg("#seg-scope", "scope", renderHeat);
-wireSeg("#seg-to", "to", renderHeat);
 wireSeg("#seg-oscope", "oscope", renderOutcomes);
 wireSeg("#seg-oenc", "oenc", renderOutcomes);
 wireSeg("#seg-rscope", "rscope", renderRouter);

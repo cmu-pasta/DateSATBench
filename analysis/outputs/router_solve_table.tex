@@ -1,0 +1,14 @@
+% Written by python -m analysis.report.paper_router_table from 5-fold cross-validation repeated 10 times, the router measured on 10 live runs, timeout 20 s. Do not edit by hand.
+\definecolor{dsSat}{HTML}{2F9E55}
+\definecolor{dsUnsat}{HTML}{F0A030}
+\definecolor{dsTimeout}{HTML}{D43D3D}
+\definecolor{dsDim}{HTML}{85837B}
+\begin{tabular}{@{}l *{5}{r} @{\hspace{14pt}} r r@{}}
+\toprule
+ & \multicolumn{5}{c}{Always one encoding} & & \\
+\cmidrule(lr){2-6}
+ & \naive & \epoch & \hybridymd & \hybridepoch & \ab & Router & Oracle \\
+\midrule
+Solved & 82.4\% & 85.6\% & 93.8\% & 88.9\% & 85.6\% & \textbf{95.1\%} & 96.0\% \\
+\bottomrule
+\end{tabular}

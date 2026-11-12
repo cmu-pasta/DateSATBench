@@ -21,11 +21,11 @@ analysis/stats/instance_costs.py's, which every other stage uses too. The forest
 trained on the same costs with a timed-out run counting at --train-timeout-cost instead
 (DEFAULT_SETTINGS' train_timeout_cost_s, 80 s), so a pick that times out weighs more than
 its 20 s and the router steers further away from timeouts; the totals and the fallback
-use --timeout-cost. Instances are dropped when
-    - any encoding has an errored or missing run on them, or
-    - every encoding timed out on them, so no encoding is faster than another.
-Instances on which only some encodings time out are kept: they are the examples that
-teach the router which choices are dangerous.
+use --timeout-cost. Instances are dropped only when any encoding has an errored or
+missing run on them. Instances on which some encodings time out are kept: they are the
+examples that teach the router which choices are dangerous. So are those on which every
+encoding timed out: every pair ties on them, so they give no training examples, but they
+count in the totals as a timeout for every strategy, as in every other stage.
 
 Overfitting. With leaves allowed to rest on one instance, the forests memorize the
 training constraints. --min-samples-leaf keeps every leaf on several. Every split chooses
@@ -70,13 +70,11 @@ import sklearn
 from sklearn.ensemble import RandomForestClassifier
 
 from analysis.paths import MODEL, OUTPUTS, REPO
-from analysis.stats.instance_costs import all_timeout_ids, cost_table  # noqa: F401 (re-exported)
-from analysis.stats.instance_costs import usable_costs as training_set
-from analysis.stats.join_results import add_timeout_arg, timeout_seconds
+from analysis.stats.instance_costs import ROUTER, all_timeout_ids, complete_costs, cost_table  # noqa: F401 (re-exported)
+from analysis.stats.join_results import RESULT_COLUMNS, add_timeout_arg, timeout_seconds
 
 RANDOM_STATE = 0
 TOP_FEATURES = 5
-ROUTER = "router"                  # the encoding name the router's own results carry
 FORMAT_VERSION = 1                 # of router.json
 EXPORT_TOLERANCE = 1e-9
 # The router's setting. crossval_router.py measures it; ROUTER.md says why it was chosen.
@@ -87,14 +85,20 @@ DEFAULT_SETTINGS = {"min_samples_leaf": 10, "max_depth": 16, "max_features": 0.5
                     "margin": 0.0, "train_timeout_cost_s": 80.0}
 DEFAULT_TREES = 50                 # trees per forest
 
-# The columns join_results.py writes ahead of the feature columns.
-RESULT_COLS = {"id", "corpus", "encoding", "run", "time", "status", "solved",
-               "baseline_time", "baseline_status", "speedup", "speedup_bound"}
-
 
 def feature_columns(joined):
     """The router's inputs: the feature columns of joined.csv, in order."""
-    return [c for c in joined.columns if c not in RESULT_COLS and not c.startswith("label_")]
+    return [c for c in joined.columns if c not in RESULT_COLUMNS and not c.startswith("label_")]
+
+
+def training_set(joined, timeout_cost):
+    """The cost table the router is trained and evaluated on: every instance that every
+    encoding ran without an error. Returns (costs, dropped, all_timeout): dropped counts the
+    instances left out, {"errored_or_missing": n}, and all_timeout how many of those kept
+    every encoding timed out on."""
+    costs, incomplete = complete_costs(joined, timeout_cost)
+    return (costs, {"errored_or_missing": incomplete},
+            int(costs.index.isin(all_timeout_ids(joined)).sum()))
 
 
 def instance_features(joined, cols, ids):
@@ -192,6 +196,23 @@ def export_error(forest, trees, a, X):
     return float(np.abs(walked - expected).max())
 
 
+def router_json(forests, encodings, features, X, fallback, margin, bounds, trained_on):
+    """The model for DateSat's router approach in router.json's form, from pairwise forests
+    over the feature columns `features`. Every forest is first walked on every row of X and
+    checked against scikit-learn's predict_proba; a difference above EXPORT_TOLERANCE raises
+    ValueError."""
+    pairs = []
+    for (a, b), forest in forests.items():
+        trees = forest_arrays(forest, a)
+        err = export_error(forest, trees, a, X)
+        if err > EXPORT_TOLERANCE:
+            raise ValueError(f"{a} vs {b}: the exported trees differ from scikit-learn by {err:g}")
+        pairs.append({"a": a, "b": b, "trees": trees})
+    return {"format_version": FORMAT_VERSION, "bounds": bounds, "encodings": list(encodings),
+            "features": list(features), "fallback": fallback, "margin": margin,
+            "trained_on": trained_on, "pairs": pairs}
+
+
 def pair_probability(forest, X, a):
     """P(a is the faster encoding) from a pairwise forest, for every row of X."""
     classes = list(forest.classes_)
@@ -286,8 +307,8 @@ def main():
     joined = joined[joined["encoding"] != ROUTER]
     cols = feature_columns(joined)
     n_total = joined["id"].nunique()
-    costs, dropped = training_set(joined, timeout_cost)
-    train_costs, _ = training_set(joined, train_timeout_cost)    # the same instances
+    costs, dropped, all_timeout = training_set(joined, timeout_cost)
+    train_costs, _, _ = training_set(joined, train_timeout_cost)    # the same instances
     feats = instance_features(joined, cols, costs.index)
     encodings = sorted(costs.columns)
 
@@ -298,8 +319,8 @@ def main():
     print(f"timeout: {timeout:g} s, counted as {timeout_cost:g} s "
           f"({train_timeout_cost:g} s in the training examples)")
     print(f"instances: {n_total}; dropped {dropped['errored_or_missing']} with an errored or "
-          f"missing run and {dropped['all_timeout']} on which every encoding timed out; "
-          f"training on {len(costs)}")
+          f"missing run; training on {len(costs)}, {all_timeout} of which every "
+          f"encoding timed out on (no examples, as every pair ties)")
 
     pairs = {}
     print(f"\n{len(encodings) * (len(encodings) - 1) // 2} forests of {args.trees} trees, "
@@ -326,21 +347,19 @@ def main():
         ap.error(f"--fallback {fallback!r} is not one of {encodings}")
 
     print(f"\nchecking the exported trees against scikit-learn on {len(costs)} instances ...")
-    X = feats.to_numpy(dtype=float)
-    exported = []
-    for (a, b), forest in forests.items():
-        trees = forest_arrays(forest, a)
-        err = export_error(forest, trees, a, X)
-        if err > EXPORT_TOLERANCE:
-            raise SystemExit(f"{a} vs {b}: the exported trees differ from scikit-learn by "
-                             f"{err:g}; router.json not written")
-        exported.append({"a": a, "b": b, "trees": trees})
+    joined_rel = os.path.relpath(args.joined, REPO)
+    try:
+        model = router_json(forests, encodings, cols, feats.to_numpy(dtype=float), fallback,
+                            args.margin, bounds, {"joined": joined_rel, "instances": len(costs),
+                                                  "timeout_s": timeout})
+    except ValueError as e:
+        raise SystemExit(f"{e}; router.json not written")
     if bounds != "keep":
         print("WARNING: the features were extracted with the injected bounds stripped; "
               "DateSat's router refuses such a model (extract them with --bounds keep)")
 
     meta = {
-        "joined": os.path.relpath(args.joined, REPO),
+        "joined": joined_rel,
         "sklearn_version": sklearn.__version__,
         "timeout_s": timeout,
         "timeout_cost_s": timeout_cost,
@@ -352,7 +371,7 @@ def main():
         "random_state": RANDOM_STATE,
         "instances": {"total": n_total,
                       "dropped_errored_or_missing": dropped["errored_or_missing"],
-                      "dropped_all_timeout": dropped["all_timeout"],
+                      "all_timeout": all_timeout,
                       "trained_on": len(costs)},
         "encodings": encodings,
         "feature_columns": cols,
@@ -363,21 +382,11 @@ def main():
         "margin": args.margin,
         "pairs": pairs,
     }
-    router_json = {
-        "format_version": FORMAT_VERSION,
-        "bounds": bounds,
-        "encodings": encodings,
-        "features": cols,
-        "fallback": fallback,
-        "margin": args.margin,
-        "trained_on": {"joined": meta["joined"], "instances": len(costs), "timeout_s": timeout},
-        "pairs": exported,
-    }
     out = Path(args.output_dir)
     out.mkdir(parents=True, exist_ok=True)
     joblib.dump(dict(meta, forests=forests), out / "router.joblib")
     (out / "router_meta.json").write_text(json.dumps(meta, indent=1))
-    (out / "router.json").write_text(json.dumps(router_json, separators=(",", ":")))
+    (out / "router.json").write_text(json.dumps(model, separators=(",", ":")))
     print(f"best single encoding on the training data: {meta['best_single_encoding']}; "
           f"fallback {fallback}, margin {args.margin:g}")
     print(f"Wrote {out / 'router.joblib'}, {out / 'router_meta.json'} and {out / 'router.json'}")

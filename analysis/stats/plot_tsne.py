@@ -23,6 +23,7 @@ from scipy import ndimage
 from scipy.stats import gaussian_kde
 
 from analysis.paths import OUTPUTS, PLOTS
+from analysis.stats.paper_style import CORPORA
 from analysis.stats.plot_feature_correlation import INK, INK_2
 
 plt.rcParams.update({
@@ -31,13 +32,6 @@ plt.rcParams.update({
     "font.serif": ["STIXGeneral"],   # ships with matplotlib
 })
 
-# The reference palette's slots 1-3, which pass every check across all pairs, as a
-# scatter needs. Each corpus also gets its own marker, so the panel survives greyscale.
-CORPORA = [  # (corpus, paper name, colour, marker), in the paper's order
-    ("llm", "LLM-Synthesized", "#2a78d6", "o"),
-    ("grammar", "Grammar-Sampled", "#eb6834", "D"),
-    ("legal", "Legally Grounded", "#1baf7a", "^"),
-]
 TSNE_SIZE = (2.69, 3.1)    # inches; the paper's subfigure, 0.49 of acmsmall's text width
 BANDWIDTH = 3.5            # t-SNE units; smooths each corpus into a region
 REGION_SHARE = 0.95        # each region encloses this share of its corpus's points
