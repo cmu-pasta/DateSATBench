@@ -6,8 +6,7 @@
     "epoch_days",
     "hybrid_init_epoch",
     "hybrid_init_ymd",
-    "simple",
-    "simple_new"
+    "simple"
   ],
   "datasets": [
     "grammar",

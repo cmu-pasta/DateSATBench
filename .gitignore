@@ -20,3 +20,5 @@ env/
 
 # SMT-LIB dumps written by older runs of the benchmark runner (then eval/run_benchmarks.py)
 results/**/*.smt2
+
+local/
