@@ -16,26 +16,26 @@
   --accent: #2a78d6;
   --accent-ink: #ffffff;
   /* --c-<corpus>, each corpus's colour, is set from the data: the paper's (paper_style.py) */
-  /* Fastest encoding in the feature-space projection: one colour per family, the three
-     hybrids sharing green and told apart by shape. Four slots of the reference palette that
-     hold up when every pair meets, as in a scatter: worst pair Delta E 16.3 for normal
-     vision, 13.0 under protan/deutan simulation. */
-  --e-hybrid_init_ymd: #008300;
-  --e-hybrid_init_epoch: #008300;
-  --e-hybrid_both: #008300;
+  /* Fastest encoding in the feature-space projection: one colour per family, the two
+     hybrids sharing green and told apart by shape. The paper's colours (paper_style.py),
+     each a different lightness, so with the shapes the groups stay apart in greyscale. */
+  --e-hybrid_init_ymd: #006400;
+  --e-hybrid_init_epoch: #006400;
   --e-epoch_days: #2a78d6;
-  --e-alpha_beta: #eda100;
-  --e-simple: #4a3aa7;
+  --e-alpha_beta: #f0ac0c;
+  --e-simple: #35248f;
   --e-other: #55544e;
   --e-none: #95938b;   /* every encoding timed out: grey, >= 3:1 on the surface */
   --ctx-dot: #d9d7cf;  /* the other instances, behind a highlighted encoding */
-  --div-n2: #991b1b;   /* darkest red at rho = -1 */
-  --div-n1: #e3807d;
-  --div-0: #f0efec;
-  --div-p1: #66b588;
-  --div-p2: #166534;   /* darkest green at rho = +1 */
+  /* The correlation scale: cividis, lighter all the way from rho = -1 to +1, so a cell's
+     grey says its sign and size when printed (paper_style.HEATMAP). */
+  --div-n2: #00224e;   /* dark blue at rho = -1 */
+  --div-n1: #434e6c;
+  --div-0: #7d7c78;    /* grey at rho = 0 */
+  --div-p1: #bcae6c;
+  --div-p2: #fee838;   /* light yellow at rho = +1 */
   --const: #e4e2dc;
-  --o-sat: #2f9e55; --o-unsat: #f0a030; --o-timeout: #d43d3d;   /* green, orange, red */
+  --o-sat: #2f9e55; --o-unsat: #efb118; --o-timeout: #8f1d1d;   /* green, yellow, dark red: three lightnesses (paper_style.OUTCOMES) */
   /* The cactus and router charts take the paper figures' colours from the data (paper_style.py):
      a colour per encoding, the hybrids apart, and the router dark. */
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -171,7 +171,7 @@ table.out td[data-tip]:hover { background: var(--chip); }
 .cactus-head { margin: 32px 0 10px; }
 .cactus-head h3 { font: 600 17px/1.3 var(--sans); margin: 0 0 4px; }
 .cactus-head .note { margin: 0; }
-.lsw { display: inline-block; width: 22px; height: 0; border-top: 2px solid; margin-right: 6px; vertical-align: 3px; }
+.lsw { display: inline-block; width: 34px; height: 6px; margin-right: 6px; vertical-align: 1px; overflow: visible; }
 .cactus-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px 28px; }
 .cactus-chart { height: 340px; }
 .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 0; }
@@ -311,7 +311,7 @@ footer li { margin: 3px 0; }
 
   <section id="speedup">
     <h2>Feature × speedup</h2>
-    <p class="sec-lede">Each cell is the Spearman correlation, over the instances, between one feature and one encoding's speedup over the baseline on each instance (the baseline's time divided by the encoding's, measured as in <a href="#outcomes">Solver outcomes</a>). Green: the encoding pulls ahead of the baseline as the feature grows. Red: it falls behind. Hover a cell for its exact value, q-value and sample size.</p>
+    <p class="sec-lede">Each cell is the Spearman correlation, over the instances, between one feature and one encoding's speedup over the baseline on each instance (the baseline's time divided by the encoding's, measured as in <a href="#outcomes">Solver outcomes</a>). Light (yellow): the encoding pulls ahead of the baseline as the feature grows. Dark (blue): it falls behind. Grey: no relation. Hover a cell for its exact value, q-value and sample size.</p>
     <div class="controls">
       <div class="ctl"><span class="ctl-label" id="lbl-scope">Corpus</span>
         <div class="seg" role="group" aria-labelledby="lbl-scope" id="seg-scope">
@@ -400,7 +400,7 @@ footer li { margin: 3px 0; }
 
   <section id="correlation">
     <h2>Feature correlation</h2>
-    <p class="sec-lede">Spearman correlation between every pair of features over all instances, ordered so that related features sit together. Green is positive and red negative, darker for a stronger correlation. Hover a cell for its exact ρ.</p>
+    <p class="sec-lede">Spearman correlation between every pair of features over all instances, ordered so that related features sit together. Light (yellow) is positive, dark (blue) negative and grey none. Hover a cell for its exact ρ.</p>
     <div class="scroll"><div id="corr"></div></div>
   </section>
 
@@ -640,8 +640,13 @@ function renderOutcomes() {
 /* One line per encoding: how many instances it solves within the time on the x axis in a run,
    averaged over the runs, so a line climbs to the mean number of instances the encoding
    solves by the limit, the Solved column. The same plot as
-   plot_cactus.py's for the paper, in the paper's encoding colours and order. */
+   plot_cactus.py's for the paper, in the paper's encoding colours, dash patterns and order. */
 const encColor = (e) => PAPER.colours[e] || (e === "router" ? PAPER.router : css("--e-other"));
+/* Each encoding's line as the paper draws it: its dash pattern, so the lines stay apart
+   without colour, and the router's heavier. Lengths in px for a line `w` px wide. */
+const encWidth = (e, w = 2) => w * (e === "router" ? PAPER.router_width : 1);
+const encDash = (e, w = 2) => (PAPER.dashes[e] ? PAPER.dashes[e].map((d) => d * w * 0.9) : null);
+const lineSwatch = (e, opacity) => `<svg class="lsw" viewBox="0 0 34 6" aria-hidden="true"><line x1="0" y1="3" x2="34" y2="3" stroke="${encColor(e)}" stroke-width="${encWidth(e)}" opacity="${opacity}"${encDash(e) ? ` stroke-dasharray="${encDash(e).join(" ")}"` : ""}/></svg>`;
 const paperOrder = (encs) => [...PAPER.encodings.filter((e) => encs.includes(e)),
                               ...encs.filter((e) => !PAPER.encodings.includes(e))];
 const plainTime = (t) => (t < 1 ? (t * 1000).toFixed(t < 0.01 ? 2 : 1) + " ms" : t.toFixed(2) + " s");
@@ -649,7 +654,7 @@ function renderCactus(scopes, encs) {
   const T = M.timeout_s, focus = encs.length === 1 ? encs[0] : null, all = paperOrder(OUT_ENCS);
   const order = focus ? [...all.filter((e) => e !== focus), focus] : all;   // the focus drawn on top
   $("#cactus-note").innerHTML = `Each line is one encoding: how many instances it solves within the time on the x axis, so it climbs to the number it solves within the ${T} s limit (dotted), the Solved column above. Each run's count is averaged over the ${M.runs} runs. Higher is more solved; further left is faster. Every encoding is timed on the same instances. Hover a line for its count at that time.`;
-  $("#cactus-legend").innerHTML = all.map((e) => `<span${focus && e !== focus ? ' class="dim"' : ""}><i class="lsw" style="border-top-color:${encColor(e)};opacity:${focus && e !== focus ? 0.35 : 1}"></i>${esc(e)}</span>`).join("");
+  $("#cactus-legend").innerHTML = all.map((e) => `<span${focus && e !== focus ? ' class="dim"' : ""}>${lineSwatch(e, focus && e !== focus ? 0.35 : 1)}${esc(e)}</span>`).join("");
   $("#cactus").innerHTML = scopes.map((c) => {
     const dot = c === "all" ? "" : `<span class="dot" style="background:var(--c-${c})"></span>`;
     return `<figure class="rt-fig"><figcaption>${dot}${CNAME[c]}<span class="cap-sub">${DATA.outcomes[c][M.baseline].instances} instances</span></figcaption><div class="cactus-chart" id="cactus-${c}" role="img"></div></figure>`;
@@ -672,7 +677,7 @@ function renderCactus(scopes, encs) {
       const y = (ts.length ? [0, ...ts.map((_, i) => i + 1), ts.length] : [0, 0]).map((k) => k / M.runs_of[e]);
       const when = x.map((t, i) => [numf(y[i]), i === x.length - 1 ? `the ${T} s limit` : plainTime(t)]);
       return { type: "scatter", mode: "lines", name: e, x, y,
-        line: { color: encColor(e), width: 2, shape: "hv" },
+        line: { color: encColor(e), width: encWidth(e), shape: "hv", dash: encDash(e) ? encDash(e).map((d) => d + "px").join(",") : "solid" },
         opacity: focus && e !== focus ? 0.25 : 1,
         customdata: when, hovertemplate: `<b>${esc(e)}</b><br>%{customdata[0]} of ${N} solved within %{customdata[1]}, averaged over the runs<extra></extra>` };
     });
@@ -907,9 +912,9 @@ function renderRouter() {
   const md = RT.model;
   const modelBlk = md
     ? `<h3>The model</h3><p>The router is made of ${md.pairs.length} random forests, one per pair of the ${md.encodings.length} encodings. Each has ${md.trees} trees of depth at most ${md.max_depth}, and no leaf rests on fewer than ${md.min_samples_leaf} training instances. Every split chooses the best of ${typeof md.max_features === "number" ? `a random ${Math.round(md.max_features * 100)}% of the ${md.n_features} features` : `${md.max_features === "log2" ? "log2" : "the square root"} of the number of features, picked at random`}. A forest predicts from the ${md.n_features} features which of its two encodings is faster. Every training instance is weighted by the two encodings' time difference, so avoiding a timeout counts far more than winning a near-tie.${md.train_timeout_cost_s > md.timeout_cost_s ? ` In the training examples a timed-out run counts as ${md.train_timeout_cost_s} s instead of ${md.timeout_cost_s} s, which steers the router further away from timeouts; every figure in this section still counts a timeout as ${cv.timeout_cost_s} s.` : ""}</p>
-       <p>The encoding that wins the most pairs is picked. On a tie, or when the pick does not beat <span class="mono">${esc(md.fallback)}</span> in their own forest${md.margin > 0 ? ` by more than ${md.margin}` : ""}, the router uses <span class="mono">${esc(md.fallback)}</span>${md.fallback === cv.best_performing_encoding ? ", the best single encoding" : ""}. The model DateSat uses, <span class="mono">outputs/model/router.json</span>, is trained on all ${md.trained_on} instances with these settings.</p>`
+       <p>The encoding that wins the most pairs is picked. On a tie, or when the pick does not beat <span class="mono">${esc(md.fallback)}</span> in their own forest${md.margin > 0 ? ` by more than ${md.margin}` : ""}, the router uses <span class="mono">${esc(md.fallback)}</span>${md.fallback === cv.best_performing_encoding ? ", the best single encoding" : ""}. The model DateSat uses, <span class="mono">results/analysis/model/router.json</span>, is trained on all ${md.trained_on} instances with these settings.</p>`
       + (md.matches_cv ? "" : `<p class="rt-warn">The cross-validation measured a different setting (leaf size ${cv.setting.min_samples_leaf}, depth ${cv.setting.max_depth}, margin ${cv.setting.margin}, ${cv.trees} trees${cv.setting.train_timeout_cost_s !== undefined ? `, timeouts counted as ${cv.setting.train_timeout_cost_s} s in training` : ""}) from the one this model was trained with, so its figures do not describe this model. Rerun <span class="mono">crossval_router.py</span> with the model's setting.</p>`)
-    : `<h3>The model</h3><p>No trained model was found in <span class="mono">outputs/model/</span>.</p>`;
+    : `<h3>The model</h3><p>No trained model was found in <span class="mono">results/analysis/model/</span>.</p>`;
   const pairsBlk = md
     ? `<h3>What each forest looks at</h3><p>The two most important features of each pair's forest.</p><ul class="rt-pairs">${md.pairs.map((p) => `<li><b>${esc(p.pair)}</b><span>${p.top.map(esc).join(", ")}</span></li>`).join("")}</ul>`
     : "";
@@ -958,8 +963,8 @@ function axis2(title) {
 function coords(p) { return state.proj === "p" ? p.p : state.dim === "3" ? p.t3 : p.t2; }
 /* Colour by fastest encoding: a fixed colour and marker shape per encoding (the shape is the
    second cue the palette needs), grey for the instances on which every encoding timed out. */
-const ENC_ORDER = ["hybrid_init_ymd", "hybrid_init_epoch", "hybrid_both", "epoch_days", "alpha_beta", "simple"];
-const ENC_SYMBOL = { hybrid_init_ymd: "circle", hybrid_init_epoch: "square", hybrid_both: "diamond",
+const ENC_ORDER = ["hybrid_init_ymd", "hybrid_init_epoch", "epoch_days", "alpha_beta", "simple"];
+const ENC_SYMBOL = { hybrid_init_ymd: "circle", hybrid_init_epoch: "square",
   epoch_days: "circle", alpha_beta: "circle", simple: "circle" };
 const SYMBOL_GLYPH = { circle: "●", square: "■", diamond: "◆", cross: "✚", x: "✕", "diamond-open": "◇", "circle-open": "○", "square-open": "□" };
 function fastestGroups() {

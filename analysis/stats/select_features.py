@@ -18,7 +18,7 @@ family then also holds the features its members had absorbed.
 Only the features are used, never the solver results, so a cross-validation run on the
 selected features (crossval_router.py --selected) is not biased by the choice.
 
-Writes analysis/outputs/selected_features.json:
+Writes results/analysis/selected_features.json:
     threshold, the number of features in features.csv, the constant ones, every family
     of more than one feature (the kept feature, and each dropped one with its signed rho
     to the kept one), the selected features in features.csv order, and the most

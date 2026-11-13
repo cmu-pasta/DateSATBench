@@ -3,8 +3,8 @@ Extract a descriptive feature set over DateSATBench.
 
 Writes one CSV row per benchmark instance. Usage:
 
-    python -m analysis.features.extract_features --output analysis/outputs/features.csv
-    python -m analysis.features.extract_features --bounds keep     # count the injected bound atoms
+    python -m analysis.features.extract_features --output results/analysis/features.csv
+    python -m analysis.features.extract_features --bounds strip    # leave out the injected bound atoms
 
 Conventions:
   * Identifier columns are `id` and `corpus`.
@@ -32,7 +32,7 @@ from analysis.paths import OUTPUTS, REPO
 
 # The datasets under datesatbench/ carry the bounds datesatbench/utils/bounds.py injected,
 # which the solver results were run with, so features are extracted from the same text. The
-# injected bound atoms are stripped before extraction unless --bounds keep is passed.
+# injected bound atoms count as part of the instance unless --bounds strip is passed.
 DATASET_ROOT = REPO / "datesatbench"
 DATASETS = {
     "llm": "llm_constraints/constraints/constraints.json",
@@ -568,8 +568,9 @@ def main():
     ap.add_argument("--output", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--dataset-root", default=str(DATASET_ROOT),
                     help="dataset root containing the three *_constraints directories")
-    ap.add_argument("--bounds", choices=("keep", "strip"), default="strip",
-                    help="keep or strip the atoms utils/bounds.py injected (default: strip)")
+    ap.add_argument("--bounds", choices=("keep", "strip"), default="keep",
+                    help="keep or strip the atoms utils/bounds.py injected (default: keep, "
+                         "which the paper, the shipped features.csv and the router use)")
     args = ap.parse_args()
 
     root = Path(args.dataset_root)

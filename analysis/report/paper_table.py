@@ -1,7 +1,7 @@
 r"""
 Write the report's solver-outcomes table as a LaTeX tabular for the paper.
 
-    python -m analysis.report.paper_table --timeout 20000     # outputs/outcomes_table.tex, and its plots
+    python -m analysis.report.paper_table --timeout 20000     # results/analysis/outcomes_table.tex, and its plots
     python -m analysis.report.paper_table --with-router       # the router's live runs as a last row
 
 The numbers are solver_outcomes()'s, the ones the report shows, one block per corpus. The
@@ -10,13 +10,15 @@ file holds the colour definitions and the tabular only; the paper wraps it in it
 makecell and graphicx, and the paper's encoding macros (\naive, \epoch, ...). Each corpus's
 cactus plot is written beside it, as outcomes_table_cactus_<corpus>.pdf.
 
-Columns: the encoding; the instances it solves, as a bar of sat, unsat and timed-out
+Columns: the encoding; the instances it solves, as a bar of SAT, UNSAT and timeout
 instances with the three counts beside it, each in a column of its own and counted in every
 run and averaged over the runs (so it can be fractional); mean and median time per
 instance, each the median over the runs, with the standard deviation over the instances
 after the mean, as mean +- SD (solver_outcomes' sd_time); and, spanning the corpus's rows, its cactus plot as plot_cactus
-draws a panel, one line per encoding. Each line has its own colour and dash pattern, so it
-can be told apart in black and white; a sample before each encoding's name shows it. The
+draws a panel, one line per encoding. Everything reads the same printed in greyscale: each
+line has its own colour and dash pattern (a sample before each encoding's name shows it), the
+colours differ in lightness, and so do the bar's sat, unsat and timed-out segments, which
+also keep one order and have their counts beside them. The
 best in each corpus is bold and underlined: the most instances solved, on the sat and unsat
 counts that add up to it, and the lowest mean and median time.
 
@@ -46,10 +48,11 @@ from analysis.stats.solver_outcomes import fmt_count, run_counts, solved_times, 
 # solver section.
 CORPORA = {"llm": "LLM-Synthesized", "grammar": "Grammar-Sampled", "legal": "Legally Grounded"}
 ENCODINGS = {"simple": r"\naive", "epoch_days": r"\epoch", "hybrid_init_ymd": r"\hybridymd",
-             "hybrid_init_epoch": r"\hybridepoch", "hybrid_both": r"\hybridboth",
-             "alpha_beta": r"\ab"}
-# The report's colours: sat, unsat and timed out; grey text.
-COLOURS = {"dsSat": "2F9E55", "dsUnsat": "F0A030", "dsTimeout": "D43D3D", "dsDim": "85837B"}
+             "hybrid_init_epoch": r"\hybridepoch", "alpha_beta": r"\ab"}
+# Sat, unsat and timed out, each a different lightness so the bar's segments stay apart in
+# greyscale (paper_style.OUTCOMES); grey text.
+COLOURS = {"dsSat": ps.OUTCOMES["sat"].lstrip("#").upper(), "dsUnsat": ps.OUTCOMES["unsat"].lstrip("#").upper(),
+           "dsTimeout": ps.OUTCOMES["timeout"].lstrip("#").upper(), "dsDim": "85837B"}
 COUNT_GAP = r"@{\hspace{4pt}}"   # between the sat, unsat and timed-out columns
 PLUS_MINUS = r"@{{\scriptsize\color{dsDim}\ $\pm$\ }}"   # between the mean and its SD
 LINES = {**ps.COLOURS, ROUTER: ps.ROUTER}   # each encoding's line, as in the paper's figures
@@ -62,11 +65,7 @@ CACTUS_W_IN = 1.665   # a corpus's plot: the width the table leaves; its height 
 CACTUS_PT = 7         # the plots' axis labels, as large as the table's grey text
 LINE_PT = 1.0         # an encoding's line, in the plots and in its samples
 SAMPLE_PT = 13        # a sample of an encoding's line, before its name
-# Each encoding's dash pattern (on, off, ... in pt; None is solid), so the lines stay apart
-# printed in black and white, where Simple and Hybrid init_ymd come out the same grey and the
-# two epoch encodings nearly so: solid, dashed, dotted, dash-dot and dash-dot-dot.
-DASHES = {"simple": (6, 2), "epoch_days": (1, 1.3), "hybrid_init_ymd": None,
-          "hybrid_init_epoch": (4, 1.3, 1, 1.3), "alpha_beta": (4, 1.3, 1, 1.3, 1, 1.3)}
+DASHES = ps.DASHES    # each encoding's dash pattern, as in the paper's figures
 
 
 def dim(text):
@@ -86,9 +85,10 @@ def line_sample(e):
     """A short stretch of the encoding's line, in its colour and dash pattern, drawn with rules."""
     colour = LINES.get(e, ps.INK_2).lstrip("#").upper()
     pattern, parts, x, i = DASHES.get(e) or (SAMPLE_PT, 0), [], 0.0, 0
+    thick = LINE_PT * (ps.ROUTER_WIDTH if e == ROUTER else 1)
     while x < SAMPLE_PT - 1e-6:
         step = min(pattern[i % len(pattern)], SAMPLE_PT - x)
-        parts.append(rf"\rule[0.5ex]{{{step:g}pt}}{{{LINE_PT:g}pt}}" if i % 2 == 0
+        parts.append(rf"\rule[0.5ex]{{{step:g}pt}}{{{thick:g}pt}}" if i % 2 == 0
                      else rf"\hspace{{{step:g}pt}}")
         x, i = x + step, i + 1
     return rf"\textcolor[HTML]{{{colour}}}{{{''.join(parts)}}}"
@@ -104,10 +104,9 @@ def cactus(times, runs, encodings, n, lo, ticks, timeout_s, height_in, path):
     ax = fig.add_axes((left / w, bottom / h, 1 - (left + right) / w, 1 - (bottom + top) / h))
     for e in encodings:
         x, y = step_curve(times.get(e, []), runs[e], lo, timeout_s)
-        dashes = DASHES.get(e)                           # matplotlib scales a pattern by the width
-        ax.step(x, y, where="post", color=LINES.get(e, ps.INK_2), linewidth=LINE_PT,
-                linestyle=(0, [d / LINE_PT for d in dashes]) if dashes else "-",
-                solid_capstyle="butt")
+        width = LINE_PT * (ps.ROUTER_WIDTH if e == ROUTER else 1)
+        ax.step(x, y, where="post", color=LINES.get(e, ps.INK_2), linewidth=width,
+                linestyle=ps.linestyle(e, width), solid_capstyle="butt", dash_capstyle="butt")
     ax.axhline(n, color=ps.RULE, linewidth=0.5, zorder=0)                          # every instance
     ax.axvline(timeout_s, color=ps.INK_3, linewidth=0.5, linestyle=(0, (1, 1.5)))   # the timeout
     ax.set_xscale("log")
@@ -192,7 +191,7 @@ def latex_table(joined, timeout_s, stem, with_router=False):
     widest = max((time_formats(ms)[0](x) for t in tables.values() for x in t["median_time"]), key=len)
     runs = joined["run"].nunique()
     sw = {k: rf"\textcolor{{ds{k}}}{{\rule{{0.8ex}}{{0.8ex}}}}" for k in ("Sat", "Unsat", "Timeout")}
-    legend = dim(rf"{sw['Sat']} sat\enspace {sw['Unsat']} unsat\enspace {sw['Timeout']} timed out")
+    legend = dim(rf"{sw['Sat']} SAT\enspace {sw['Unsat']} UNSAT\enspace {sw['Timeout']} timeout")
     sd = dim(r"$\pm$ SD")
     unit = "ms" if ms else "s"
     ps.apply()

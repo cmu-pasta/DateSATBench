@@ -2,7 +2,7 @@
 Run DateSat's router on the datasets with the fold models of crossval_router.py: the
 router's live evaluation.
 
-    python -m analysis.run.run_router_cv --tag router-cv-10runs     # every repeat, 20 s timeout
+    python -m analysis.run.run_router_cv --tag router     # every repeat, 20 s timeout
 
 crossval_router.py cuts the instances into 5 folds --repeats times (default 10), each time
 at random and stratified by corpus, and writes, for every fold, the model trained on the
@@ -153,7 +153,7 @@ def main():
     ap.add_argument("--hard-timeout", type=int, default=HARD_TIMEOUT_MS,
                     help=f"wall-clock limit per instance in ms (default: {HARD_TIMEOUT_MS})")
     ap.add_argument("--tag", help="results subdirectory (default: a YYYYmmdd_HHMMSS timestamp)")
-    ap.add_argument("--results-dir", default=str(REPO / "results"),
+    ap.add_argument("--results-dir", default=str(REPO / "results" / "runs"),
                     help="directory under which <tag>/ is created")
     ap.add_argument("--no-analysis", action="store_true",
                     help="skip checking the solutions after the runs")

@@ -6,8 +6,9 @@ Plot how each feature relates to each encoding's speedup over the baseline.
 
 Reads joined.csv. A cell is the Spearman rho, over the complete instances, between a
 feature and one encoding's speedup (the baseline's cost / the encoding's cost). rho > 0
-(green): the encoding gains on the baseline as the feature grows; rho < 0 (red): it loses
-ground.
+(light, yellow): the encoding gains on the baseline as the feature grows; rho < 0 (dark,
+blue): it loses ground. The scale gets lighter all the way from -1 to +1, so it reads the
+same in greyscale, and every cell has its signed value written on it.
 
 Costs and instances are instance_costs.py's, as in every other stage: one cost per
 instance, the median over its runs, with a timed-out run counting at the timeout, and no
@@ -19,7 +20,7 @@ Stars mark cells that survive Benjamini-Hochberg correction across the whole gri
 (* q < 0.05, ** q < 0.01). Rows keep the column order of features.csv, so every
 heatmap (pooled or per corpus) lists features in the same order.
 
-Writes analysis/outputs/plots/speedup_heatmap[_<corpus>].png.
+Writes results/analysis/plots/speedup_heatmap[_<corpus>].png.
 """
 
 import argparse
@@ -93,7 +94,7 @@ def main():
     ap.add_argument("--baseline", default="simple")
     ap.add_argument("--corpus", help="restrict to one corpus (llm, grammar, legal)")
     add_timeout_arg(ap)
-    ap.add_argument("--output", help="default: outputs/plots/speedup_heatmap[_<corpus>].png")
+    ap.add_argument("--output", help="default: results/analysis/plots/speedup_heatmap[_<corpus>].png")
     args = ap.parse_args()
     timeout = timeout_seconds(ap, args)
 
@@ -105,7 +106,7 @@ def main():
     fig, ax = plt.subplots(figsize=(6.5, 13), facecolor=SURFACE)
     im = ax.imshow(np.ma.masked_invalid(rho.values), cmap=CMAP, vmin=-1, vmax=1,
                    aspect="auto", interpolation="nearest")
-    ax.set_facecolor("#dcdad5")     # constant features show as flat grey
+    ax.set_facecolor(SURFACE)       # constant features show as empty cells, marked "const"
     ax.set_xticks(range(len(encodings)))
     ax.set_xticklabels([f"{e}\nn={n[e]}" for e in encodings], fontsize=10, color=INK_2)
     ax.xaxis.tick_top()
@@ -132,7 +133,7 @@ def main():
     ax.set_title(f"Feature vs speedup over {args.baseline}, {scope}", loc="left",
                  fontsize=13, color=INK, fontweight="semibold", pad=64)
     note = "One cost per instance; timeouts count at the timeout."
-    ax.text(0, 1.045, "Green: encoding gains on baseline as feature grows; red: it loses ground. "
+    ax.text(0, 1.045, "Light (yellow): encoding gains on baseline as feature grows; dark (blue): it loses ground. "
             f"{note}\n* BH q < 0.05, ** q < 0.01",
             transform=ax.transAxes, fontsize=8.5, color=INK_2)
 

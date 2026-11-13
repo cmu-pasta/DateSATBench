@@ -18,7 +18,7 @@ and a line beside the encodings, and the router section shows it measured; no se
 compares encodings (the heatmaps, the fastest encoding) counts it. The feature-reduction section comes
 from select_features.py's selected_features.json and, for the router with those features,
 from crossval_router.py --selected; it is left out when select_features.py has not been
-run. Writes a single self-contained analysis/outputs/report.html. Only Plotly
+run. Writes a single self-contained results/analysis/report.html. Only Plotly
 and the IBM Plex webfonts are fetched from a CDN when the page opens.
 """
 
@@ -31,7 +31,7 @@ from pathlib import Path
 import pandas as pd
 
 from analysis.features.extract_features import FEATURE_GROUPS
-from analysis.paths import (CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, MODEL, OUTPUTS, REPO,
+from analysis.paths import (CROSS_VALIDATION, CROSS_VALIDATION_SELECTED, DEFAULT_RUNS, MODEL, OUTPUTS, REPO,
                             SELECTED_FEATURES)
 from analysis.stats import paper_style as ps
 from analysis.stats.join_results import add_timeout_arg, check_run_config, timeout_seconds
@@ -217,7 +217,7 @@ def main():
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--joined", default=str(OUTPUTS / "joined.csv"))
     ap.add_argument("--clusters", default=str(OUTPUTS / "clusters.json"))
-    ap.add_argument("--results", nargs="+", default=[str(REPO / "results/all-10runs-bounded-datesat28d8186")],
+    ap.add_argument("--results", nargs="+", default=[str(d) for d in DEFAULT_RUNS],
                     help="the results directories joined.csv was made from")
     ap.add_argument("--baseline", default="simple")
     add_timeout_arg(ap)
@@ -307,7 +307,9 @@ def main():
             # the paper figures' order and colours of the corpora and the encodings
             "paper": {"corpora": CORPORA, "corpus_colours": {c: colour for c, _, colour, _ in ps.CORPORA},
                       "encodings": [e for e, *_ in ps.ENCODINGS], "colours": ps.COLOURS,
-                      "router": ps.ROUTER},
+                      "router": ps.ROUTER,
+                      # what tells the marks apart without colour, as in the paper's figures
+                      "dashes": ps.DASHES, "router_width": ps.ROUTER_WIDTH},
         },
         "groups": FEATURE_GROUPS,
         "outcomes": outcomes,

@@ -1,9 +1,9 @@
 """
 Join solver timings to the feature matrix.
 
-    python -m analysis.stats.join_results --results results/all-10runs-bounded-datesat28d8186 --timeout 20000
-    python -m analysis.stats.join_results --results results/all-10runs-bounded-datesat28d8186 \
-        results/router-cv-10runs --timeout 20000         # the encodings and the router's live runs
+    python -m analysis.stats.join_results --results results/runs/encodings --timeout 20000
+    python -m analysis.stats.join_results --results results/runs/encodings \
+        results/runs/router --timeout 20000         # the encodings and the router's live runs
 
 Reads every <corpus>/run_N/<approach>_<impl>.json (or, for a single-run eval,
 <corpus>/<approach>_<impl>.json) under each results root given to --results and joins each
@@ -38,7 +38,7 @@ Rows are never dropped from joined.csv; analyses skip rows with an empty speedup
 `time` and `baseline_time` stay as measured; filter on `solved` before using `time` as
 a measurement.
 
-Writes analysis/outputs/joined.csv, one row per (instance, encoding, run).
+Writes results/analysis/joined.csv, one row per (instance, encoding, run).
 """
 
 import argparse
@@ -47,7 +47,7 @@ import json
 import os
 from pathlib import Path
 
-from analysis.paths import OUTPUTS, REPO
+from analysis.paths import DEFAULT_RUNS, OUTPUTS
 
 FINISHED = {"sat", "unsat"}
 TIMEOUT_ENV = "DATESAT_TIMEOUT_MS"
@@ -106,12 +106,12 @@ def speedup_and_bound(time, status, base_time, base_status, timeout):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--results", nargs="+", default=[str(REPO / "results/all-10runs-bounded-datesat28d8186")],
+    ap.add_argument("--results", nargs="+", default=[str(d) for d in DEFAULT_RUNS],
                     help="results directories (multi-run <corpus>/run_N/ or single-run <corpus>/)")
     ap.add_argument("--features", default=str(OUTPUTS / "features.csv"))
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
     ap.add_argument("--exclude", nargs="+", default=[], metavar="ENCODING",
-                    help="encodings in the results to leave out, e.g. hybrid_both")
+                    help="encodings in the results to leave out, e.g. simple")
     add_timeout_arg(ap)
     ap.add_argument("--output", default=str(OUTPUTS / "joined.csv"))
     args = ap.parse_args()

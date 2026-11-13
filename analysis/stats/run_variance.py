@@ -4,9 +4,9 @@ and each scope, its mean time and its number of solved instances in every run, a
 apart the runs are.
 
     python -m analysis.stats.run_variance --timeout 20000
-    python -m analysis.stats.run_variance --joined analysis/outputs-unbounded-677e3bc/joined.csv
+    python -m analysis.stats.run_variance --joined results/analysis/joined.csv
     python -m analysis.stats.run_variance --timeout 20000 \
-        --results results/all-10runs-unbounded-datesat677e3bc results/router-cv-10runs
+        --results results/runs/encodings results/runs/router
 
 --results reads the result files (<dir>/<corpus>/run_N/<encoding>_int.json) directly instead
 of joined.csv, so no features are needed; give the router's runs as one more directory.
@@ -123,7 +123,7 @@ def main():
     src.add_argument("--results", nargs="+", metavar="DIR",
                      help="results directories to read instead of joined.csv")
     ap.add_argument("--exclude", nargs="+", default=[], metavar="ENCODING",
-                    help="encodings to leave out, e.g. hybrid_both")
+                    help="encodings to leave out, e.g. simple")
     add_timeout_arg(ap)
     ap.add_argument("--output", help="also write the rows as CSV, with a `scope` column")
     args = ap.parse_args()

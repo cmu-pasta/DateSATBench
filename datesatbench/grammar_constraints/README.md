@@ -4,13 +4,13 @@ This directory holds the grammar definition and generator code for producing Dat
 
 ## How the dataset is built
 
-We swarm-sample 300 constraint sets from the formal grammar in `generator/grammar.fan` with the [fandango](https://github.com/fandango-fuzzer/fandango) fuzzer. Before each batch of 5, the generator draws a new setting for every flag in `generator/flags.toml`: how many constraints and date variables an instance has, how large and what shape its Periods are, how long its offset chains and disjunctions get, how many of its variables are pinned to a literal date, how close together its date literals lie, and how often they sit at the end of a month. `generator/flag.md` explains every flag. There is no further selection or filtering step: the sampled constraint sets are the dataset.
+We swarm-sample 500 constraint sets from the formal grammar in `generator/grammar.fan` with the [fandango](https://github.com/fandango-fuzzer/fandango) fuzzer. Before each batch of 5, the generator draws a new setting for every flag in `generator/flags.toml`: how many constraints and date variables an instance has, how large and what shape its Periods are, how long its offset chains and disjunctions get, how many of its variables are pinned to a literal date, how close together its date literals lie, and how often they sit at the end of a month. `generator/flag.md` explains every flag. There is no further selection or filtering step: the sampled constraint sets are the dataset.
 
 Each instance draws its date literals from a window of `literal_spread` days (a month up to the whole range) placed within the full positive-years range 0001-01-01 to 9999-12-31, the same window as the `positive_years` bounds of `datesatbench/utils/bounds.py`. Unlike the LLM and legal datasets, the grammar dataset is not restricted to 1900–2100. The generator does not add bounds of its own: run `bounds inject` separately (see below).
 
 ## Generating the dataset (`generate_constraints.py`)
 
-Uses fandango's Python API, so run it with a Python environment that has `fandango` installed (for example the DateSat repo's `.venv`).
+Uses fandango's Python API, so run it with a Python environment that has `fandango` installed (`pip install fandango-fuzzer`).
 
 ```bash
 # From repository root: generate the dataset with the settings in flags.toml
@@ -23,7 +23,7 @@ python -m datesatbench.grammar_constraints.generator.generate_constraints -n 100
 **Command line arguments:**
 
 - `-c`/`--config`: Flag configuration (default: `generator/flags.toml`)
-- `-n`/`--num-samples`: Number of constraint sets to generate (default: `num_samples` in the config, `300`)
+- `-n`/`--num-samples`: Number of constraint sets to generate (default: `num_samples` in the config, `500`)
 - `-o`/`--output`: Output file (default: `constraints/constraints.json`)
 
 The number of constraint sets per flag setting (`batch_size`) and the random seed are set in `flags.toml`; the same config and seed give the same dataset.
