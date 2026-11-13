@@ -9,8 +9,8 @@ Conventions that apply to all features:
 - An instance's constraint list is treated as **one big AND**.
 - Period arithmetic is **folded first**: `Period(1,0,0) * 2 + Period(0,0,3)` becomes the single
 constant `(2y, 0m, 3d)` and never counts as an operation.
-- Injected bounds are **stripped by default**; see INJECTED BOUNDS below. The examples in this
-file have no bounds.
+- Injected bounds are **kept by default**, so they count like any other constraint; see
+INJECTED BOUNDS below. The examples in this file have no bounds.
 - A ratio whose denominator is 0 is written as 0.
 - In the examples, `a`–`e` are `date` variables, `x`, `y`, `n` are `int`, and `f`, `g` are
 `bool`. Only the variables that appear are declared, unless an example adds one explicitly
@@ -24,6 +24,12 @@ file's order with one exception: the coupling columns of SEARCH SPACE (`n_compon
 `mixed_sort_coupling`) and the columns of DATE ARITHMETIC from `n_self_ops` on come after
 CALENDAR CORNERS, in that order. That order is older than the groups. It is kept because the
 router's forests draw features by column position, so a new order would change its results.
+
+The paper counts eight categories where this file has six groups. Two of the paper's
+categories are parts of a group here: its *variable coupling* is the last four features of
+SEARCH SPACE (`n_components` to `mixed_sort_coupling`, `VARIABLE_COUPLING` in
+`extract_features.py`), and its *arithmetic structure* is DATE ARITHMETIC from `n_self_ops`
+on (`ARITHMETIC_STRUCTURE`). The 61 features are the same.
 
 ---
 
@@ -41,24 +47,25 @@ d >= Date(1, 1, 1);  d <= Date(9999, 12, 31)
 
 `extract_features.py --bounds` decides whether these count:
 
-- `strip` (default): the bounds are removed before extraction. The script checks that the
-last constraints of each entry are exactly these, and fails otherwise.
-- `keep`: the bounds are part of the instance, exactly as the solver saw it.
+- `keep` (default): the bounds are part of the instance, exactly as the solver saw it. The
+shipped `features.csv`, the numbers in the paper and the router all use this mode.
+- `strip`: the bounds are removed before extraction. The script checks that the last
+constraints of each entry are exactly these, and fails otherwise.
 
-Every instance gets the same bounds, so they add nothing that tells instances apart. They only
-inflate counts. Affected features (mean over all 450 instances):
+Every instance gets the same bounds, so they add nothing that tells instances apart; they only
+raise some counts. Affected features (mean over all 800 instances):
 
 ```
 feature                keep     strip    instances that change
-n_date_subexprs        14.61    12.61    450
-n_atoms                22.78    10.62    450
-n_date_comparisons     20.20     8.04    450
-n_unit_constraints     17.10     4.94    450
-near_month_end_frac     0.48     0.23    426
-ordering_cmp_frac       0.77     0.53    417
-implication_atom_frac   0.12     0.21    151
-property_access_frac    0.07     0.12    109
-neg_ordering_frac       0.02     0.04     50
+n_date_subexprs        14.74    12.74    800
+n_atoms                19.52    10.32    800
+n_date_comparisons     18.07     8.87    800
+n_unit_constraints     15.12     5.93    800
+near_month_end_frac     0.51     0.44    746
+ordering_cmp_frac       0.80     0.63    731
+implication_atom_frac   0.07     0.12    151
+property_access_frac    0.04     0.06    109
+neg_ordering_frac       0.01     0.02     50
 ```
 
 All other features are identical in both modes. Each bound mentions a single variable, so the
@@ -74,7 +81,7 @@ affects `features.csv`. To carry it through the analysis, rerun the downstream s
 
 ```
 export DATESAT_TIMEOUT_MS=20000                    # the --timeout the results were run with
-python -m analysis.features.extract_features --bounds keep
+python -m analysis.features.extract_features --bounds strip
 python -m analysis.stats.join_results
 python -m analysis.stats.cluster
 python -m analysis.stats.plot_speedup_heatmap            # and --corpus llm|legal|grammar

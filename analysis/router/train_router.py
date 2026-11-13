@@ -38,7 +38,7 @@ router cannot learn which generator made a constraint), the label is the faster 
 two, and the weight is the gap |cost_A - cost_B| in seconds. A near-tie barely counts; a
 timeout avoided counts a lot.
 
-Writes to analysis/outputs/model/:
+Writes to results/analysis/model/:
     router.joblib      the forests, keyed by (A, B), plus everything in router_meta.json
     router_meta.json   encodings, feature column order, whether the features were
                        extracted with the injected bounds kept, timeout cost, instance

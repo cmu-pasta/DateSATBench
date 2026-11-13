@@ -5,12 +5,14 @@ Plot the Spearman correlation between features over every benchmark instance.
 
 Features only, no runtimes, so all instances in features.csv are used. Features are
 ordered by complete-linkage clustering on 1 - |rho|; a family is a group in which
-every pair has |rho| >= --family, and is outlined on the plot.
+every pair has |rho| >= --family, and is outlined on the plot. The scale gets lighter from
+rho = -1 (dark blue) to +1 (light yellow), so it reads the same in greyscale, and every cell
+has its signed value written on it.
 
 With --selected, only the features select_features.py kept (selected_features.json) are
 plotted, to show what correlation is left among them.
 
-Writes analysis/outputs/plots/feature_correlation.png, or with --selected
+Writes results/analysis/plots/feature_correlation.png, or with --selected
 feature_correlation_selected.png.
 """
 
@@ -23,17 +25,18 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.colors import LinearSegmentedColormap, to_rgb
+from matplotlib.colors import to_rgb
 from matplotlib.patches import Rectangle
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
 
 from analysis.paths import OUTPUTS, PLOTS, SELECTED_FEATURES
+from analysis.stats.paper_style import HEATMAP
 
-# Diverging scale: red (negative) -> grey (zero) -> green (positive). Green is the
-# desired direction everywhere it is used: for speedups it means the encoding gains.
-CMAP = LinearSegmentedColormap.from_list(
-    "red_gray_green", ["#a12a28", "#e34948", "#f0efec", "#3db07a", "#1b7a4e"])
+# The scale: dark blue (-1) -> grey (0) -> light yellow (+1), lighter all the way, so the
+# plots read the same in greyscale (paper_style.HEATMAP). Light is the desired direction
+# everywhere it is used: for speedups it means the encoding gains.
+CMAP = matplotlib.colormaps[HEATMAP]
 INK, INK_2, SURFACE = "#1f1f1e", "#52514e", "#fcfcfb"
 
 
@@ -42,7 +45,8 @@ def ink_on(color):
     def lin(v):
         return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
     r, g, b = (lin(c) for c in to_rgb(color))
-    return "white" if 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.36 else INK
+    lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+    return "white" if 1.05 / (lum + 0.05) >= (lum + 0.05) / 0.062 else INK   # the higher contrast
 
 
 def constant_features(df):
@@ -125,7 +129,7 @@ def main():
     what = f" of the {n} selected features" if args.selected else ""
     ax.set_title(f"Feature correlation{what}, all {len(df)} instances", loc="left", fontsize=15,
                  color=INK, fontweight="semibold", pad=28)
-    ax.text(0, 1.012, f"Green: positive, red: negative. Boxes = families (every pair |rho| >= {args.family}).",
+    ax.text(0, 1.012, f"Light (yellow): positive, dark (blue): negative, grey: none. Boxes = families (every pair |rho| >= {args.family}).",
             transform=ax.transAxes, fontsize=10, color=INK_2)
 
     out = Path(args.output)

@@ -1,7 +1,7 @@
 """
 Project DateSATBench instances from the extracted feature set to 2D and 3D.
 
-    python -m analysis.stats.cluster --input analysis/outputs/features.csv --output analysis/outputs/clusters.json
+    python -m analysis.stats.cluster --input results/analysis/features.csv --output results/analysis/clusters.json
 
 The projections are BLIND to the corpus label; the report colours the points
 by corpus afterwards, to show whether the features tell the generators apart.

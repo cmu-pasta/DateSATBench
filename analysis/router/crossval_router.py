@@ -12,7 +12,7 @@ DateSat uses. It does not search for a better setting; --min-samples-leaf, --max
 --timeout-cost (default: the timeout), whatever it counts as in training.
 
 Features. By default the router sees every feature column. With --selected it sees only
-the features select_features.py kept (outputs/selected_features.json), and the results go
+the features select_features.py kept (results/analysis/selected_features.json), and the results go
 to model_cross_validation_selected/ instead, so the two can be compared.
 
 How. The instances of joined.csv, kept as in train_router.py (each one a single
@@ -49,7 +49,7 @@ models already written to the output directory (fold_models.json, and router_eva
 whether a pick fell back), with their setting, and leaves the models and fold_models.json
 as they are. Use it to add the live runs to the cross-validation that produced their models.
 
-Writes to analysis/outputs/model_cross_validation/ (with --selected,
+Writes to results/analysis/model_cross_validation/ (with --selected,
 model_cross_validation_selected/):
     router_eval.json   the setting, the feature columns, whether the router is measured,
                        and, overall and for each corpus, averaged over the repeats (or the
@@ -409,7 +409,7 @@ def main():
     ap.add_argument("--baseline", default="simple", help="encoding that speedups are measured against")
     ap.add_argument("--selected", action="store_true",
                     help="use only the features in selected_features.json (select_features.py)")
-    ap.add_argument("--output-dir", help="default: outputs/model_cross_validation/, or "
+    ap.add_argument("--output-dir", help="default: results/analysis/model_cross_validation/, or "
                                          "model_cross_validation_selected/ with --selected")
     ap.add_argument("--from-fold-models", action="store_true",
                     help="train nothing: take the picks and the setting from the fold models "

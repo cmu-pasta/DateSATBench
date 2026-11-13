@@ -4,10 +4,12 @@ Plot clusters.json's 2D t-SNE of every benchmark instance, coloured by corpus, f
     python -m analysis.stats.plot_tsne
 
 Each corpus is drawn as its points over a shaded region that encloses most of them, with a
-direct label beside it that doubles as the key. Run analysis.stats.cluster first if the
+direct label beside it that doubles as the key. A corpus is never told apart by hue alone,
+so the panel reads the same in greyscale: its colour has its own lightness, its points their
+own marker, and its region its own outline (solid, dashed or dotted). Run analysis.stats.cluster first if the
 features changed.
 
-Writes analysis/outputs/plots/dataset_tsne.pdf (for the paper) and .png (to look at).
+Writes results/analysis/plots/dataset_tsne.pdf (for the paper) and .png (to look at).
 """
 
 import argparse
@@ -23,7 +25,7 @@ from scipy import ndimage
 from scipy.stats import gaussian_kde
 
 from analysis.paths import OUTPUTS, PLOTS
-from analysis.stats.paper_style import CORPORA
+from analysis.stats.paper_style import CORPORA, OUTLINES, check_greyscale
 from analysis.stats.plot_feature_correlation import INK, INK_2
 
 plt.rcParams.update({
@@ -89,6 +91,7 @@ def place_label(size, own, others, blocked, cell, allowed, centre, along=(1, 1))
 
 
 def plot_tsne(clusters, out_dir):
+    check_greyscale()
     points = clusters["points"]
     xy = {c: np.array([p["tsne_2d"] for p in points if p["corpus"] == c]) for c, *_ in CORPORA}
     every = np.vstack(list(xy.values()))
@@ -120,11 +123,12 @@ def plot_tsne(clusters, out_dir):
     for corpus, _, colour, _ in order:
         z, level = region(xy[corpus], grid)
         ax.contourf(grid[0], grid[1], z, levels=[level, z.max()], colors=[colour], alpha=0.12)
-        ax.contour(grid[0], grid[1], z, levels=[level], colors=[colour], linewidths=0.6, alpha=0.7)
+        ax.contour(grid[0], grid[1], z, levels=[level], colors=[darker(colour)], linewidths=0.7,
+                   linestyles=[OUTLINES[corpus]], alpha=0.9)
         masks[corpus] = z >= level
     for corpus, _, colour, marker in order:
         ax.scatter(xy[corpus][:, 0], xy[corpus][:, 1], s=MARK_SIZE[marker], marker=marker,
-                   facecolors=colour, edgecolors=darker(colour), linewidths=0.3, alpha=0.85,
+                   facecolors=colour, edgecolors=darker(colour, 0.45), linewidths=0.3, alpha=0.85,
                    zorder=3)
 
     # A direct label beside each corpus, which is also the key: its marker, name and size.
@@ -168,7 +172,7 @@ def plot_tsne(clusters, out_dir):
         cx, cy = grid[0][i, j], grid[1][i, j]
         left, top = cx - w / 2, cy + h / 2
         ax.scatter([left + w * swatch * 0.4 / width_px], [top - h * 0.26], s=MARK_SIZE[marker] * 2.2,
-                   marker=marker, facecolors=colour, edgecolors=darker(colour), linewidths=0.4,
+                   marker=marker, facecolors=colour, edgecolors=darker(colour, 0.45), linewidths=0.4,
                    zorder=4)
         title.set_position((left + w * swatch / width_px, top))
         sub.set_position((left + w * swatch / width_px, top - h * 0.53))

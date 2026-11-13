@@ -19,7 +19,7 @@ DateSATBench's: copy extract_features.py and datesat_parser.py over DateSat's ag
 note at the top of each), or rerun crossval_router.py if the fold models changed since.
 
 It also says whether DateSat's bundled model, datesat/router/model.json, is the router
-train_router.py trained on every instance (outputs/model/router.json). The live evaluation
+train_router.py trained on every instance (results/analysis/model/router.json). The live evaluation
 does not use it.
 """
 

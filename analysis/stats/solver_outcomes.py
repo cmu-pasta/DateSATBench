@@ -5,7 +5,7 @@ total and on the median instance, and how it compares with the baseline.
     python -m analysis.stats.solver_outcomes --timeout 20000          # all corpora pooled
     python -m analysis.stats.solver_outcomes --corpus legal           # one corpus
     python -m analysis.stats.solver_outcomes --compare                # pooled, then every corpus
-    python -m analysis.stats.solver_outcomes --compare --output analysis/outputs/outcomes.csv
+    python -m analysis.stats.solver_outcomes --compare --output results/analysis/outcomes.csv
 
 Reads joined.csv and prints one row per encoding for each scope. --output writes the
 same rows as CSV with a `scope` column (all, llm, legal, grammar). build_report.py

@@ -11,9 +11,10 @@ from pathlib import Path
 try:
     import datesat
 except ImportError:
-    sys.exit("DateSat is not installed. Install it from the DateSat repo with: pip install -e <path to DateSat>")
+    sys.exit("DateSat is not installed. Clone the DateSAT repository and install it with: pip install -e <path to DateSAT checkout>")
 from analysis.paths import REPO
-from analysis.run.validation import check_results_dir
+from analysis.run.validation import VALIDATION_SEMANTICS, check_results_dir
+from datesat.constraint_validator import validation_semantics
 
 TIMEOUT_MS = 20000
 # Default wall-clock limit per instance, covering build and solve.
@@ -245,38 +246,24 @@ def _load_constraints(constraints_file: str) -> list[dict]:
     return constraints
 
 
-# Define all solver approaches per implementation.
-# The int implementation splits hybrid into hybrid_init_ymd / hybrid_init_epoch (named for
-# the form a fresh date starts in) and hybrid_both, which keeps both forms linked from the
-# start; the bitvector implementation keeps the single "hybrid" approach.
+# The five encodings of the paper (Sec. 4), all over Z3 integers.
 ALL_SYMBOLIC_APPROACHES_BY_IMPL = {
     "int": [
         "simple",
         "epoch_days",
         "hybrid_init_ymd",
         "hybrid_init_epoch",
-        "hybrid_both",
         "alpha_beta",
-    ],
-    "bitvector": [
-        "simple",
-        "epoch_days",
-        "hybrid",
-        "alpha_beta",
-        "alpha_beta_table",
     ],
 }
 
-# Approaches that --approaches accepts but the default run leaves out. `router` picks one
-# of the int encodings per instance with a trained model (see DateSat's docs/router.md).
-# simple_new and epoch_new are variants of simple and epoch_days (see DateSat's
-# symbolic_int/simple_new_int.py and epoch_new_int.py).
+# Accepted by --approaches but left out of the default run: `router` picks one of the five
+# encodings per instance with a trained model (see analysis/README.md).
 OPT_IN_APPROACHES_BY_IMPL = {
-    "int": ["alpha_beta_table", "router", "simple_new", "epoch_new"],
-    "bitvector": [],
+    "int": ["router"],
 }
 
-IMPLEMENTATIONS = ["int"]  # Can add "bitvector" if needed
+IMPLEMENTATIONS = ["int"]
 
 
 def _resolve_approach_pairs(approaches: list[str] | None) -> list[tuple[str, str]]:
@@ -542,8 +529,8 @@ def main():
         nargs="+",
         default=None,
         help="List of approaches to test (e.g., --approaches router simple). "
-        "If not specified, the default approaches are tested; the opt-in ones "
-        "(alpha_beta_table, router) only run when named here.",
+        "If not specified, the five encodings are tested; router only runs "
+        "when named here.",
     )
     parser.add_argument(
         "--datesatbenchs",
@@ -569,8 +556,8 @@ def main():
     parser.add_argument(
         "--results-dir",
         default=None,
-        help="Directory under which <tag>/ is created. Defaults to results/ in the "
-        "DateSATBench checkout the dataset comes from (this repo's results/ by default).",
+        help="Directory under which <tag>/ is created. Defaults to results/runs/ in the "
+        "DateSATBench checkout the dataset comes from (this repo's results/runs/ by default).",
     )
 
     args = parser.parse_args()
@@ -605,13 +592,13 @@ def main():
     datesatbench_repo = args.datesatbench_repo or os.environ.get("DATESATBENCH_REPO")
     datesatbench_root = _resolve_datesatbench_root(datesatbench_repo)
 
-    # Results go to <DateSATBench repo>/results/<tag>/ so they sit next to the
-    # dataset they were produced from; this repo's results/ is the fallback.
+    # Results go to <DateSATBench repo>/results/runs/<tag>/ so they sit next to the
+    # dataset they were produced from; this repo's results/runs/ is the fallback.
     if args.results_dir:
         results_base = Path(args.results_dir).expanduser().resolve()
     else:
         bench_repo_root = _find_repo_root(datesatbench_root)
-        results_base = (bench_repo_root or REPO) / "results"
+        results_base = (bench_repo_root or REPO) / "results" / "runs"
     results_root = results_base / tag
 
     # Where to load constraints from
@@ -670,6 +657,9 @@ def main():
     print(f"  MaxSAT: {'Enabled' if args.maxsat else 'Disabled'}")
     print(f"  DateSat mode: {_solver_mode(args.python_bounds)}")
     print(f"  Analysis: {'Enabled' if not args.no_analysis else 'Disabled'}")
+    if not args.no_analysis:
+        # Fails here, before any solving, when the Verus oracle is required but not built.
+        print(f"  Solutions validated with: {validation_semantics(VALIDATION_SEMANTICS)}")
     if args.approaches:
         print(f"  Approaches: {args.approaches}")
     if args.datesatbenchs:

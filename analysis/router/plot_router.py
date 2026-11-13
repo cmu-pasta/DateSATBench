@@ -8,13 +8,14 @@ instance solved within the timeout (paper_router_table.py's numbers), each for a
 encoding and for the router, with the oracle as a dashed line; (c) how often the router
 picks each encoding, by its vote or by falling back, with a tick for how many instances
 each encoding is the fastest on. The rows of (a) and (b) keep one order, so the two panels
-can be read across.
+can be read across. Every bar is named by its row, so no panel is read by colour, and the
+figure reads the same in greyscale; a fallback is hatched, not coloured.
 
 Reads crossval_router.py's router_eval.json and router_eval.csv, as the report's
 Specialized router section does, so the numbers are the report's: the router measured in its
 live runs (run_router_cv.py) when joined.csv held them, else predicted.
 
-Writes analysis/outputs/plots/router.pdf (for the paper) and .png (to look at).
+Writes results/analysis/plots/router.pdf (for the paper) and .png (to look at).
 """
 
 import argparse

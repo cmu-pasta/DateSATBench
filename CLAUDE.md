@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 DateSATBench is a **dataset repository plus the generators that produced it**. The shipped artifacts (the `constraints.json` / `constraints.jsonl` files) are the product; the generator scripts are provenance and are only re-run to extend or regenerate a dataset. Treat the committed constraint files as data — regenerating them costs LLM API calls and changes IDs.
 
-The repo also holds the evaluation of the separate **DateSAT** solver repo (not vendored here): `python -m analysis.run.run_benchmarks` runs DateSat on `datesatbench/` by default, or on another dataset directory given with `--datesatbench-repo`, and writes to `results/<tag>/`, which the rest of `analysis/` reads. DateSat must be installed into the same environment with `pip install -e <path to DateSat>`.
+The repo also holds the evaluation of the separate **DateSAT** solver repo (not vendored here): `python -m analysis.run.run_benchmarks` runs DateSat on `datesatbench/` by default, or on another dataset directory given with `--datesatbench-repo`, and writes to `results/runs/<tag>/`. The rest of `analysis/` reads `results/runs/encodings` and `results/runs/router` by default and writes to `results/analysis/` (see `results/README.md`; the `*-bounded` runs there are an earlier round, kept for reference only). DateSat is a separate repository: clone it and install it into the same environment with `pip install -e <path to DateSat>`.
 
 ## Commands
 
@@ -18,7 +18,7 @@ pip install -e ".[llm]"   # adds python-dotenv, openai, anthropic — needed by 
 pip install -e ".[analysis]"  # adds pandas, scikit-learn, scipy, matplotlib, pytest for analysis/ (DateSat itself is installed separately)
 ```
 
-`python -m pytest` runs `analysis/run/test_validation.py` (needs DateSat installed). `analysis/` is a package too: run its scripts as modules, e.g. `python -m analysis.features.test_features_md` (see `analysis/README.md`, the one README for running and analysing the solver). There is no linter config or CI.
+`python -m pytest` runs the tests in `analysis/run/` (needs DateSat installed and the Verus oracle built, or `DATESAT_VALIDATION_SEMANTICS=python`; `DATESAT_VERUS_ORACLE` points at an oracle binary outside the default location). `analysis/` is a package too: run its scripts as modules, e.g. `python -m analysis.features.test_features_md` (see `analysis/README.md`, the one README for running and analysing the solver). There is no linter config or CI.
 
 ### Regenerating datasets
 
@@ -62,7 +62,7 @@ Every entry in every dataset — synthetic, legal, grammar — is a JSON object 
 |---|---|---|---|---|
 | `llm_constraints` | LLM synthesis, 5 coverage tags | `constraints/constraints.json` | 100 | `llm-<tag>-<n>` |
 | `legal_doc_constraints` | US Code Title 26 XML | `constraints/constraints.jsonl` | 200 | `legal-<n>` |
-| `grammar_constraints` | fandango fuzzer over `grammar.fan`, swarm-sampled via `flags.toml` | `constraints/constraints.json` | 300 | `grammar-<n>` |
+| `grammar_constraints` | fandango fuzzer over `grammar.fan`, swarm-sampled via `flags.toml` | `constraints/constraints.json` | 500 | `grammar-<n>` |
 
 Each dataset directory follows the same layout: `generator/` (code), `constraints/` (shipped output), and for legal also `raw_data/` → `processed_data/` staging.
 

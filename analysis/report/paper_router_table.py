@@ -1,7 +1,7 @@
 r"""
 Write the router's solve rate as a one-row LaTeX tabular for the paper.
 
-    python -m analysis.report.paper_router_table     # outputs/router_solve_table.tex
+    python -m analysis.report.paper_router_table     # results/analysis/router_solve_table.tex
 
 Reads crossval_router.py's router_eval.json, as the report's Specialized router section
 does, and gives every strategy's share of solved instances over all corpora: always one

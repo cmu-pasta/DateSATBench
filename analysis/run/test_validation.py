@@ -10,7 +10,6 @@ from analysis.run.validation import (
     validate_solution_with_concrete,
 )
 from datesat.core import Date, Period
-from future_work.datesat_bounded.enumeration_baseline import EnumerationDateVar, EnumerationSolver
 
 
 class TestEnumerationBaselineValidation:
@@ -122,50 +121,6 @@ class TestEnumerationBaselineValidation:
         )
         # Should still execute (empty code is valid)
         assert is_valid
-
-    def test_enumeration_solver_basic_operations(self):
-        """Test basic operations with enumeration solver."""
-        solver = EnumerationSolver()
-
-        # Add date variable and set concrete value
-        date_var = solver.add_date_var("d1")
-        date_var.set_value(2020, 3, 15)
-        assert isinstance(date_var, EnumerationDateVar)
-        assert date_var.get_value() is not None
-        assert date_var.get_value().year == 2020
-        assert date_var.get_value().month == 3
-        assert date_var.get_value().day == 15
-
-        # Test date arithmetic with core Period
-        period = Period(1, 2, 3)
-        result = date_var + period
-        assert isinstance(result, EnumerationDateVar)
-        # The result should be 2020-03-15 + 1 year, 2 months, 3 days = 2021-05-18
-        assert result.get_value() is not None
-        assert result.get_value().year == 2021
-        assert result.get_value().month == 5
-        assert result.get_value().day == 18
-
-    def test_enumeration_date_comparison(self):
-        """Test enumeration date comparison."""
-        solver = EnumerationSolver()
-        date1 = solver.add_date_var("d1")
-        date1.set_value(2020, 3, 15)
-        date2 = solver.add_date_var("d2")
-        date2.set_value(2020, 3, 16)
-
-        # Comparisons return ConstraintWrapper objects, need to evaluate them
-        assert (date1 < date2).evaluate()
-        assert (date2 > date1).evaluate()
-        assert (date1 <= date2).evaluate()
-        assert (date2 >= date1).evaluate()
-        assert (date1 != date2).evaluate()
-
-        # Test with Date objects
-        date_obj = Date(2020, 3, 15)
-        assert (date1 == date_obj).evaluate()
-        assert (date1 >= date_obj).evaluate()
-        assert (date1 <= date_obj).evaluate()
 
     def test_leap_year_feb_29_constraint(self):
         """Test the leap year Feb 29 constraint case (the bug we fixed)."""

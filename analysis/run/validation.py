@@ -8,14 +8,21 @@ with concrete solutions rather than rebuilding constraints and checking them wit
 """
 
 import json
+import os
 import re
 import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from datesat.constraint_parser import ConstraintParser
-from datesat.constraint_validator import validate_constraint_solution
+from datesat.constraint_validator import validate_constraint_solution, validation_semantics
 from datesat.core import Date, Period
+
+# How the date operations of a model are evaluated when DateSATBench results are
+# validated. "verus": by the Verus oracle (mechanized_proofs/src/oracle.rs), the
+# executable reference semantics; validation fails if it is not built. Set
+# DATESAT_VALIDATION_SEMANTICS=python to use datesat.core.Date instead.
+VALIDATION_SEMANTICS = os.environ.get("DATESAT_VALIDATION_SEMANTICS", "verus")
 
 # --------------------------
 # Parsing helpers
@@ -141,9 +148,11 @@ def execute_constraint_code(
                     constraint_strs.append(constraint_item)
             validated_constraints_str = "\n".join(constraint_strs)
 
-        # Evaluate using the pure-Python constraint validator (supports date/bool/int)
+        # Evaluate with the constraint validator: date operations go to the Verus oracle
+        # (VALIDATION_SEMANTICS), booleans and integers are evaluated in Python.
         ok, msg = validate_constraint_solution(
-            constraint_code, parsed_solution, python_bounds=python_bounds
+            constraint_code, parsed_solution, python_bounds=python_bounds,
+            semantics=VALIDATION_SEMANTICS,
         )
         if ok:
             return True, msg, validated_constraints_str
@@ -596,6 +605,10 @@ def check_results_dir(
             "enumeration_filter must be one of None, 'supported', or 'not_supported'"
         )
 
+    # Resolve the semantics first: this raises OracleUnavailable when the Verus oracle
+    # is required (the default here) but not built, instead of marking every model wrong.
+    semantics_used = validation_semantics(VALIDATION_SEMANTICS)
+
     records = load_results_files(results_dir)
     grouped = group_by_constraint(records)
 
@@ -875,6 +888,8 @@ def check_results_dir(
 
     return {
         "results_dir": str(results_dir),
+        # "verus" (date operations answered by the Verus oracle) or "python"
+        "validation_semantics": semantics_used,
         "constraints_checked": len(filtered_summaries),
         "counts_by_approach": counts_by_approach,
         "by_constraint": filtered_summaries,
